@@ -2,6 +2,8 @@
 
 A physics playground built on top of the [TresJS](https://tresjs.org) ecosystem — named after Alexandre Dumas, author of _The Three Musketeers_. The name is a nod to the three TresJS libraries the project is built with: [Tres](https://tresjs.org), [Cientos](https://cientos.tresjs.org), and [TresLeches](https://leches.tresjs.org).
 
+**[View demos →](https://robokozo.github.io/dumas/)**
+
 ## Packages
 
 - **`@dumas/core`** — ECS-based physics engine built on [Rapier](https://rapier.rs) and [bitECS](https://github.com/NateTheGreatt/bitECS), exposed as Vue composables and components.
