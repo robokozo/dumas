@@ -48,6 +48,11 @@ const stringMidY = computed(() => ctx.PIVOT_Y - (ctx.STRING_LENGTH / 2) * Math.c
 const STRING_OFFSETS = [-ctx.STRING_Z, ctx.STRING_Z] as const;
 const STRING_RADIUS = 0.012;
 const SPHERE_SEGMENTS = 24;
+
+// Rainbow color based on ball index
+const hue = Math.round((props.index / (ctx.PIVOT_X.length - 1)) * 300);
+const BALL_COLOR = `hsl(${hue}, 90%, 60%)`;
+const STRING_COLOR = `hsl(${hue}, 60%, 75%)`;
 </script>
 
 <template>
@@ -60,7 +65,7 @@ const SPHERE_SEGMENTS = 24;
   >
     <TresMesh>
       <TresCylinderGeometry :args="[STRING_RADIUS, STRING_RADIUS, ctx.STRING_LENGTH, 4]" />
-      <TresMeshStandardMaterial color="#aaaaaa" />
+      <TresMeshStandardMaterial :color="STRING_COLOR" />
     </TresMesh>
   </TresGroup>
 
@@ -68,7 +73,7 @@ const SPHERE_SEGMENTS = 24;
   <TresGroup ref="groupRef">
     <TresMesh>
       <TresSphereGeometry :args="[ctx.BALL_RADIUS, SPHERE_SEGMENTS, SPHERE_SEGMENTS]" />
-      <TresMeshStandardMaterial color="#c8ccd8" :metalness="0.95" :roughness="0.05" />
+      <TresMeshStandardMaterial :color="BALL_COLOR" :metalness="0.4" :roughness="0.2" />
     </TresMesh>
   </TresGroup>
 </template>

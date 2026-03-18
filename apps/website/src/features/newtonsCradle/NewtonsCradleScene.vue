@@ -130,8 +130,9 @@ useSystem({
 <template>
   <TresPerspectiveCamera :position="[0, 4, 10]" :look-at="[0, 3, 0]" />
   <OrbitControls />
-  <TresAmbientLight :intensity="0.4" />
-  <TresDirectionalLight :position="[5, 8, 5]" :intensity="1.2" cast-shadow />
+  <TresAmbientLight :intensity="0.8" />
+  <TresDirectionalLight :position="[5, 8, 5]" :intensity="2.0" cast-shadow />
+  <TresDirectionalLight :position="[-4, 6, -3]" :intensity="0.8" />
 
   <CradleFrame :pivot-y="PIVOT_Y" :half-span="((BALL_COUNT - 1) / 2) * SPACING + 0.8" />
 

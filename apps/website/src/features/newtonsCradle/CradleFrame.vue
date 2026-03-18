@@ -35,7 +35,7 @@ const FRAME_PIECES: Array<FramePiece> = [
   <TresGroup>
     <TresMesh v-for="(piece, i) in FRAME_PIECES" :key="i" :position="piece.position">
       <TresBoxGeometry :args="piece.size" />
-      <TresMeshStandardMaterial color="#888899" :metalness="0.8" :roughness="0.2" />
+      <TresMeshStandardMaterial color="#dde0f0" :metalness="0.6" :roughness="0.15" />
     </TresMesh>
   </TresGroup>
 </template>

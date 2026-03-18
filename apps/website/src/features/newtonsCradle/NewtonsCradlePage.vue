@@ -5,7 +5,7 @@ import NewtonsCradleScene from "./NewtonsCradleScene.vue";
 </script>
 
 <template>
-  <TresCanvas clear-color="#0f0a1e" window-size render-mode="always">
+  <TresCanvas clear-color="#1a1040" window-size render-mode="always">
     <NewtonsCradleScene />
   </TresCanvas>
   <TresLeches />
