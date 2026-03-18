@@ -1,0 +1,59 @@
+import { shallowRef, watch } from "vue";
+import { tryOnUnmounted } from "@vueuse/core";
+import type { ShallowRef } from "vue";
+import type RAPIER from "@dimforge/rapier3d-compat";
+import { addComponent } from "bitecs";
+
+import { useWorld } from "./useWorld";
+import { createCollider } from "../physics/colliders";
+import { ColliderRef } from "../ecs/components";
+import type { ColliderOptions } from "../types";
+
+export interface ColliderReturn {
+  collider: ShallowRef<RAPIER.Collider | null>;
+}
+
+export function useCollider(options: ColliderOptions): ColliderReturn {
+  const ctx = useWorld();
+  const { eid } = options;
+
+  const collider = shallowRef<RAPIER.Collider | null>(null);
+
+  function initCollider(): void {
+    const rapier = ctx.rapier.value;
+    const physicsWorld = ctx.physicsWorld.value;
+    const body = ctx.entityBodyMap.get(eid) ?? null;
+
+    if (rapier === null || physicsWorld === null || body === null) {
+      return;
+    }
+
+    const col = createCollider({ physicsWorld, rapier, rigidBody: body, options });
+
+    collider.value = col;
+    addComponent(ctx.ecsWorld, eid, ColliderRef);
+    ColliderRef.handle[eid] = col.handle;
+    ctx.entityColliderMap.set(eid, col);
+  }
+
+  if (ctx.isReady.value === true) {
+    initCollider();
+  } else {
+    const stopWatch = watch(ctx.isReady, (isReady) => {
+      if (isReady === true) {
+        initCollider();
+        stopWatch();
+      }
+    });
+  }
+
+  tryOnUnmounted(() => {
+    const physicsWorld = ctx.physicsWorld.value;
+    if (collider.value !== null && physicsWorld !== null) {
+      physicsWorld.removeCollider(collider.value, true);
+    }
+    ctx.entityColliderMap.delete(eid);
+  });
+
+  return { collider };
+}
