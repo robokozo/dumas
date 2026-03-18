@@ -30,6 +30,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Build @dumas/core
+        run: pnpm --filter @dumas/core run build
+
       - name: Build website
         run: pnpm --filter website run build
 
