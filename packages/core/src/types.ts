@@ -98,3 +98,27 @@ export interface ColliderOptions {
 export interface ColliderReturn {
   collider: ShallowRef<RAPIER.Collider | null>;
 }
+
+// -- Object pool --
+
+export interface PoolHandle {
+  eid: number;
+  rigidBody: RAPIER.RigidBody;
+  collider: RAPIER.Collider;
+  isActive: boolean;
+}
+
+export interface ObjectPoolOptions {
+  size: number;
+  bodyType?: RigidBodyType;
+  colliderOptions: Omit<ColliderOptions, "eid">;
+  parkPosition?: Vec3;
+}
+
+export interface ObjectPoolReturn {
+  handles: Readonly<ShallowRef<ReadonlyArray<PoolHandle>>>;
+  available: Readonly<Ref<number>>;
+  active: Readonly<Ref<number>>;
+  acquire: () => PoolHandle | null;
+  release: (params: { eid: number }) => void;
+}

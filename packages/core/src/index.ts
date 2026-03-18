@@ -10,6 +10,10 @@ export { useSystem } from "./composables/useSystem";
 export { useRigidBody } from "./composables/useRigidBody";
 export { useCollider } from "./composables/useCollider";
 
+// Pooling
+export { createObjectPool } from "./pooling/objectPool";
+export { useObjectPool } from "./pooling/useObjectPool";
+
 // ECS components (for advanced users building custom systems)
 export { Transform, Velocity, RigidBodyRef, ColliderRef } from "./ecs/components";
 
@@ -25,6 +29,9 @@ export type {
   RigidBodyOptions,
   ColliderOptions,
   SystemFn,
+  PoolHandle,
+  ObjectPoolOptions,
+  ObjectPoolReturn,
 } from "./types";
 
 // Return types

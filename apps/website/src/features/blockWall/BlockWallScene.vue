@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { reactive, onMounted, onUnmounted } from "vue";
+import { onMounted, onUnmounted } from "vue";
 import { Raycaster, Vector2 } from "three";
-import { useWorld } from "@dumas/core";
+import { useWorld, useObjectPool, useSystem } from "@dumas/core";
 import { useTresContext } from "@tresjs/core";
 import { useControls } from "@tresjs/leches";
 import { OrbitControls } from "@tresjs/cientos";
@@ -32,14 +32,22 @@ for (let row = 0; row < ROWS; row++) {
   }
 }
 
-let nextId = 0;
-const cannonballs = reactive<
-  Array<{
-    id: number;
-    position: [number, number, number];
-    velocity: { x: number; y: number; z: number };
-  }>
->([]);
+const pool = useObjectPool({
+  size: 10,
+  bodyType: "dynamic",
+  colliderOptions: { shape: "sphere", radius: 0.4, restitution: 0.3, friction: 0.5 },
+});
+
+// Auto-release cannonballs that have fallen off the world
+useSystem({
+  fn: () => {
+    for (const handle of pool.handles.value) {
+      if (handle.isActive === true && handle.rigidBody.translation().y < -20) {
+        pool.release({ eid: handle.eid });
+      }
+    }
+  },
+});
 
 const raycaster = new Raycaster();
 const mouse = new Vector2();
@@ -47,6 +55,9 @@ const mouse = new Vector2();
 let pointerMoved = false;
 let pointerDownX = 0;
 let pointerDownY = 0;
+
+const SPAWN_OFFSET = 1.5;
+const FIRE_SPEED = 40;
 
 function onPointerDown(e: PointerEvent) {
   pointerMoved = false;
@@ -61,30 +72,35 @@ function onPointerMove(e: PointerEvent) {
 }
 
 function onPointerUp(e: PointerEvent) {
-  if (!pointerMoved) fire(e.clientX, e.clientY);
+  if (pointerMoved === false) fire(e.clientX, e.clientY);
 }
 
 function fire(clientX: number, clientY: number) {
   const cam = camera.activeCamera.value;
-  if (!cam) return;
+  if (cam === null || cam === undefined) return;
 
   mouse.x = (clientX / window.innerWidth) * 2 - 1;
   mouse.y = -(clientY / window.innerHeight) * 2 + 1;
 
   raycaster.setFromCamera(mouse, cam);
   const dir = raycaster.ray.direction;
-  const speed = 40;
 
-  const SPAWN_OFFSET = 1.5;
-  cannonballs.push({
-    id: nextId++,
-    position: [
-      cam.position.x + dir.x * SPAWN_OFFSET,
-      cam.position.y + dir.y * SPAWN_OFFSET,
-      cam.position.z + dir.z * SPAWN_OFFSET,
-    ],
-    velocity: { x: dir.x * speed, y: dir.y * speed, z: dir.z * speed },
-  });
+  const handle = pool.acquire();
+  if (handle === null) return;
+
+  handle.rigidBody.setTranslation(
+    {
+      x: cam.position.x + dir.x * SPAWN_OFFSET,
+      y: cam.position.y + dir.y * SPAWN_OFFSET,
+      z: cam.position.z + dir.z * SPAWN_OFFSET,
+    },
+    true,
+  );
+  handle.rigidBody.setLinvel(
+    { x: dir.x * FIRE_SPEED, y: dir.y * FIRE_SPEED, z: dir.z * FIRE_SPEED },
+    true,
+  );
+  handle.rigidBody.enableCcd(true);
 }
 
 onMounted(() => {
@@ -107,10 +123,5 @@ onUnmounted(() => {
   <TresDirectionalLight :position="[8, 12, 8]" :intensity="1.2" cast-shadow />
   <Ground />
   <Block v-for="(block, i) in blocks" :key="i" :position="block.position" :color="block.color" />
-  <Cannonball
-    v-for="ball in cannonballs"
-    :key="ball.id"
-    :position="ball.position"
-    :velocity="ball.velocity"
-  />
+  <Cannonball v-for="handle in pool.handles.value" :key="handle.eid" :handle="handle" />
 </template>
