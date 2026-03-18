@@ -4,6 +4,7 @@
     <div class="links">
       <RouterLink to="/bouncing-ball">Bouncing Ball</RouterLink>
       <RouterLink to="/block-wall">Block Wall</RouterLink>
+      <RouterLink to="/newtons-cradle">Newton's Cradle</RouterLink>
     </div>
   </nav>
   <RouterView />

@@ -8,6 +8,9 @@
       <li>
         <RouterLink to="/block-wall">Block Wall</RouterLink>
       </li>
+      <li>
+        <RouterLink to="/newtons-cradle">Newton's Cradle</RouterLink>
+      </li>
     </ul>
   </div>
 </template>
