@@ -1,7 +1,12 @@
 import { useLoop } from "@tresjs/core";
 import type RAPIER from "@dimforge/rapier3d-compat";
 
-import { physicsSyncSystem, renderSyncSystem, reactiveSyncSystem } from "../ecs/systems";
+import {
+  physicsSyncSystem,
+  renderSyncSystem,
+  reactiveSyncSystem,
+  collisionEventSystem,
+} from "../ecs/systems";
 import { stepPhysics } from "../physics/sync";
 import type { DumasContext } from "../types";
 
@@ -30,6 +35,12 @@ export function useGameLoop({ ctx }: { ctx: DumasContext }): void {
       }
 
       stepPhysics({ physicsWorld, eventQueue });
+
+      collisionEventSystem({
+        eventQueue,
+        colliderEntityMap: ctx.colliderEntityMap,
+        collisionHandlers: ctx.collisionHandlers,
+      });
 
       physicsSyncSystem({
         ecsWorld: ctx.ecsWorld,

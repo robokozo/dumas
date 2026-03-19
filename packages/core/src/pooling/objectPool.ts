@@ -70,6 +70,7 @@ export function createObjectPool({
     addComponent(ecsWorld, eid, ColliderRef);
     ColliderRef.handle[eid] = collider.handle;
     maps.entityColliderMap.set(eid, collider);
+    maps.colliderEntityMap.set(collider.handle, eid);
 
     handles.push({ eid, rigidBody, collider, isActive: false });
   }

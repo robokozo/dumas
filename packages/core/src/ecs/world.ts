@@ -10,6 +10,7 @@ import type { ReactiveEntityRefs } from "../types";
 export interface WorldMaps {
   entityBodyMap: Map<number, RAPIER.RigidBody>;
   entityColliderMap: Map<number, RAPIER.Collider>;
+  colliderEntityMap: Map<number, number>;
   entityMeshMap: Map<number, Object3D>;
   reactiveEntities: Map<number, ReactiveEntityRefs>;
 }
@@ -28,6 +29,7 @@ export function createDumasWorld(): { ecsWorld: World; maps: WorldMaps } {
   const maps: WorldMaps = {
     entityBodyMap: new Map(),
     entityColliderMap: new Map(),
+    colliderEntityMap: new Map(),
     entityMeshMap: new Map(),
     reactiveEntities: new Map(),
   };
@@ -50,6 +52,10 @@ export function destroyEntity({
   eid: number;
   maps: WorldMaps;
 }): void {
+  const collider = maps.entityColliderMap.get(eid);
+  if (collider !== undefined) {
+    maps.colliderEntityMap.delete(collider.handle);
+  }
   maps.entityBodyMap.delete(eid);
   maps.entityColliderMap.delete(eid);
   maps.entityMeshMap.delete(eid);

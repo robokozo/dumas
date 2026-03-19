@@ -6,7 +6,7 @@ import { createDumasWorld } from "../ecs/world";
 import { initRapier, createPhysicsWorld } from "../physics/init";
 import { DEFAULT_GRAVITY } from "../constants";
 import { useGameLoop } from "./useGameLoop";
-import type { DumasContext, WorldOptions, SystemFn, SystemEntry } from "../types";
+import type { DumasContext, WorldOptions, SystemFn, SystemEntry, CollisionHandler } from "../types";
 
 function _useWorld(options?: WorldOptions): DumasContext {
   const gravity = options?.gravity ?? DEFAULT_GRAVITY;
@@ -18,6 +18,7 @@ function _useWorld(options?: WorldOptions): DumasContext {
   const isReady = ref(false);
 
   const systems: Array<SystemEntry> = [];
+  const collisionHandlers = new Map<number, Array<CollisionHandler>>();
 
   function registerSystem({ fn, priority }: { fn: SystemFn; priority: number }): () => void {
     const entry: SystemEntry = { fn, priority };
@@ -32,6 +33,35 @@ function _useWorld(options?: WorldOptions): DumasContext {
     };
   }
 
+  function registerCollisionHandler({
+    eid,
+    handler,
+  }: {
+    eid: number;
+    handler: CollisionHandler;
+  }): () => void {
+    const handlers = collisionHandlers.get(eid);
+    if (handlers !== undefined) {
+      handlers.push(handler);
+    } else {
+      collisionHandlers.set(eid, [handler]);
+    }
+
+    return () => {
+      const list = collisionHandlers.get(eid);
+      if (list === undefined) {
+        return;
+      }
+      const index = list.indexOf(handler);
+      if (index !== -1) {
+        list.splice(index, 1);
+      }
+      if (list.length === 0) {
+        collisionHandlers.delete(eid);
+      }
+    };
+  }
+
   const ctx: DumasContext = {
     ecsWorld,
     physicsWorld,
@@ -39,10 +69,14 @@ function _useWorld(options?: WorldOptions): DumasContext {
     isReady,
     entityBodyMap: maps.entityBodyMap,
     entityColliderMap: maps.entityColliderMap,
+    colliderEntityMap: maps.colliderEntityMap,
     entityMeshMap: maps.entityMeshMap,
     reactiveEntities: maps.reactiveEntities,
     systems,
+    collisionHandlers,
+    jointMap: new Map(),
     registerSystem,
+    registerCollisionHandler,
   };
 
   // Init Rapier WASM asynchronously — physics starts once loaded

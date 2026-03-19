@@ -36,5 +36,9 @@ export function createCollider({
     desc.setSensor(true);
   }
 
+  // COLLISION_EVENTS = 1, enables EventQueue collision reporting for this collider
+  const COLLISION_EVENTS_FLAG = 1;
+  desc.setActiveEvents(COLLISION_EVENTS_FLAG);
+
   return physicsWorld.createCollider(desc, rigidBody);
 }

@@ -33,10 +33,14 @@ export interface DumasContext {
   isReady: Ref<boolean>;
   entityBodyMap: Map<number, RAPIER.RigidBody>;
   entityColliderMap: Map<number, RAPIER.Collider>;
+  colliderEntityMap: Map<number, number>;
   entityMeshMap: Map<number, Object3D>;
   reactiveEntities: Map<number, ReactiveEntityRefs>;
   systems: Array<SystemEntry>;
+  collisionHandlers: Map<number, Array<CollisionHandler>>;
+  jointMap: Map<number, RAPIER.ImpulseJoint>;
   registerSystem: (entry: { fn: SystemFn; priority: number }) => () => void;
+  registerCollisionHandler: (params: { eid: number; handler: CollisionHandler }) => () => void;
 }
 
 export interface ReactiveEntityRefs {
@@ -97,6 +101,37 @@ export interface ColliderOptions {
 
 export interface ColliderReturn {
   collider: ShallowRef<RAPIER.Collider | null>;
+}
+
+// -- Collision events --
+
+export type CollisionEventType = "started" | "stopped";
+
+export interface CollisionEvent {
+  eidA: number;
+  eidB: number;
+  type: CollisionEventType;
+  isSensor: boolean;
+}
+
+export type CollisionHandler = (event: CollisionEvent) => void;
+
+// -- Joints --
+
+export type JointType = "fixed" | "revolute" | "prismatic" | "spherical";
+
+export interface JointOptions {
+  bodyA: RAPIER.RigidBody;
+  bodyB: RAPIER.RigidBody;
+  type: JointType;
+  anchorA?: Vec3;
+  anchorB?: Vec3;
+  axis?: Vec3;
+  limits?: { min: number; max: number };
+}
+
+export interface JointReturn {
+  joint: ShallowRef<RAPIER.ImpulseJoint | null>;
 }
 
 // -- Object pool --

@@ -34,6 +34,7 @@ export function useCollider(options: ColliderOptions): ColliderReturn {
     addComponent(ctx.ecsWorld, eid, ColliderRef);
     ColliderRef.handle[eid] = col.handle;
     ctx.entityColliderMap.set(eid, col);
+    ctx.colliderEntityMap.set(col.handle, eid);
   }
 
   if (ctx.isReady.value === true) {
@@ -50,6 +51,7 @@ export function useCollider(options: ColliderOptions): ColliderReturn {
   tryOnUnmounted(() => {
     const physicsWorld = ctx.physicsWorld.value;
     if (collider.value !== null && physicsWorld !== null) {
+      ctx.colliderEntityMap.delete(collider.value.handle);
       physicsWorld.removeCollider(collider.value, true);
     }
     ctx.entityColliderMap.delete(eid);

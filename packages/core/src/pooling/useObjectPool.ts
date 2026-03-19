@@ -26,6 +26,7 @@ export function useObjectPool(options: ObjectPoolOptions): ObjectPoolReturn {
     const maps: WorldMaps = {
       entityBodyMap: ctx.entityBodyMap,
       entityColliderMap: ctx.entityColliderMap,
+      colliderEntityMap: ctx.colliderEntityMap,
       entityMeshMap: ctx.entityMeshMap,
       reactiveEntities: ctx.reactiveEntities,
     };

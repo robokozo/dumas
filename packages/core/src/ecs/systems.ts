@@ -4,7 +4,7 @@ import type RAPIER from "@dimforge/rapier3d-compat";
 import type { Object3D } from "three";
 
 import { Transform, RigidBodyRef } from "./components";
-import type { ReactiveEntityRefs } from "../types";
+import type { CollisionEvent, CollisionHandler, ReactiveEntityRefs } from "../types";
 
 // Syncs Rapier rigid body transforms → bitECS Transform SoA arrays
 export function physicsSyncSystem({
@@ -88,4 +88,45 @@ export function reactiveSyncSystem({
       w: Transform.rotW[eid],
     };
   }
+}
+
+// Drains Rapier EventQueue and dispatches collision events to registered handlers
+export function collisionEventSystem({
+  eventQueue,
+  colliderEntityMap,
+  collisionHandlers,
+}: {
+  eventQueue: RAPIER.EventQueue;
+  colliderEntityMap: Map<number, number>;
+  collisionHandlers: Map<number, Array<CollisionHandler>>;
+}): void {
+  eventQueue.drainCollisionEvents((handle1, handle2, isStarted) => {
+    const eidA = colliderEntityMap.get(handle1) ?? null;
+    const eidB = colliderEntityMap.get(handle2) ?? null;
+
+    if (eidA === null || eidB === null) {
+      return;
+    }
+
+    const event: CollisionEvent = {
+      eidA,
+      eidB,
+      type: isStarted === true ? "started" : "stopped",
+      isSensor: false,
+    };
+
+    const handlersA = collisionHandlers.get(eidA);
+    if (handlersA !== undefined) {
+      for (const handler of handlersA) {
+        handler(event);
+      }
+    }
+
+    const handlersB = collisionHandlers.get(eidB);
+    if (handlersB !== undefined) {
+      for (const handler of handlersB) {
+        handler(event);
+      }
+    }
+  });
 }

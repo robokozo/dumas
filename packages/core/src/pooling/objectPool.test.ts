@@ -19,6 +19,7 @@ function makeMaps() {
   return {
     entityBodyMap: new Map(),
     entityColliderMap: new Map(),
+    colliderEntityMap: new Map(),
     entityMeshMap: new Map(),
     reactiveEntities: new Map(),
   };

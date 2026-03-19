@@ -59,6 +59,7 @@ export function useGameObject(options?: GameObjectOptions): GameObjectReturn {
       maps: {
         entityBodyMap: ctx.entityBodyMap,
         entityColliderMap: ctx.entityColliderMap,
+        colliderEntityMap: ctx.colliderEntityMap,
         entityMeshMap: ctx.entityMeshMap,
         reactiveEntities: ctx.reactiveEntities,
       },
