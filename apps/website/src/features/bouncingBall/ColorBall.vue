@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import { shallowRef } from "vue";
-import type { Mesh, MeshStandardMaterial } from "three";
-import { Color } from "three";
 import { useGameObject, useRigidBody, useCollider, useCollisionHandler } from "@dumas/core";
 
 const { position } = defineProps<{ position: [number, number, number] }>();
@@ -27,15 +25,13 @@ function randomColor(): string {
   return COLORS[Math.floor(Math.random() * COLORS.length)];
 }
 
-const initialColor = randomColor();
-const meshRef = shallowRef<Mesh | null>(null);
+const color = shallowRef(randomColor());
 
 useCollisionHandler({
   eid,
   handler: (event) => {
-    if (event.type === "started" && meshRef.value !== null) {
-      const material = meshRef.value.material as MeshStandardMaterial;
-      material.color.set(new Color(randomColor()));
+    if (event.type === "started") {
+      color.value = randomColor();
     }
   },
 });
@@ -43,9 +39,9 @@ useCollisionHandler({
 
 <template>
   <TresGroup ref="groupRef">
-    <TresMesh ref="meshRef">
+    <TresMesh>
       <TresSphereGeometry :args="[RADIUS, SPHERE_SEGMENTS, SPHERE_SEGMENTS]" />
-      <TresMeshStandardMaterial :color="initialColor" :metalness="0.4" :roughness="0.3" />
+      <TresMeshStandardMaterial :color="color" :metalness="0.4" :roughness="0.3" />
     </TresMesh>
   </TresGroup>
 </template>
