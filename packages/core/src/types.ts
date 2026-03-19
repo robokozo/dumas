@@ -116,7 +116,7 @@ export interface ObjectPoolOptions {
 }
 
 export interface ObjectPoolReturn {
-  handles: Readonly<ShallowRef<ReadonlyArray<PoolHandle>>>;
+  handles: ShallowRef<ReadonlyArray<PoolHandle>>;
   available: Readonly<Ref<number>>;
   active: Readonly<Ref<number>>;
   acquire: () => PoolHandle | null;

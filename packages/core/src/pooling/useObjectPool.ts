@@ -75,7 +75,7 @@ export function useObjectPool(options: ObjectPoolOptions): ObjectPoolReturn {
   });
 
   return {
-    handles: readonly(handles),
+    handles,
     available: readonly(available),
     active: readonly(active),
     acquire,
