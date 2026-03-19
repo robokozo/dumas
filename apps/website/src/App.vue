@@ -2,6 +2,7 @@
   <nav>
     <RouterLink to="/">Dumas</RouterLink>
     <div class="links">
+      <RouterLink to="/sandbox">Sandbox</RouterLink>
       <RouterLink to="/bouncing-ball">Bouncing Ball</RouterLink>
       <RouterLink to="/block-wall">Block Wall</RouterLink>
       <RouterLink to="/newtons-cradle">Newton's Cradle</RouterLink>

@@ -3,6 +3,9 @@
     <h1>Dumas Demos</h1>
     <ul>
       <li>
+        <RouterLink to="/sandbox">Sandbox</RouterLink>
+      </li>
+      <li>
         <RouterLink to="/bouncing-ball">Bouncing Ball</RouterLink>
       </li>
       <li>
