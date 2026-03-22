@@ -6,23 +6,13 @@ import PlatformerScene from "./PlatformerScene.vue";
 
 const TOTAL_COINS = 5;
 const score = ref(0);
-
-function onCollect(): void {
-  score.value++;
-}
 </script>
 
 <template>
   <SampleLayout>
     <template #scene>
       <DumasCanvas clear-color="#1a1a2e" render-mode="always" :gravity="{ x: 0, y: -20, z: 0 }">
-        <PlatformerScene
-          @collect="
-            () => {
-              onCollect();
-            }
-          "
-        />
+        <PlatformerScene v-model:score="score" />
       </DumasCanvas>
     </template>
     <template #hud>

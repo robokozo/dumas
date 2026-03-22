@@ -6,7 +6,7 @@ import CodeBlock from "../layout/CodeBlock.vue";
 import ObjectPoolingScene from "./ObjectPoolingScene.vue";
 import ObjectPoolingCode from "./ObjectPoolingScene.vue?raw";
 
-const POOL_SIZE = 5 as const;
+const POOL_SIZE = 5;
 
 const spawnCount = ref<number>(0);
 const available = ref<number>(POOL_SIZE);

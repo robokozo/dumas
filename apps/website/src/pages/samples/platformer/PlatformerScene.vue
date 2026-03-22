@@ -40,7 +40,7 @@ const COIN_DATA: Array<{ id: number; position: [number, number, number] }> = [
 ];
 
 const emit = defineEmits<{
-  collect: [];
+  "update:score": [score: number];
 }>();
 
 const coins = reactive(COIN_DATA.map((c) => ({ ...c, collected: false })));
@@ -84,7 +84,7 @@ function resetPlayer(): void {
 
 function onCoinCollected(id: number): void {
   coins[id].collected = true;
-  emit("collect");
+  emit("update:score", coins.filter((c) => c.collected === true).length);
 }
 
 const input = useInput({
