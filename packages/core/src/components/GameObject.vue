@@ -6,7 +6,7 @@ import type { GameObjectOptions } from "../types";
 
 const props = defineProps<GameObjectOptions>();
 
-const { groupRef, eid, position, rotation } = useGameObject({
+const { groupRef, eid } = useGameObject({
   position: props.position,
   rotation: props.rotation,
   scale: props.scale,

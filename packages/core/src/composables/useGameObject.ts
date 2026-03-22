@@ -47,8 +47,12 @@ export function useGameObject(options?: GameObjectOptions): GameObjectReturn {
   const groupRef = shallowRef<Object3D | null>(null);
 
   tryOnMounted(() => {
-    if (groupRef.value !== null) {
-      ctx.entityMeshMap.set(eid, groupRef.value);
+    const group = groupRef.value;
+    if (group !== null) {
+      ctx.entityMeshMap.set(eid, group);
+      group.position.set(pos[0], pos[1], pos[2]);
+      group.scale.set(scale[0], scale[1], scale[2]);
+      group.quaternion.set(rot[0], rot[1], rot[2], rot[3]);
     }
   });
 
