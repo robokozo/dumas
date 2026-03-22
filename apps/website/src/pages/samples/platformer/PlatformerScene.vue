@@ -1,31 +1,19 @@
 <script setup lang="ts">
-import { reactive } from "vue";
-import {
-  GameObject,
-  useGameObject,
-  useRigidBody,
-  useCollider,
-  useCharacterController,
-  useContactDetection,
-  useActions,
-  useSystem,
-} from "@dumas/core";
-import type { ActionMapDefinition } from "@dumas/core";
+import { ref, reactive, computed } from "vue";
+import { GameObject } from "@dumas/core";
+import PlatformerCharacter from "./PlatformerCharacter.vue";
+import PlatformerWall from "./PlatformerWall.vue";
 import PlatformerPlatform from "./PlatformerPlatform.vue";
 import PlatformerCoin from "./PlatformerCoin.vue";
 import PlatformerLava from "./PlatformerLava.vue";
 
-type Actions = "move" | "jump";
+const SPAWN_P1: [number, number, number] = [0, 3, 0];
+const SPAWN_P2: [number, number, number] = [3, 3, 0];
 
-const SPAWN: [number, number, number] = [0, 3, 0];
-const MOVE_SPEED = 8;
-const JUMP_SPEED = 12;
-const CAPSULE_HALF_HEIGHT = 0.4;
-const CAPSULE_RADIUS = 0.3;
-const WALL_POSITION: [number, number, number] = [3, 1.5, 0];
-const WALL_HALF_W = 0.25;
-const WALL_HALF_H = 1.5;
-const WALL_HALF_D = 1;
+const WALLS: Array<{ position: [number, number, number] }> = [
+  { position: [-10, 1.5, 0] },
+  { position: [10, 1.5, 0] },
+];
 
 const PLATFORMS: Array<{ position: [number, number, number]; width: number }> = [
   { position: [0, 0, 0], width: 20 },
@@ -45,72 +33,45 @@ const COIN_DATA: Array<{ id: number; position: [number, number, number] }> = [
 ];
 
 const emit = defineEmits<{
-  "update:score": [score: number];
+  "update:score1": [score: number];
+  "update:score2": [score: number];
 }>();
 
+const player1Eid = ref<number | null>(null);
+const player2Eid = ref<number | null>(null);
+const reset1Trigger = ref(0);
+const reset2Trigger = ref(0);
+const score1 = ref(0);
+const score2 = ref(0);
 const coins = reactive(COIN_DATA.map((c) => ({ ...c, collected: false })));
 
-const wall = useGameObject({ position: WALL_POSITION });
-useRigidBody({ eid: wall.eid, type: "fixed" });
-useCollider({
-  eid: wall.eid,
-  shape: "box",
-  args: [WALL_HALF_W, WALL_HALF_H, WALL_HALF_D],
-  friction: 0,
-  restitution: 0,
+const playerEids = computed(() => {
+  const eids: Array<number> = [];
+  if (player1Eid.value !== null) eids.push(player1Eid.value);
+  if (player2Eid.value !== null) eids.push(player2Eid.value);
+  return eids;
 });
 
-const player = useGameObject({ position: SPAWN });
-const { rigidBody, collider, move, teleport } = useCharacterController({
-  eid: player.eid,
-  mode: "2d",
-  moveSpeed: MOVE_SPEED,
-  collider: {
-    shape: "capsule",
-    halfHeight: CAPSULE_HALF_HEIGHT,
-    radius: CAPSULE_RADIUS,
-  },
-});
-const { hasContact } = useContactDetection({ collider });
+const isReady = computed(() => player1Eid.value !== null && player2Eid.value !== null);
 
-function resetPlayer(): void {
-  teleport({ position: { x: SPAWN[0], y: SPAWN[1], z: SPAWN[2] } });
+function onDie({ eid }: { eid: number }): void {
+  if (eid === player1Eid.value) {
+    reset1Trigger.value += 1;
+  } else if (eid === player2Eid.value) {
+    reset2Trigger.value += 1;
+  }
 }
 
-function onCoinCollected({ id }: { id: number }): void {
+function onCoinCollected({ id, collectorEid }: { id: number; collectorEid: number }): void {
   coins[id].collected = true;
-  emit("update:score", coins.filter((c) => c.collected === true).length);
+  if (collectorEid === player1Eid.value) {
+    score1.value += 1;
+    emit("update:score1", score1.value);
+  } else {
+    score2.value += 1;
+    emit("update:score2", score2.value);
+  }
 }
-
-const p1 = useActions({
-  source: "keyboard",
-  bindings: {
-    dpadLeft: ["KeyA", "ArrowLeft"],
-    dpadRight: ["KeyD", "ArrowRight"],
-    south: ["Space"],
-  },
-  actions: {
-    move: "leftStick",
-    jump: ["south"],
-  } as const satisfies ActionMapDefinition<Actions>,
-});
-
-useSystem({
-  fn: ({ delta }) => {
-    const { x } = p1.axis("move");
-    move({ x, z: 0, delta });
-    if (
-      p1.wasJustPressed("jump") === true &&
-      hasContact({ direction: { x: 0, y: 1, z: 0 } }) === true
-    ) {
-      const body = rigidBody.value;
-      if (body !== null) {
-        const vel = body.linvel();
-        body.setLinvel({ x: vel.x, y: JUMP_SPEED, z: vel.z }, true);
-      }
-    }
-  },
-});
 </script>
 
 <template>
@@ -119,31 +80,34 @@ useSystem({
     <TresAmbientLight :intensity="0.4" />
     <TresDirectionalLight :position="[8, 15, 10]" :intensity="1.2" cast-shadow />
 
-    <TresGroup
-      :ref="
-        (el: any) => {
-          player.groupRef.value = el;
+    <PlatformerCharacter
+      :position="SPAWN_P1"
+      :reset-trigger="reset1Trigger"
+      :left-keys="['KeyA']"
+      :right-keys="['KeyD']"
+      :jump-keys="['KeyW']"
+      @ready="
+        (eid) => {
+          player1Eid = eid;
         }
       "
-    >
-      <TresMesh>
-        <TresCapsuleGeometry :args="[CAPSULE_RADIUS, CAPSULE_HALF_HEIGHT * 2, 8, 16]" />
-        <TresMeshStandardMaterial color="#4af" />
-      </TresMesh>
-    </TresGroup>
+    />
 
-    <TresGroup
-      :ref="
-        (el: any) => {
-          wall.groupRef.value = el;
+    <PlatformerCharacter
+      :position="SPAWN_P2"
+      :reset-trigger="reset2Trigger"
+      color="#f44"
+      :left-keys="['ArrowLeft']"
+      :right-keys="['ArrowRight']"
+      :jump-keys="['ArrowUp']"
+      @ready="
+        (eid) => {
+          player2Eid = eid;
         }
       "
-    >
-      <TresMesh>
-        <TresBoxGeometry :args="[WALL_HALF_W * 2, WALL_HALF_H * 2, WALL_HALF_D * 2]" />
-        <TresMeshStandardMaterial color="#888" />
-      </TresMesh>
-    </TresGroup>
+    />
+
+    <PlatformerWall v-for="(wall, i) in WALLS" :key="i" :position="wall.position" />
 
     <PlatformerPlatform
       v-for="(platform, i) in PLATFORMS"
@@ -152,25 +116,27 @@ useSystem({
       :width="platform.width"
     />
 
-    <PlatformerCoin
-      v-for="coin in coins.filter((c) => c.collected === false)"
-      :key="coin.id"
-      :position="coin.position"
-      :player-eid="player.eid"
-      @collect="
-        () => {
-          onCoinCollected({ id: coin.id });
-        }
-      "
-    />
+    <template v-if="isReady">
+      <PlatformerCoin
+        v-for="coin in coins.filter((c) => c.collected === false)"
+        :key="coin.id"
+        :position="coin.position"
+        :player-eids="playerEids"
+        @collect="
+          (collectorEid) => {
+            onCoinCollected({ id: coin.id, collectorEid });
+          }
+        "
+      />
 
-    <PlatformerLava
-      :player-eid="player.eid"
-      @die="
-        () => {
-          resetPlayer();
-        }
-      "
-    />
+      <PlatformerLava
+        :player-eids="playerEids"
+        @die="
+          (eid) => {
+            onDie({ eid });
+          }
+        "
+      />
+    </template>
   </GameObject>
 </template>

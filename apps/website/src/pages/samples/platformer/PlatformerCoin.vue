@@ -3,11 +3,11 @@ import { useGameObject, useRigidBody, useCollider } from "@dumas/core";
 
 const props = defineProps<{
   position: [number, number, number];
-  playerEid: number;
+  playerEids: Array<number>;
 }>();
 
 const emit = defineEmits<{
-  collect: [];
+  collect: [collectorEid: number];
 }>();
 
 const RADIUS = 0.3;
@@ -22,8 +22,8 @@ useCollider({
   onCollision: ({ eidA, eidB, type }) => {
     if (type !== "started") return;
     const hitEid = eidA === eid ? eidB : eidA;
-    if (hitEid === props.playerEid) {
-      emit("collect");
+    if (props.playerEids.includes(hitEid) === true) {
+      emit("collect", hitEid);
     }
   },
 });
