@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Raycaster, Vector2 } from "three";
 import { useEventListener } from "@vueuse/core";
-import { useObjectPool, useSystem } from "@dumas/core";
+import { GameObject, useObjectPool, useSystem } from "@dumas/core";
 import { useTresContext } from "@tresjs/core";
 import { OrbitControls } from "@tresjs/cientos";
 import WallBlock from "./WallBlock.vue";
@@ -88,16 +88,18 @@ useEventListener(window, "click", (e: MouseEvent) => {
 </script>
 
 <template>
-  <TresPerspectiveCamera :position="[0, 4, 18]" :look-at="[0, 2, 0]" />
-  <OrbitControls />
-  <TresAmbientLight :intensity="0.4" />
-  <TresDirectionalLight :position="[8, 12, 8]" :intensity="1.2" cast-shadow />
-  <WallGround />
-  <WallBlock
-    v-for="(block, i) in blocks"
-    :key="i"
-    :position="block.position"
-    :color="block.color"
-  />
-  <WallCannonball v-for="handle in pool.handles.value" :key="handle.eid" :handle="handle" />
+  <GameObject>
+    <TresPerspectiveCamera :position="[0, 4, 18]" :look-at="[0, 2, 0]" />
+    <OrbitControls />
+    <TresAmbientLight :intensity="0.4" />
+    <TresDirectionalLight :position="[8, 12, 8]" :intensity="1.2" cast-shadow />
+    <WallGround />
+    <WallBlock
+      v-for="(block, i) in blocks"
+      :key="i"
+      :position="block.position"
+      :color="block.color"
+    />
+    <WallCannonball v-for="handle in pool.handles.value" :key="handle.eid" :handle="handle" />
+  </GameObject>
 </template>

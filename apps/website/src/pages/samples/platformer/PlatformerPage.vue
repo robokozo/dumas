@@ -12,7 +12,13 @@ const score = ref(0);
   <SampleLayout>
     <template #scene>
       <DumasCanvas clear-color="#1a1a2e" render-mode="always" :gravity="{ x: 0, y: -20, z: 0 }">
-        <PlatformerScene v-model:score="score" />
+        <PlatformerScene
+          @update:score="
+            (s) => {
+              score = s;
+            }
+          "
+        />
       </DumasCanvas>
     </template>
     <template #hud>

@@ -15,6 +15,7 @@ export { useCollisionHandler } from "./composables/useCollisionHandler";
 export { useJoint } from "./composables/useJoint";
 export { useInput } from "./composables/useInput";
 export { useActionMap } from "./composables/useActionMap";
+export { useCharacterController } from "./composables/useCharacterController";
 
 // Pooling
 export { createObjectPool } from "./physics/objectPool";
@@ -52,6 +53,9 @@ export type {
   ActionSource,
   ActionMapDefinition,
   ActionMapReturn,
+  CharacterMode,
+  CharacterControllerOptions,
+  CharacterControllerReturn,
 } from "./types";
 
 // Return types

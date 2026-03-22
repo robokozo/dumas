@@ -50,20 +50,22 @@ useSystem({
 </script>
 
 <template>
-  <TresPerspectiveCamera :position="[0, 5, 16]" :look-at="[0, 2, 0]" />
-  <OrbitControls />
-  <TresAmbientLight :intensity="0.4" />
-  <TresDirectionalLight :position="[5, 8, 5]" :intensity="1" />
+  <GameObject>
+    <TresPerspectiveCamera :position="[0, 5, 16]" :look-at="[0, 2, 0]" />
+    <OrbitControls />
+    <TresAmbientLight :intensity="0.4" />
+    <TresDirectionalLight :position="[5, 8, 5]" :intensity="1" />
 
-  <PoolBall v-for="handle in handles" :key="handle.eid" :handle="handle" />
+    <PoolBall v-for="handle in handles" :key="handle.eid" :handle="handle" />
 
-  <GameObject :position="[0, -0.25, 0]">
-    <RigidBody type="fixed">
-      <Collider shape="box" :args="[1.5, 0.25, 1.5]" />
-    </RigidBody>
-    <TresMesh>
-      <TresBoxGeometry :args="[3, 0.5, 3]" />
-      <TresMeshStandardMaterial color="#555" />
-    </TresMesh>
+    <GameObject :position="[0, -0.25, 0]">
+      <RigidBody type="fixed">
+        <Collider shape="box" :args="[1.5, 0.25, 1.5]" />
+      </RigidBody>
+      <TresMesh>
+        <TresBoxGeometry :args="[3, 0.5, 3]" />
+        <TresMeshStandardMaterial color="#555" />
+      </TresMesh>
+    </GameObject>
   </GameObject>
 </template>

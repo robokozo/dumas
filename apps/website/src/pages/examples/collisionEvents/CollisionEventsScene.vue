@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { useGameObject, useRigidBody, useCollider, useCollisionHandler } from "@dumas/core";
+import {
+  GameObject,
+  useGameObject,
+  useRigidBody,
+  useCollider,
+  useCollisionHandler,
+} from "@dumas/core";
 import { OrbitControls } from "@tresjs/cientos";
 
 const WALL_X = 5.5;
@@ -77,50 +83,52 @@ useCollisionHandler({
 </script>
 
 <template>
-  <TresPerspectiveCamera :position="[0, 0, 14]" :look-at="[0, 0, 0]" />
-  <OrbitControls />
-  <TresAmbientLight :intensity="0.4" />
-  <TresDirectionalLight :position="[5, 8, 5]" :intensity="1" />
+  <GameObject>
+    <TresPerspectiveCamera :position="[0, 0, 14]" :look-at="[0, 0, 0]" />
+    <OrbitControls />
+    <TresAmbientLight :intensity="0.4" />
+    <TresDirectionalLight :position="[5, 8, 5]" :intensity="1" />
 
-  <!-- Left wall (red) -->
-  <TresGroup
-    :ref="
-      (el: any) => {
-        leftWall.groupRef.value = el;
-      }
-    "
-  >
-    <TresMesh>
-      <TresBoxGeometry :args="[WALL_HALF_WIDTH * 2, WALL_HALF_HEIGHT * 2, WALL_HALF_DEPTH * 2]" />
-      <TresMeshStandardMaterial color="#f64" />
-    </TresMesh>
-  </TresGroup>
+    <!-- Left wall (red) -->
+    <TresGroup
+      :ref="
+        (el: any) => {
+          leftWall.groupRef.value = el;
+        }
+      "
+    >
+      <TresMesh>
+        <TresBoxGeometry :args="[WALL_HALF_WIDTH * 2, WALL_HALF_HEIGHT * 2, WALL_HALF_DEPTH * 2]" />
+        <TresMeshStandardMaterial color="#f64" />
+      </TresMesh>
+    </TresGroup>
 
-  <!-- Right wall (blue) -->
-  <TresGroup
-    :ref="
-      (el: any) => {
-        rightWall.groupRef.value = el;
-      }
-    "
-  >
-    <TresMesh>
-      <TresBoxGeometry :args="[WALL_HALF_WIDTH * 2, WALL_HALF_HEIGHT * 2, WALL_HALF_DEPTH * 2]" />
-      <TresMeshStandardMaterial color="#4af" />
-    </TresMesh>
-  </TresGroup>
+    <!-- Right wall (blue) -->
+    <TresGroup
+      :ref="
+        (el: any) => {
+          rightWall.groupRef.value = el;
+        }
+      "
+    >
+      <TresMesh>
+        <TresBoxGeometry :args="[WALL_HALF_WIDTH * 2, WALL_HALF_HEIGHT * 2, WALL_HALF_DEPTH * 2]" />
+        <TresMeshStandardMaterial color="#4af" />
+      </TresMesh>
+    </TresGroup>
 
-  <!-- Ball -->
-  <TresGroup
-    :ref="
-      (el: any) => {
-        ball.groupRef.value = el;
-      }
-    "
-  >
-    <TresMesh>
-      <TresSphereGeometry :args="[BALL_RADIUS, 32, 32]" />
-      <TresMeshStandardMaterial :color="ballColor" :metalness="0.3" :roughness="0.4" />
-    </TresMesh>
-  </TresGroup>
+    <!-- Ball -->
+    <TresGroup
+      :ref="
+        (el: any) => {
+          ball.groupRef.value = el;
+        }
+      "
+    >
+      <TresMesh>
+        <TresSphereGeometry :args="[BALL_RADIUS, 32, 32]" />
+        <TresMeshStandardMaterial :color="ballColor" :metalness="0.3" :roughness="0.4" />
+      </TresMesh>
+    </TresGroup>
+  </GameObject>
 </template>

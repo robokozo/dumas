@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import {
+  GameObject,
   useGameObject,
   useRigidBody,
   useCollider,
+  useCharacterController,
   useSystem,
   useInput,
   useActionMap,
@@ -37,80 +39,63 @@ useCollider({ eid: ground.eid, shape: "box", args: [8, 0.5, 8] });
 
 // Player
 const MOVE_SPEED = 6;
-const JUMP_IMPULSE = 5;
+const JUMP_SPEED = 8;
 const CAPSULE_RADIUS = 0.4;
 const CAPSULE_HALF_HEIGHT = 0.4;
-// Bottom of capsule sits at: pos.y - (halfHeight + radius)
-// Grounded when bottom is near ground surface (y = 0)
-const GROUNDED_THRESHOLD = CAPSULE_HALF_HEIGHT + CAPSULE_RADIUS + 0.15;
 
 const player = useGameObject({ position: [0, 2, 0] });
-const { rigidBody: playerBody } = useRigidBody({ eid: player.eid, type: "dynamic" });
-useCollider({
+const controller = useCharacterController({
   eid: player.eid,
-  shape: "capsule",
-  radius: CAPSULE_RADIUS,
-  halfHeight: CAPSULE_HALF_HEIGHT,
+  collider: { shape: "capsule", halfHeight: CAPSULE_HALF_HEIGHT, radius: CAPSULE_RADIUS },
+  moveSpeed: MOVE_SPEED,
+  mode: "3d",
 });
 
 useSystem({
-  fn: () => {
-    const rb = playerBody.value;
-    if (rb === null) return;
-
+  fn: ({ delta }) => {
     const { x, y: forward } = p1.axis("move");
-    const vel = rb.linvel();
-    const pos = rb.translation();
-    const isGrounded = pos.y < GROUNDED_THRESHOLD;
-
-    rb.setLinvel(
-      {
-        x: x * MOVE_SPEED,
-        y: vel.y,
-        // leftStick y positive = forward = negative Z in world space
-        z: -forward * MOVE_SPEED,
-      },
-      true,
-    );
-
-    if (p1.wasJustPressed("jump") && isGrounded) {
-      rb.applyImpulse({ x: 0, y: JUMP_IMPULSE, z: 0 }, true);
+    // leftStick y positive = forward = negative Z in world space
+    controller.move({ x, z: -forward, delta });
+    if (p1.wasJustPressed("jump") === true) {
+      controller.jump({ speed: JUMP_SPEED });
     }
   },
 });
 </script>
 
 <template>
-  <TresPerspectiveCamera :position="[0, 8, 14]" :look-at="[0, 0, 0]" />
-  <OrbitControls />
-  <TresAmbientLight :intensity="0.4" />
-  <TresDirectionalLight :position="[5, 10, 5]" :intensity="1" cast-shadow />
+  <GameObject>
+    <TresPerspectiveCamera :position="[0, 8, 14]" :look-at="[0, 0, 0]" />
+    <OrbitControls />
+    <TresAmbientLight :intensity="0.4" />
+    <TresDirectionalLight :position="[5, 10, 5]" :intensity="1" cast-shadow />
 
-  <!-- Ground -->
-  <TresGroup
-    :ref="
-      (el: any) => {
-        ground.groupRef.value = el;
-      }
-    "
-  >
-    <TresMesh>
-      <TresBoxGeometry :args="[16, 1, 16]" />
-      <TresMeshStandardMaterial color="#555" />
-    </TresMesh>
-  </TresGroup>
+    <!-- Ground -->
+    <TresGroup
+      :ref="
+        (el: any) => {
+          ground.groupRef.value = el;
+        }
+      "
+    >
+      <TresMesh>
+        <TresBoxGeometry :args="[16, 1, 16]" />
+        <TresMeshStandardMaterial color="#555" />
+      </TresMesh>
+    </TresGroup>
 
-  <!-- Player -->
-  <TresGroup
-    :ref="
-      (el: any) => {
-        player.groupRef.value = el;
-      }
-    "
-  >
-    <TresMesh>
-      <TresCapsuleGeometry :args="[CAPSULE_RADIUS, CAPSULE_HALF_HEIGHT * 2, 8, 16]" />
-      <TresMeshStandardMaterial color="#4af" :metalness="0.2" :roughness="0.5" />
-    </TresMesh>
-  </TresGroup>
+    <!-- Player -->
+    <TresGroup
+      :ref="
+        (el: any) => {
+          player.groupRef.value = el;
+        }
+      "
+    >
+      <TresMesh>
+        <TresCapsuleGeometry :args="[CAPSULE_RADIUS, CAPSULE_HALF_HEIGHT * 2, 8, 16]" />
+        <TresMeshStandardMaterial color="#4af" :metalness="0.2" :roughness="0.5" />
+      </TresMesh>
+    </TresGroup>
+  </GameObject>
 </template>

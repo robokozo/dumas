@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { reactive } from "vue";
 import {
+  GameObject,
   useGameObject,
   useRigidBody,
   useCollider,
-  useCollisionHandler,
+  useCharacterController,
   useInput,
   useActionMap,
   useSystem,
@@ -21,6 +22,11 @@ const MOVE_SPEED = 8;
 const JUMP_SPEED = 12;
 const CAPSULE_HALF_HEIGHT = 0.4;
 const CAPSULE_RADIUS = 0.3;
+
+const WALL_POSITION: [number, number, number] = [3, 1.5, 0];
+const WALL_HALF_W = 0.25;
+const WALL_HALF_H = 1.5;
+const WALL_HALF_D = 1;
 
 const PLATFORMS: Array<{ position: [number, number, number]; width: number }> = [
   { position: [0, 0, 0], width: 20 },
@@ -45,41 +51,20 @@ const emit = defineEmits<{
 
 const coins = reactive(COIN_DATA.map((c) => ({ ...c, collected: false })));
 
+const wall = useGameObject({ position: WALL_POSITION });
+useRigidBody({ eid: wall.eid, type: "fixed" });
+useCollider({ eid: wall.eid, shape: "box", args: [WALL_HALF_W, WALL_HALF_H, WALL_HALF_D] });
+
 const player = useGameObject({ position: SPAWN });
-const { rigidBody: playerBodyRef } = useRigidBody({ eid: player.eid, type: "dynamic" });
-useCollider({
+const controller = useCharacterController({
   eid: player.eid,
-  shape: "capsule",
-  halfHeight: CAPSULE_HALF_HEIGHT,
-  radius: CAPSULE_RADIUS,
-  friction: 0.2,
-  restitution: 0,
-});
-
-const rb = playerBodyRef.value;
-if (rb !== null) {
-  rb.lockRotations(true, true);
-  rb.setEnabledTranslations(true, true, false, true);
-}
-
-let groundContacts = 0;
-
-useCollisionHandler({
-  eid: player.eid,
-  handler: ({ type, isSensor }) => {
-    if (isSensor === true) return;
-    if (type === "started") groundContacts++;
-    if (type === "stopped") groundContacts = Math.max(0, groundContacts - 1);
-  },
+  collider: { shape: "capsule", halfHeight: CAPSULE_HALF_HEIGHT, radius: CAPSULE_RADIUS },
+  moveSpeed: MOVE_SPEED,
+  mode: "2d",
 });
 
 function resetPlayer(): void {
-  const body = playerBodyRef.value;
-  if (body === null) return;
-  body.setTranslation({ x: SPAWN[0], y: SPAWN[1], z: SPAWN[2] }, true);
-  body.setLinvel({ x: 0, y: 0, z: 0 }, true);
-  body.setAngvel({ x: 0, y: 0, z: 0 }, true);
-  groundContacts = 0;
+  controller.teleport({ position: { x: SPAWN[0], y: SPAWN[1], z: SPAWN[2] } });
 }
 
 function onCoinCollected(id: number): void {
@@ -104,62 +89,74 @@ const ACTIONS = {
 const p1 = useActionMap(input, ACTIONS);
 
 useSystem({
-  fn: () => {
-    const body = playerBodyRef.value;
-    if (body === null) return;
+  fn: ({ delta }) => {
     const { x } = p1.axis("move");
-    const vel = body.linvel();
-    body.setLinvel({ x: x * MOVE_SPEED, y: vel.y, z: 0 }, true);
-    if (p1.wasJustPressed("jump") === true && groundContacts > 0) {
-      body.setLinvel({ x: vel.x, y: JUMP_SPEED, z: 0 }, true);
+    controller.move({ x, z: 0, delta });
+    if (p1.wasJustPressed("jump") === true) {
+      controller.jump({ speed: JUMP_SPEED });
     }
   },
 });
 </script>
 
 <template>
-  <TresPerspectiveCamera :position="[0, 5, 22]" :look-at="[0, 5, 0]" />
-  <TresAmbientLight :intensity="0.4" />
-  <TresDirectionalLight :position="[8, 15, 10]" :intensity="1.2" cast-shadow />
+  <GameObject>
+    <TresPerspectiveCamera :position="[0, 5, 22]" :look-at="[0, 5, 0]" />
+    <TresAmbientLight :intensity="0.4" />
+    <TresDirectionalLight :position="[8, 15, 10]" :intensity="1.2" cast-shadow />
 
-  <TresGroup
-    :ref="
-      (el: any) => {
-        player.groupRef.value = el;
-      }
-    "
-  >
-    <TresMesh>
-      <TresCapsuleGeometry :args="[CAPSULE_RADIUS, CAPSULE_HALF_HEIGHT * 2, 8, 16]" />
-      <TresMeshStandardMaterial color="#4af" />
-    </TresMesh>
-  </TresGroup>
+    <TresGroup
+      :ref="
+        (el: any) => {
+          player.groupRef.value = el;
+        }
+      "
+    >
+      <TresMesh>
+        <TresCapsuleGeometry :args="[CAPSULE_RADIUS, CAPSULE_HALF_HEIGHT * 2, 8, 16]" />
+        <TresMeshStandardMaterial color="#4af" />
+      </TresMesh>
+    </TresGroup>
 
-  <PlatformerPlatform
-    v-for="(platform, i) in PLATFORMS"
-    :key="i"
-    :position="platform.position"
-    :width="platform.width"
-  />
+    <TresGroup
+      :ref="
+        (el: any) => {
+          wall.groupRef.value = el;
+        }
+      "
+    >
+      <TresMesh>
+        <TresBoxGeometry :args="[WALL_HALF_W * 2, WALL_HALF_H * 2, WALL_HALF_D * 2]" />
+        <TresMeshStandardMaterial color="#888" />
+      </TresMesh>
+    </TresGroup>
 
-  <PlatformerCoin
-    v-for="coin in coins.filter((c) => c.collected === false)"
-    :key="coin.id"
-    :position="coin.position"
-    :player-eid="player.eid"
-    @collect="
-      () => {
-        onCoinCollected(coin.id);
-      }
-    "
-  />
+    <PlatformerPlatform
+      v-for="(platform, i) in PLATFORMS"
+      :key="i"
+      :position="platform.position"
+      :width="platform.width"
+    />
 
-  <PlatformerLava
-    :player-eid="player.eid"
-    @die="
-      () => {
-        resetPlayer();
-      }
-    "
-  />
+    <PlatformerCoin
+      v-for="coin in coins.filter((c) => c.collected === false)"
+      :key="coin.id"
+      :position="coin.position"
+      :player-eid="player.eid"
+      @collect="
+        () => {
+          onCoinCollected(coin.id);
+        }
+      "
+    />
+
+    <PlatformerLava
+      :player-eid="player.eid"
+      @die="
+        () => {
+          resetPlayer();
+        }
+      "
+    />
+  </GameObject>
 </template>

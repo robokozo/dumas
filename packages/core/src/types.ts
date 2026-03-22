@@ -193,6 +193,31 @@ export interface ActionMapReturn<TActions extends string> {
   axis: (action: TActions) => StickState;
 }
 
+// -- Character controller --
+
+export type CharacterMode = "2d" | "3d";
+
+export interface CharacterControllerOptions {
+  eid: number;
+  collider: Omit<ColliderOptions, "eid">;
+  moveSpeed?: number;
+  mode?: CharacterMode;
+  /** Gap the controller maintains between itself and surfaces. Default: 0.02 */
+  offset?: number;
+  /** Whether to slide along surfaces instead of stopping. Default: true */
+  slideEnabled?: boolean;
+  /** Whether to push dynamic bodies out of the way. Default: true */
+  applyImpulsesToDynamicBodies?: boolean;
+}
+
+export interface CharacterControllerReturn {
+  rigidBody: ShallowRef<RAPIER.RigidBody | null>;
+  isGrounded: () => boolean;
+  move: (dir: { x: number; z: number; delta: number }) => void;
+  jump: (options: { speed: number }) => void;
+  teleport: (options: { position: { x: number; y: number; z: number } }) => void;
+}
+
 // -- Object pool --
 
 export interface PoolHandle {
