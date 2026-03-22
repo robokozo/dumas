@@ -4,7 +4,7 @@ import type { ShallowRef } from "vue";
 import type RAPIER from "@dimforge/rapier3d-compat";
 import { addComponent } from "bitecs";
 
-import { useWorld } from "./useWorld";
+import { useDumasContext } from "./useDumasContext";
 import { createRigidBody } from "../physics/bodies";
 import { Transform, RigidBodyRef } from "../ecs/components";
 import type { RigidBodyOptions, Vec3 } from "../types";
@@ -18,7 +18,7 @@ export interface RigidBodyReturn {
 }
 
 export function useRigidBody(options: RigidBodyOptions): RigidBodyReturn {
-  const ctx = useWorld();
+  const ctx = useDumasContext();
   const { eid, type: bodyType = "dynamic" } = options;
 
   const rigidBody = shallowRef<RAPIER.RigidBody | null>(null);

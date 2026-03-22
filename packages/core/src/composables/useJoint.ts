@@ -2,12 +2,12 @@ import { shallowRef, watch } from "vue";
 import { tryOnUnmounted } from "@vueuse/core";
 import type RAPIER from "@dimforge/rapier3d-compat";
 
-import { useWorld } from "./useWorld";
+import { useDumasContext } from "./useDumasContext";
 import { createJoint } from "../physics/joints";
 import type { JointOptions, JointReturn } from "../types";
 
 export function useJoint(options: JointOptions): JointReturn {
-  const ctx = useWorld();
+  const ctx = useDumasContext();
 
   const joint = shallowRef<RAPIER.ImpulseJoint | null>(null);
 

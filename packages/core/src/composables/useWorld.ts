@@ -1,14 +1,12 @@
 import { shallowRef, ref } from "vue";
-import { createSharedComposable } from "@vueuse/core";
 import type RAPIER from "@dimforge/rapier3d-compat";
 
 import { createDumasWorld } from "../ecs/world";
 import { initRapier, createPhysicsWorld } from "../physics/init";
 import { DEFAULT_GRAVITY } from "../constants";
-import { useGameLoop } from "./useGameLoop";
 import type { DumasContext, WorldOptions, SystemFn, SystemEntry, CollisionHandler } from "../types";
 
-function _useWorld(options?: WorldOptions): DumasContext {
+export function createWorldContext(options?: WorldOptions): DumasContext {
   const gravity = options?.gravity ?? DEFAULT_GRAVITY;
 
   const { ecsWorld, maps } = createDumasWorld();
@@ -24,7 +22,6 @@ function _useWorld(options?: WorldOptions): DumasContext {
     const entry: SystemEntry = { fn, priority };
     systems.push(entry);
 
-    // Return unsubscribe function
     return () => {
       const index = systems.indexOf(entry);
       if (index !== -1) {
@@ -89,10 +86,5 @@ function _useWorld(options?: WorldOptions): DumasContext {
 
   void initPhysics();
 
-  // Wire up the game loop (hooks into TresJS useLoop)
-  useGameLoop({ ctx });
-
   return ctx;
 }
-
-export const useWorld = createSharedComposable((options?: WorldOptions) => _useWorld(options));

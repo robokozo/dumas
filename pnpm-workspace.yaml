@@ -8,6 +8,7 @@ catalog:
   "@types/three": ^0.183.1
   "@vitejs/plugin-vue": ^6.0.5
   bitecs: ^0.4.0
+  shiki: ^4.0.2
   three: ^0.183.2
   typescript: ^5
   vite: npm:@voidzero-dev/vite-plus-core@latest

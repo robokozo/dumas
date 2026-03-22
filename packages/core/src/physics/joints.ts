@@ -49,11 +49,10 @@ export function createJoint({
 
   const joint = physicsWorld.createImpulseJoint(params, options.bodyA, options.bodyB, true);
 
-  if (
-    options.limits !== undefined &&
-    (options.type === "revolute" || options.type === "prismatic")
-  ) {
-    joint.setLimits(options.limits.min, options.limits.max);
+  if (options.limits !== undefined && options.type === "revolute") {
+    (joint as RAPIER.RevoluteImpulseJoint).setLimits(options.limits.min, options.limits.max);
+  } else if (options.limits !== undefined && options.type === "prismatic") {
+    (joint as RAPIER.PrismaticImpulseJoint).setLimits(options.limits.min, options.limits.max);
   }
 
   return joint;

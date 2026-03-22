@@ -1,12 +1,12 @@
 import { tryOnUnmounted } from "@vueuse/core";
 
-import { useWorld } from "./useWorld";
+import { useDumasContext } from "./useDumasContext";
 import type { SystemFn } from "../types";
 
 const DEFAULT_PRIORITY = 0;
 
 export function useSystem({ fn, priority }: { fn: SystemFn; priority?: number }): void {
-  const ctx = useWorld();
+  const ctx = useDumasContext();
 
   const unsubscribe = ctx.registerSystem({
     fn,

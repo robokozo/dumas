@@ -2,7 +2,7 @@
 import { inject } from "vue";
 import { useRigidBody } from "../composables/useRigidBody";
 import { GAME_OBJECT_EID_KEY } from "../keys";
-import type { RigidBodyOptions, RigidBodyType } from "../types";
+import type { RigidBodyOptions } from "../types";
 
 const props = defineProps<Omit<RigidBodyOptions, "eid"> & { eid?: number }>();
 
@@ -17,8 +17,6 @@ const { rigidBody, applyImpulse, applyForce, setLinvel, setAngvel } = useRigidBo
   eid,
   type: props.type,
 });
-
-defineExpose({ rigidBody, applyImpulse, applyForce, setLinvel, setAngvel });
 </script>
 
 <template>

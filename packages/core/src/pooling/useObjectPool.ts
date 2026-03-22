@@ -1,13 +1,13 @@
 import { shallowRef, ref, watch, readonly } from "vue";
 import { tryOnUnmounted } from "@vueuse/core";
 
-import { useWorld } from "../composables/useWorld";
+import { useDumasContext } from "../composables/useDumasContext";
 import { createObjectPool } from "./objectPool";
 import type { WorldMaps } from "../ecs/world";
 import type { ObjectPoolOptions, ObjectPoolReturn, PoolHandle } from "../types";
 
 export function useObjectPool(options: ObjectPoolOptions): ObjectPoolReturn {
-  const ctx = useWorld();
+  const ctx = useDumasContext();
 
   const handles = shallowRef<ReadonlyArray<PoolHandle>>([]);
   const available = ref<number>(0);

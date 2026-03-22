@@ -13,7 +13,6 @@ const { groupRef, eid, position, rotation } = useGameObject({
 });
 
 provide(GAME_OBJECT_EID_KEY, eid);
-defineExpose({ eid, position, rotation });
 </script>
 
 <template>

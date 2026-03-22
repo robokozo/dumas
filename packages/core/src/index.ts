@@ -2,10 +2,11 @@
 export { default as GameObject } from "./components/GameObject.vue";
 export { default as RigidBody } from "./components/RigidBody.vue";
 export { default as Collider } from "./components/Collider.vue";
-export { default as DumasProvider } from "./components/DumasProvider.vue";
+export { default as DumasCanvas } from "./components/DumasCanvas.vue";
 
 // Composables
-export { useWorld } from "./composables/useWorld";
+export { useDumasContext } from "./composables/useDumasContext";
+export { createWorldContext } from "./composables/useWorld";
 export { useGameObject } from "./composables/useGameObject";
 export { useSystem } from "./composables/useSystem";
 export { useRigidBody } from "./composables/useRigidBody";

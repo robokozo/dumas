@@ -1,17 +1,16 @@
 <script setup lang="ts">
 import { shallowRef, watch } from "vue";
 import type { Object3D } from "three";
-import { useSystem, useWorld } from "@dumas/core";
+import { useSystem, useDumasContext } from "@dumas/core";
 import type { PoolHandle } from "@dumas/core";
 
 const { handle } = defineProps<{ handle: PoolHandle }>();
 
 const RADIUS = 0.4;
-const ctx = useWorld();
+const ctx = useDumasContext();
 
 const meshRef = shallowRef<Object3D | null>(null);
 
-// Register mesh in entityMeshMap so renderSyncSystem handles transform sync
 watch(meshRef, (mesh, oldMesh) => {
   if (oldMesh !== null) {
     ctx.entityMeshMap.delete(handle.eid);
@@ -21,11 +20,12 @@ watch(meshRef, (mesh, oldMesh) => {
   }
 });
 
-// Only toggle visibility — transform sync is handled by renderSyncSystem
 useSystem({
   fn: () => {
     const mesh = meshRef.value;
-    if (mesh === null) return;
+    if (mesh === null) {
+      return;
+    }
     mesh.visible = handle.isActive === true;
   },
 });

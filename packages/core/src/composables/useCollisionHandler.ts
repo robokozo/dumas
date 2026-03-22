@@ -1,6 +1,6 @@
 import { tryOnUnmounted } from "@vueuse/core";
 
-import { useWorld } from "./useWorld";
+import { useDumasContext } from "./useDumasContext";
 import type { CollisionHandler } from "../types";
 
 export function useCollisionHandler({
@@ -10,7 +10,7 @@ export function useCollisionHandler({
   eid: number;
   handler: CollisionHandler;
 }): void {
-  const ctx = useWorld();
+  const ctx = useDumasContext();
 
   const unsubscribe = ctx.registerCollisionHandler({ eid, handler });
 

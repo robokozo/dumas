@@ -15,8 +15,6 @@ if (eid === undefined) {
 
 const { eid: _eid, ...restProps } = props;
 const { collider } = useCollider({ eid, ...restProps });
-
-defineExpose({ collider });
 </script>
 
 <template>

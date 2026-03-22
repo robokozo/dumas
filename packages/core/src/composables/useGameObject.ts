@@ -5,7 +5,7 @@ import type { Object3D } from "three";
 
 import { createEntity, destroyEntity } from "../ecs/world";
 import { Transform } from "../ecs/components";
-import { useWorld } from "./useWorld";
+import { useDumasContext } from "./useDumasContext";
 import type { GameObjectOptions, Vec3, Quat, ReactiveEntityRefs } from "../types";
 
 export interface GameObjectReturn {
@@ -16,7 +16,7 @@ export interface GameObjectReturn {
 }
 
 export function useGameObject(options?: GameObjectOptions): GameObjectReturn {
-  const ctx = useWorld();
+  const ctx = useDumasContext();
 
   const eid = createEntity({ world: ctx.ecsWorld });
 

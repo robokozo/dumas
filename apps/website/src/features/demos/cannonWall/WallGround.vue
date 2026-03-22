@@ -13,7 +13,7 @@ useCollider({ eid, shape: "box", args: GROUND_HALF, restitution: 0.3, friction: 
   <TresGroup ref="groupRef">
     <TresMesh>
       <TresBoxGeometry :args="GROUND_SIZE" />
-      <TresMeshStandardMaterial color="#333333" />
+      <TresMeshStandardMaterial color="#555555" />
     </TresMesh>
   </TresGroup>
 </template>

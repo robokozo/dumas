@@ -4,7 +4,7 @@ import type { ShallowRef } from "vue";
 import type RAPIER from "@dimforge/rapier3d-compat";
 import { addComponent } from "bitecs";
 
-import { useWorld } from "./useWorld";
+import { useDumasContext } from "./useDumasContext";
 import { createCollider } from "../physics/colliders";
 import { ColliderRef } from "../ecs/components";
 import type { ColliderOptions } from "../types";
@@ -14,7 +14,7 @@ export interface ColliderReturn {
 }
 
 export function useCollider(options: ColliderOptions): ColliderReturn {
-  const ctx = useWorld();
+  const ctx = useDumasContext();
   const { eid } = options;
 
   const collider = shallowRef<RAPIER.Collider | null>(null);

@@ -44,7 +44,7 @@ export function renderSyncSystem({
   ecsWorld: World;
   entityMeshMap: Map<number, Object3D>;
 }): void {
-  const entities = query(ecsWorld, [Transform]);
+  const entities = query(ecsWorld, [Transform, RigidBodyRef]);
 
   for (const eid of entities) {
     const mesh = entityMeshMap.get(eid);
