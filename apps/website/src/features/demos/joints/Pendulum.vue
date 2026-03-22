@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { watch } from "vue";
+import { watchOnce } from "@vueuse/core";
 import { useGameObject, useRigidBody, useCollider, useJoint } from "@dumas/core";
 
 const anchor = useGameObject({ position: [0, 5, 0] });
@@ -10,7 +10,7 @@ const ball = useGameObject({ position: [2, 3, 0] });
 const ballBody = useRigidBody({ eid: ball.eid, type: "dynamic" });
 useCollider({ eid: ball.eid, shape: "sphere", radius: 0.4 });
 
-watch(
+watchOnce(
   [anchorBody.rigidBody, ballBody.rigidBody],
   ([a, b]) => {
     if (a !== null && b !== null) {

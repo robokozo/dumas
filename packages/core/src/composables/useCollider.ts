@@ -1,5 +1,5 @@
-import { shallowRef, watch } from "vue";
-import { tryOnUnmounted } from "@vueuse/core";
+import { shallowRef } from "vue";
+import { tryOnUnmounted, watchOnce } from "@vueuse/core";
 import type { ShallowRef } from "vue";
 import type RAPIER from "@dimforge/rapier3d-compat";
 import { addComponent } from "bitecs";
@@ -40,11 +40,8 @@ export function useCollider(options: ColliderOptions): ColliderReturn {
   if (ctx.isReady.value === true) {
     initCollider();
   } else {
-    const stopWatch = watch(ctx.isReady, (isReady) => {
-      if (isReady === true) {
-        initCollider();
-        stopWatch();
-      }
+    watchOnce(ctx.isReady, () => {
+      initCollider();
     });
   }
 

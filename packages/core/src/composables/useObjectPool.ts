@@ -1,8 +1,8 @@
-import { shallowRef, ref, watch, readonly } from "vue";
-import { tryOnUnmounted } from "@vueuse/core";
+import { shallowRef, ref, readonly } from "vue";
+import { tryOnUnmounted, watchOnce } from "@vueuse/core";
 
-import { useDumasContext } from "../composables/useDumasContext";
-import { createObjectPool } from "./objectPool";
+import { useDumasContext } from "./useDumasContext";
+import { createObjectPool } from "../physics/objectPool";
 import type { WorldMaps } from "../ecs/world";
 import type { ObjectPoolOptions, ObjectPoolReturn, PoolHandle } from "../types";
 
@@ -40,11 +40,8 @@ export function useObjectPool(options: ObjectPoolOptions): ObjectPoolReturn {
   if (ctx.isReady.value === true) {
     initPool();
   } else {
-    const stopWatch = watch(ctx.isReady, (isReady) => {
-      if (isReady === true) {
-        initPool();
-        stopWatch();
-      }
+    watchOnce(ctx.isReady, () => {
+      initPool();
     });
   }
 

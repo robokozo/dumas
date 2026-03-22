@@ -116,6 +116,7 @@ These commands map to their corresponding tools. For example, `vp dev --port 300
 ## VueUse
 
 - Prefer VueUse utilities over manual equivalents (self-clean on unmount).
+- Use `watchOnce` instead of a `watch` that manually stops itself after the first invocation.
 
 ## Imports
 
@@ -151,7 +152,8 @@ These commands map to their corresponding tools. For example, `vp dev --port 300
 ## Type Safety
 
 - `any` strictly prohibited. `as` casting discouraged — prefer type guards.
-- `as const` encouraged. `satisfies` encouraged.
+- `as const` encouraged on object/array literals to preserve literal member types. Never use on primitive `const` declarations — `const FOO = 5` already infers `5`, not `number`.
+- `satisfies` encouraged.
 
 ## Array Types
 

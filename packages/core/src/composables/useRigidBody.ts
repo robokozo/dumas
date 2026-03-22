@@ -1,5 +1,5 @@
-import { shallowRef, watch } from "vue";
-import { tryOnUnmounted } from "@vueuse/core";
+import { shallowRef } from "vue";
+import { tryOnUnmounted, watchOnce } from "@vueuse/core";
 import type { ShallowRef } from "vue";
 import type RAPIER from "@dimforge/rapier3d-compat";
 import { addComponent } from "bitecs";
@@ -55,11 +55,8 @@ export function useRigidBody(options: RigidBodyOptions): RigidBodyReturn {
   if (ctx.isReady.value === true) {
     initBody();
   } else {
-    const stopWatch = watch(ctx.isReady, (isReady) => {
-      if (isReady === true) {
-        initBody();
-        stopWatch();
-      }
+    watchOnce(ctx.isReady, () => {
+      initBody();
     });
   }
 

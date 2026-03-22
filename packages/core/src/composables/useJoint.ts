@@ -1,5 +1,5 @@
-import { shallowRef, watch } from "vue";
-import { tryOnUnmounted } from "@vueuse/core";
+import { shallowRef } from "vue";
+import { tryOnUnmounted, watchOnce } from "@vueuse/core";
 import type RAPIER from "@dimforge/rapier3d-compat";
 
 import { useDumasContext } from "./useDumasContext";
@@ -27,11 +27,8 @@ export function useJoint(options: JointOptions): JointReturn {
   if (ctx.isReady.value === true) {
     initJoint();
   } else {
-    const stopWatch = watch(ctx.isReady, (isReady) => {
-      if (isReady === true) {
-        initJoint();
-        stopWatch();
-      }
+    watchOnce(ctx.isReady, () => {
+      initJoint();
     });
   }
 

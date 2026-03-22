@@ -3,13 +3,13 @@ import { DumasCanvas } from "@dumas/core";
 import DemoLayout from "../layout/DemoLayout.vue";
 import CodeBlock from "../layout/CodeBlock.vue";
 import CollisionEventsScene from "./CollisionEventsScene.vue";
-import CollisionBallCode from "./CollisionBall.vue?raw";
+import CollisionEventsCode from "./CollisionEventsScene.vue?raw";
 </script>
 
 <template>
   <DemoLayout slug="collision-events">
     <template #scene>
-      <DumasCanvas clear-color="#111" render-mode="always" :gravity="{ x: 0, y: -9.81, z: 0 }">
+      <DumasCanvas clear-color="#111" render-mode="always" :gravity="{ x: 0, y: 0, z: 0 }">
         <CollisionEventsScene />
       </DumasCanvas>
     </template>
@@ -22,17 +22,19 @@ import CollisionBallCode from "./CollisionBall.vue?raw";
         </p>
         <p>
           The handler receives a <code>CollisionEvent</code> with <code>eidA</code>,
-          <code>eidB</code>, and <code>type</code>
-          ("started" or "stopped"). Use this to trigger effects, damage, sounds, or any game logic.
+          <code>eidB</code>, and <code>type</code> ("started" or "stopped"). Compare
+          <code>eidA</code> and <code>eidB</code> against known entity IDs to branch on
+          <em>which</em> entity was hit and run different logic per target.
         </p>
         <p>
-          Watch the ball turn <strong style="color: #4fa">green</strong> on contact and back to
-          <strong style="color: #4af">blue</strong> when it bounces away.
+          Here, the ball bounces between two walls. On each collision, the handler checks
+          <em>which wall</em> was hit: it turns <strong style="color: #f64">red</strong> for the
+          left wall and <strong style="color: #4af">blue</strong> for the right.
         </p>
       </section>
       <section>
         <h2>Code</h2>
-        <CodeBlock :code="CollisionBallCode" />
+        <CodeBlock :code="CollisionEventsCode" />
       </section>
     </template>
   </DemoLayout>

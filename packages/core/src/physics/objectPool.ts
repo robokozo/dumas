@@ -4,8 +4,8 @@ import type { World } from "bitecs";
 import { addComponent } from "../ecs/world";
 import { Transform, RigidBodyRef, ColliderRef } from "../ecs/components";
 import { createEntity, destroyEntity } from "../ecs/world";
-import { createRigidBody } from "../physics/bodies";
-import { createCollider } from "../physics/colliders";
+import { createRigidBody } from "./bodies";
+import { createCollider } from "./colliders";
 import type { WorldMaps } from "../ecs/world";
 import type { Vec3, ObjectPoolOptions, PoolHandle } from "../types";
 

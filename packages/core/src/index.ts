@@ -15,8 +15,8 @@ export { useCollisionHandler } from "./composables/useCollisionHandler";
 export { useJoint } from "./composables/useJoint";
 
 // Pooling
-export { createObjectPool } from "./pooling/objectPool";
-export { useObjectPool } from "./pooling/useObjectPool";
+export { createObjectPool } from "./physics/objectPool";
+export { useObjectPool } from "./composables/useObjectPool";
 
 // ECS components (for advanced users building custom systems)
 export { Transform, Velocity, RigidBodyRef, ColliderRef } from "./ecs/components";
