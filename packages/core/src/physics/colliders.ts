@@ -1,4 +1,5 @@
 import type RAPIER from "@dimforge/rapier3d-compat";
+import { ActiveCollisionTypes } from "@dimforge/rapier3d-compat";
 import type { ColliderOptions } from "../types";
 import { DEFAULT_RESTITUTION, DEFAULT_FRICTION, DEFAULT_DENSITY } from "../constants";
 
@@ -34,6 +35,13 @@ export function createCollider({
 
   if (options.isSensor === true) {
     desc.setSensor(true);
+    // Rapier's DEFAULT activeCollisionTypes (15) excludes kinematic-fixed pairs (8704),
+    // so sensors won't detect kinematic bodies unless we set ALL (60943).
+    desc.setActiveCollisionTypes(
+      (options.activeCollisionTypes ?? ActiveCollisionTypes.ALL) as RAPIER.ActiveCollisionTypes,
+    );
+  } else if (options.activeCollisionTypes !== undefined) {
+    desc.setActiveCollisionTypes(options.activeCollisionTypes as RAPIER.ActiveCollisionTypes);
   }
 
   // COLLISION_EVENTS = 1, enables EventQueue collision reporting for this collider

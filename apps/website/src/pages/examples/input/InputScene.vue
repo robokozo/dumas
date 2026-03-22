@@ -4,22 +4,22 @@ import {
   useGameObject,
   useRigidBody,
   useCollider,
-  useCharacterController,
+  useDumasContext,
+  useActions,
   useSystem,
-  useInput,
-  useActionMap,
 } from "@dumas/core";
 import type { ActionMapDefinition } from "@dumas/core";
 import { OrbitControls } from "@tresjs/cientos";
 
 type Actions = "move" | "jump";
 
-const ACTIONS = {
-  move: "leftStick",
-  jump: ["south"],
-} as const satisfies ActionMapDefinition<Actions>;
+const MOVE_SPEED = 6;
+const JUMP_SPEED = 8;
+const CAPSULE_RADIUS = 0.4;
+const CAPSULE_HALF_HEIGHT = 0.4;
+const GROUND_NORMAL_Y_MIN = 0.5;
 
-const input = useInput({
+const p1 = useActions({
   source: "keyboard",
   bindings: {
     dpadUp: ["KeyW", "ArrowUp"],
@@ -28,9 +28,13 @@ const input = useInput({
     dpadRight: ["KeyD", "ArrowRight"],
     south: ["Space"],
   },
+  actions: {
+    move: "leftStick",
+    jump: ["south"],
+  } as const satisfies ActionMapDefinition<Actions>,
 });
 
-const p1 = useActionMap(input, ACTIONS);
+const ctx = useDumasContext();
 
 // Ground
 const ground = useGameObject({ position: [0, -0.5, 0] });
@@ -38,26 +42,52 @@ useRigidBody({ eid: ground.eid, type: "fixed" });
 useCollider({ eid: ground.eid, shape: "box", args: [8, 0.5, 8] });
 
 // Player
-const MOVE_SPEED = 6;
-const JUMP_SPEED = 8;
-const CAPSULE_RADIUS = 0.4;
-const CAPSULE_HALF_HEIGHT = 0.4;
-
 const player = useGameObject({ position: [0, 2, 0] });
-const controller = useCharacterController({
+const { rigidBody } = useRigidBody({ eid: player.eid, type: "dynamic" });
+const { collider: playerCollider } = useCollider({
   eid: player.eid,
-  collider: { shape: "capsule", halfHeight: CAPSULE_HALF_HEIGHT, radius: CAPSULE_RADIUS },
-  moveSpeed: MOVE_SPEED,
-  mode: "3d",
+  shape: "capsule",
+  halfHeight: CAPSULE_HALF_HEIGHT,
+  radius: CAPSULE_RADIUS,
+  friction: 0,
 });
 
+// Prevent capsule from tipping over under contact forces
+rigidBody.value?.lockRotations(true, true);
+
+function isGrounded(): boolean {
+  const world = ctx.physicsWorld.value;
+  const col = playerCollider.value;
+  if (world === null || col === null) return false;
+
+  let grounded = false;
+  world.contactPairsWith(col, (otherCollider) => {
+    if (grounded === true) return;
+    world.contactPair(col, otherCollider, (manifold) => {
+      const n = manifold.normal();
+      if (Math.abs(n.y) > GROUND_NORMAL_Y_MIN) {
+        grounded = true;
+      }
+    });
+  });
+  return grounded;
+}
+
 useSystem({
-  fn: ({ delta }) => {
+  fn: () => {
+    const body = rigidBody.value;
+    if (body === null) return;
+
     const { x, y: forward } = p1.axis("move");
+    const vel = body.linvel();
     // leftStick y positive = forward = negative Z in world space
-    controller.move({ x, z: -forward, delta });
-    if (p1.wasJustPressed("jump") === true) {
-      controller.jump({ speed: JUMP_SPEED });
+    const newX = x * MOVE_SPEED;
+    const newZ = -forward * MOVE_SPEED;
+
+    if (p1.wasJustPressed("jump") === true && isGrounded() === true) {
+      body.setLinvel({ x: newX, y: JUMP_SPEED, z: newZ }, true);
+    } else {
+      body.setLinvel({ x: newX, y: vel.y, z: newZ }, true);
     }
   },
 });

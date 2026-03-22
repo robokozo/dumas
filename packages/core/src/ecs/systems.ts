@@ -90,7 +90,8 @@ export function reactiveSyncSystem({
   }
 }
 
-// Drains Rapier EventQueue and dispatches collision events to registered handlers
+// Drains Rapier EventQueue and dispatches collision events to registered handlers.
+// drainCollisionEvents covers both solid-solid contacts and sensor intersections in Rapier 0.12.
 export function collisionEventSystem({
   eventQueue,
   colliderEntityMap,

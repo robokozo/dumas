@@ -15,6 +15,7 @@ export { useCollisionHandler } from "./composables/useCollisionHandler";
 export { useJoint } from "./composables/useJoint";
 export { useInput } from "./composables/useInput";
 export { useActionMap } from "./composables/useActionMap";
+export { useActions } from "./composables/useActions";
 export { useCharacterController } from "./composables/useCharacterController";
 
 // Pooling

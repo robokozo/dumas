@@ -55,7 +55,7 @@ export const DEMOS: Array<DemoEntry> = [
   {
     slug: "player-input",
     title: "Player Input",
-    feature: "useInput + useActionMap",
+    feature: "useActions",
     description:
       "Bind keyboard or gamepad to a standard hardware layout, then map to game-specific actions. Supports multiple players with independent configurations.",
   },

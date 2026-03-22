@@ -5,9 +5,8 @@ import {
   useGameObject,
   useRigidBody,
   useCollider,
-  useCharacterController,
-  useInput,
-  useActionMap,
+  useDumasContext,
+  useActions,
   useSystem,
 } from "@dumas/core";
 import type { ActionMapDefinition } from "@dumas/core";
@@ -22,6 +21,7 @@ const MOVE_SPEED = 8;
 const JUMP_SPEED = 12;
 const CAPSULE_HALF_HEIGHT = 0.4;
 const CAPSULE_RADIUS = 0.3;
+const GROUND_NORMAL_Y_MIN = 0.5;
 
 const WALL_POSITION: [number, number, number] = [3, 1.5, 0];
 const WALL_HALF_W = 0.25;
@@ -51,20 +51,49 @@ const emit = defineEmits<{
 
 const coins = reactive(COIN_DATA.map((c) => ({ ...c, collected: false })));
 
+const ctx = useDumasContext();
+
 const wall = useGameObject({ position: WALL_POSITION });
 useRigidBody({ eid: wall.eid, type: "fixed" });
 useCollider({ eid: wall.eid, shape: "box", args: [WALL_HALF_W, WALL_HALF_H, WALL_HALF_D] });
 
 const player = useGameObject({ position: SPAWN });
-const controller = useCharacterController({
+const { rigidBody } = useRigidBody({ eid: player.eid, type: "dynamic" });
+const { collider: playerCollider } = useCollider({
   eid: player.eid,
-  collider: { shape: "capsule", halfHeight: CAPSULE_HALF_HEIGHT, radius: CAPSULE_RADIUS },
-  moveSpeed: MOVE_SPEED,
-  mode: "2d",
+  shape: "capsule",
+  halfHeight: CAPSULE_HALF_HEIGHT,
+  radius: CAPSULE_RADIUS,
+  friction: 0,
 });
 
+// Prevent capsule from tipping; lock Z so character stays in the XY plane (2D)
+rigidBody.value?.lockRotations(true, true);
+rigidBody.value?.setEnabledTranslations(true, true, false, true);
+
+function isGrounded(): boolean {
+  const world = ctx.physicsWorld.value;
+  const col = playerCollider.value;
+  if (world === null || col === null) return false;
+
+  let grounded = false;
+  world.contactPairsWith(col, (otherCollider) => {
+    if (grounded === true) return;
+    world.contactPair(col, otherCollider, (manifold) => {
+      const n = manifold.normal();
+      if (Math.abs(n.y) > GROUND_NORMAL_Y_MIN) {
+        grounded = true;
+      }
+    });
+  });
+  return grounded;
+}
+
 function resetPlayer(): void {
-  controller.teleport({ position: { x: SPAWN[0], y: SPAWN[1], z: SPAWN[2] } });
+  const body = rigidBody.value;
+  if (body === null) return;
+  body.setTranslation({ x: SPAWN[0], y: SPAWN[1], z: SPAWN[2] }, true);
+  body.setLinvel({ x: 0, y: 0, z: 0 }, true);
 }
 
 function onCoinCollected(id: number): void {
@@ -72,28 +101,32 @@ function onCoinCollected(id: number): void {
   emit("update:score", coins.filter((c) => c.collected === true).length);
 }
 
-const input = useInput({
+const p1 = useActions({
   source: "keyboard",
   bindings: {
     dpadLeft: ["KeyA", "ArrowLeft"],
     dpadRight: ["KeyD", "ArrowRight"],
     south: ["Space"],
   },
+  actions: {
+    move: "leftStick",
+    jump: ["south"],
+  } as const satisfies ActionMapDefinition<Actions>,
 });
 
-const ACTIONS = {
-  move: "leftStick",
-  jump: ["south"],
-} as const satisfies ActionMapDefinition<Actions>;
-
-const p1 = useActionMap(input, ACTIONS);
-
 useSystem({
-  fn: ({ delta }) => {
+  fn: () => {
+    const body = rigidBody.value;
+    if (body === null) return;
+
     const { x } = p1.axis("move");
-    controller.move({ x, z: 0, delta });
-    if (p1.wasJustPressed("jump") === true) {
-      controller.jump({ speed: JUMP_SPEED });
+    const vel = body.linvel();
+    const newX = x * MOVE_SPEED;
+
+    if (p1.wasJustPressed("jump") === true && isGrounded() === true) {
+      body.setLinvel({ x: newX, y: JUMP_SPEED, z: 0 }, true);
+    } else {
+      body.setLinvel({ x: newX, y: vel.y, z: 0 }, true);
     }
   },
 });
