@@ -39,6 +39,10 @@ const routes: Array<RouteRecordRaw> = [
     path: "/samples/cannon-wall",
     component: () => import("../pages/samples/cannonWall/CannonWallPage.vue"),
   },
+  {
+    path: "/samples/platformer",
+    component: () => import("../pages/samples/platformer/PlatformerPage.vue"),
+  },
 ];
 
 export const router = createRouter({

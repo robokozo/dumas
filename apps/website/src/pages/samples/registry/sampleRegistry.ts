@@ -10,4 +10,9 @@ export const SAMPLES: Array<SampleEntry> = [
     title: "Cannon Wall",
     description: "Click anywhere to fire cannonballs at a wall of blocks.",
   },
+  {
+    slug: "platformer",
+    title: "Platformer",
+    description: "Jump between platforms and collect all the coins. Fall into the lava to respawn.",
+  },
 ];
