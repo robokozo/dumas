@@ -99,6 +99,8 @@ export interface ColliderOptions {
   isSensor?: boolean;
   /** Raw Rapier ActiveCollisionTypes bitmask. Overrides the default pair filtering. */
   activeCollisionTypes?: number;
+  /** Optional collision handler registered for this entity. Shorthand for a separate useCollisionHandler call. */
+  onCollision?: CollisionHandler;
 }
 
 export interface ColliderReturn {

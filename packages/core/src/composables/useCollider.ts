@@ -5,6 +5,7 @@ import type RAPIER from "@dimforge/rapier3d-compat";
 import { addComponent } from "bitecs";
 
 import { useDumasContext } from "./useDumasContext";
+import { useCollisionHandler } from "./useCollisionHandler";
 import { createCollider } from "../physics/colliders";
 import { ColliderRef } from "../ecs/components";
 import type { ColliderOptions } from "../types";
@@ -43,6 +44,10 @@ export function useCollider(options: ColliderOptions): ColliderReturn {
     watchOnce(ctx.isReady, () => {
       initCollider();
     });
+  }
+
+  if (options.onCollision !== undefined) {
+    useCollisionHandler({ eid, handler: options.onCollision });
   }
 
   tryOnUnmounted(() => {

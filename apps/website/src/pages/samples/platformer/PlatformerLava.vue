@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useGameObject, useRigidBody, useCollider, useCollisionHandler } from "@dumas/core";
+import { useGameObject, useRigidBody, useCollider } from "@dumas/core";
 
 const props = defineProps<{
   playerEid: number;
@@ -16,11 +16,12 @@ const LAVA_Y = -3;
 
 const { groupRef, eid } = useGameObject({ position: [0, LAVA_Y, 0] });
 useRigidBody({ eid, type: "fixed" });
-useCollider({ eid, shape: "box", args: [HALF_WIDTH, HALF_HEIGHT, HALF_DEPTH], isSensor: true });
-
-useCollisionHandler({
+useCollider({
   eid,
-  handler: ({ eidA, eidB, type }) => {
+  shape: "box",
+  args: [HALF_WIDTH, HALF_HEIGHT, HALF_DEPTH],
+  isSensor: true,
+  onCollision: ({ eidA, eidB, type }) => {
     if (type !== "started") return;
     const hitEid = eidA === eid ? eidB : eidA;
     if (hitEid === props.playerEid) {
