@@ -5,7 +5,7 @@ import {
   useGameObject,
   useRigidBody,
   useCollider,
-  useDumasContext,
+  useCharacterController,
   useActions,
   useSystem,
 } from "@dumas/core";
@@ -21,8 +21,6 @@ const MOVE_SPEED = 8;
 const JUMP_SPEED = 12;
 const CAPSULE_HALF_HEIGHT = 0.4;
 const CAPSULE_RADIUS = 0.3;
-const GROUND_NORMAL_Y_MIN = 0.5;
-
 const WALL_POSITION: [number, number, number] = [3, 1.5, 0];
 const WALL_HALF_W = 0.25;
 const WALL_HALF_H = 1.5;
@@ -51,52 +49,33 @@ const emit = defineEmits<{
 
 const coins = reactive(COIN_DATA.map((c) => ({ ...c, collected: false })));
 
-const ctx = useDumasContext();
-
 const wall = useGameObject({ position: WALL_POSITION });
 useRigidBody({ eid: wall.eid, type: "fixed" });
-useCollider({ eid: wall.eid, shape: "box", args: [WALL_HALF_W, WALL_HALF_H, WALL_HALF_D] });
-
-const player = useGameObject({ position: SPAWN });
-const { rigidBody } = useRigidBody({ eid: player.eid, type: "dynamic" });
-const { collider: playerCollider } = useCollider({
-  eid: player.eid,
-  shape: "capsule",
-  halfHeight: CAPSULE_HALF_HEIGHT,
-  radius: CAPSULE_RADIUS,
+useCollider({
+  eid: wall.eid,
+  shape: "box",
+  args: [WALL_HALF_W, WALL_HALF_H, WALL_HALF_D],
   friction: 0,
+  restitution: 0,
 });
 
-// Prevent capsule from tipping; lock Z so character stays in the XY plane (2D)
-rigidBody.value?.lockRotations(true, true);
-rigidBody.value?.setEnabledTranslations(true, true, false, true);
-
-function isGrounded(): boolean {
-  const world = ctx.physicsWorld.value;
-  const col = playerCollider.value;
-  if (world === null || col === null) return false;
-
-  let grounded = false;
-  world.contactPairsWith(col, (otherCollider) => {
-    if (grounded === true) return;
-    world.contactPair(col, otherCollider, (manifold) => {
-      const n = manifold.normal();
-      if (Math.abs(n.y) > GROUND_NORMAL_Y_MIN) {
-        grounded = true;
-      }
-    });
-  });
-  return grounded;
-}
+const player = useGameObject({ position: SPAWN });
+const { move, jump, teleport } = useCharacterController({
+  eid: player.eid,
+  mode: "2d",
+  moveSpeed: MOVE_SPEED,
+  collider: {
+    shape: "capsule",
+    halfHeight: CAPSULE_HALF_HEIGHT,
+    radius: CAPSULE_RADIUS,
+  },
+});
 
 function resetPlayer(): void {
-  const body = rigidBody.value;
-  if (body === null) return;
-  body.setTranslation({ x: SPAWN[0], y: SPAWN[1], z: SPAWN[2] }, true);
-  body.setLinvel({ x: 0, y: 0, z: 0 }, true);
+  teleport({ position: { x: SPAWN[0], y: SPAWN[1], z: SPAWN[2] } });
 }
 
-function onCoinCollected(id: number): void {
+function onCoinCollected({ id }: { id: number }): void {
   coins[id].collected = true;
   emit("update:score", coins.filter((c) => c.collected === true).length);
 }
@@ -115,18 +94,11 @@ const p1 = useActions({
 });
 
 useSystem({
-  fn: () => {
-    const body = rigidBody.value;
-    if (body === null) return;
-
+  fn: ({ delta }) => {
     const { x } = p1.axis("move");
-    const vel = body.linvel();
-    const newX = x * MOVE_SPEED;
-
-    if (p1.wasJustPressed("jump") === true && isGrounded() === true) {
-      body.setLinvel({ x: newX, y: JUMP_SPEED, z: 0 }, true);
-    } else {
-      body.setLinvel({ x: newX, y: vel.y, z: 0 }, true);
+    move({ x, z: 0, delta });
+    if (p1.wasJustPressed("jump") === true) {
+      jump({ speed: JUMP_SPEED });
     }
   },
 });
@@ -178,7 +150,7 @@ useSystem({
       :player-eid="player.eid"
       @collect="
         () => {
-          onCoinCollected(coin.id);
+          onCoinCollected({ id: coin.id });
         }
       "
     />

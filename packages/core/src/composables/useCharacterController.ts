@@ -17,7 +17,7 @@ export function useCharacterController({
   const ctx = useDumasContext();
 
   const { rigidBody } = useRigidBody({ eid, type: "dynamic" });
-  const { collider } = useCollider({ friction: 0, ...colliderOptions, eid });
+  const { collider } = useCollider({ friction: 0, restitution: 0, ...colliderOptions, eid });
 
   function initBody(): void {
     const body = rigidBody.value;

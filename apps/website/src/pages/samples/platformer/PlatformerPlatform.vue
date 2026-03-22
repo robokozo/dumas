@@ -15,7 +15,7 @@ useCollider({
   eid,
   shape: "box",
   args: [props.width / 2, HALF_HEIGHT, HALF_DEPTH],
-  friction: 0.8,
+  friction: 0,
   restitution: 0,
 });
 </script>
