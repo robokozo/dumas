@@ -134,6 +134,65 @@ export interface JointReturn {
   joint: ShallowRef<RAPIER.ImpulseJoint | null>;
 }
 
+// -- Input --
+
+export type HardwareButton =
+  | "south"
+  | "east"
+  | "west"
+  | "north"
+  | "lb"
+  | "rb"
+  | "lt"
+  | "rt"
+  | "l3"
+  | "r3"
+  | "dpadUp"
+  | "dpadDown"
+  | "dpadLeft"
+  | "dpadRight"
+  | "start"
+  | "select";
+
+export interface StickState {
+  x: number;
+  y: number;
+}
+
+export interface TriggerState {
+  left: number;
+  right: number;
+}
+
+export interface KeyboardInputOptions {
+  source: "keyboard";
+  bindings: Partial<Record<HardwareButton, Array<string>>>;
+}
+
+export interface GamepadInputOptions {
+  source: { type: "gamepad"; index: number };
+}
+
+export type InputOptions = KeyboardInputOptions | GamepadInputOptions;
+
+export interface InputReturn {
+  isHeld: (button: HardwareButton) => boolean;
+  wasJustPressed: (button: HardwareButton) => boolean;
+  leftStick: Readonly<ShallowRef<StickState>>;
+  rightStick: Readonly<ShallowRef<StickState>>;
+  triggers: Readonly<ShallowRef<TriggerState>>;
+}
+
+export type ActionSource = ReadonlyArray<HardwareButton> | "leftStick" | "rightStick";
+
+export type ActionMapDefinition<TActions extends string> = Record<TActions, ActionSource>;
+
+export interface ActionMapReturn<TActions extends string> {
+  isHeld: (action: TActions) => boolean;
+  wasJustPressed: (action: TActions) => boolean;
+  axis: (action: TActions) => StickState;
+}
+
 // -- Object pool --
 
 export interface PoolHandle {

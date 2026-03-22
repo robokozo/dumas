@@ -13,6 +13,8 @@ export { useRigidBody } from "./composables/useRigidBody";
 export { useCollider } from "./composables/useCollider";
 export { useCollisionHandler } from "./composables/useCollisionHandler";
 export { useJoint } from "./composables/useJoint";
+export { useInput } from "./composables/useInput";
+export { useActionMap } from "./composables/useActionMap";
 
 // Pooling
 export { createObjectPool } from "./physics/objectPool";
@@ -42,6 +44,14 @@ export type {
   PoolHandle,
   ObjectPoolOptions,
   ObjectPoolReturn,
+  HardwareButton,
+  StickState,
+  TriggerState,
+  InputOptions,
+  InputReturn,
+  ActionSource,
+  ActionMapDefinition,
+  ActionMapReturn,
 } from "./types";
 
 // Return types

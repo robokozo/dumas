@@ -35,6 +35,10 @@ const demoRoutes: Array<RouteRecordRaw> = [
     path: "/demos/cannon-wall",
     component: () => import("../features/demos/cannonWall/CannonWallPage.vue"),
   },
+  {
+    path: "/demos/player-input",
+    component: () => import("../features/demos/input/InputPage.vue"),
+  },
 ];
 
 export const router = createRouter({

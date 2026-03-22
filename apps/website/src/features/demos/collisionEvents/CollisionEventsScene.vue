@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { watchOnce } from "@vueuse/core";
 import { useGameObject, useRigidBody, useCollider, useCollisionHandler } from "@dumas/core";
 import { OrbitControls } from "@tresjs/cientos";
 
@@ -45,15 +44,12 @@ useCollider({
   friction: 0,
 });
 
-watchOnce(
-  ballBody,
-  (rb) => {
-    if (rb === null) return;
-    rb.setGravityScale(0, true);
-    rb.setLinvel({ x: INITIAL_SPEED, y: 0, z: 0 }, true);
-  },
-  { immediate: true },
-);
+// rigidBody is initialized synchronously — apply physics config immediately
+const rb = ballBody.value;
+if (rb !== null) {
+  rb.setGravityScale(0, true);
+  rb.setLinvel({ x: INITIAL_SPEED, y: 0, z: 0 }, true);
+}
 
 useCollisionHandler({
   eid: ball.eid,

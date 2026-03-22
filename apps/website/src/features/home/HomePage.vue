@@ -7,6 +7,11 @@ import { DEMOS } from "../demos/registry/demoRegistry";
     <header class="hero">
       <h1>Dumas</h1>
       <p>A declarative game engine for Vue. Explore the features below.</p>
+      <p class="origin">
+        Named after Alexandre Dumas, author of <em>The Three Musketeers</em> — a nod to the three
+        TresJS libraries it's built on: Tres, Cientos, and TresLeches. Physics are powered by Rapier
+        (fittingly, the weapon of choice for a musketeer) with an ECS architecture via bitECS.
+      </p>
     </header>
     <div class="grid">
       <RouterLink v-for="demo in DEMOS" :key="demo.slug" :to="`/demos/${demo.slug}`" class="card">
@@ -42,6 +47,11 @@ import { DEMOS } from "../demos/registry/demoRegistry";
   color: #888;
   font-size: 1rem;
   margin: 0;
+}
+
+.hero .origin {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
 }
 
 .grid {

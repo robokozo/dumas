@@ -58,6 +58,13 @@ export const DEMOS: Array<DemoEntry> = [
     feature: "Combined",
     description: "A complete example combining rigid bodies, colliders, pooling, and systems.",
   },
+  {
+    slug: "player-input",
+    title: "Player Input",
+    feature: "useInput + useActionMap",
+    description:
+      "Bind keyboard or gamepad to a standard hardware layout, then map to game-specific actions. Supports multiple players with independent configurations.",
+  },
 ];
 
 export function getDemoBySlug({ slug }: { slug: string }): DemoEntry | null {
