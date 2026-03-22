@@ -6,6 +6,7 @@ import {
   useRigidBody,
   useCollider,
   useCharacterController,
+  useContactDetection,
   useActions,
   useSystem,
 } from "@dumas/core";
@@ -60,7 +61,7 @@ useCollider({
 });
 
 const player = useGameObject({ position: SPAWN });
-const { move, jump, teleport } = useCharacterController({
+const { rigidBody, collider, move, teleport } = useCharacterController({
   eid: player.eid,
   mode: "2d",
   moveSpeed: MOVE_SPEED,
@@ -70,6 +71,7 @@ const { move, jump, teleport } = useCharacterController({
     radius: CAPSULE_RADIUS,
   },
 });
+const { hasContact } = useContactDetection({ collider });
 
 function resetPlayer(): void {
   teleport({ position: { x: SPAWN[0], y: SPAWN[1], z: SPAWN[2] } });
@@ -97,8 +99,15 @@ useSystem({
   fn: ({ delta }) => {
     const { x } = p1.axis("move");
     move({ x, z: 0, delta });
-    if (p1.wasJustPressed("jump") === true) {
-      jump({ speed: JUMP_SPEED });
+    if (
+      p1.wasJustPressed("jump") === true &&
+      hasContact({ direction: { x: 0, y: 1, z: 0 } }) === true
+    ) {
+      const body = rigidBody.value;
+      if (body !== null) {
+        const vel = body.linvel();
+        body.setLinvel({ x: vel.x, y: JUMP_SPEED, z: vel.z }, true);
+      }
     }
   },
 });

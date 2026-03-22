@@ -210,9 +210,8 @@ export interface CharacterControllerOptions {
 
 export interface CharacterControllerReturn {
   rigidBody: ShallowRef<RAPIER.RigidBody | null>;
-  isGrounded: () => boolean;
+  collider: ShallowRef<RAPIER.Collider | null>;
   move: (dir: { x: number; z: number; delta: number }) => void;
-  jump: (options: { speed: number }) => void;
   teleport: (options: { position: { x: number; y: number; z: number } }) => void;
 }
 

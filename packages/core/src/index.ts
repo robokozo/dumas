@@ -17,6 +17,7 @@ export { useInput } from "./composables/useInput";
 export { useActionMap } from "./composables/useActionMap";
 export { useActions } from "./composables/useActions";
 export { useCharacterController } from "./composables/useCharacterController";
+export { useContactDetection } from "./composables/useContactDetection";
 
 // Pooling
 export { createObjectPool } from "./physics/objectPool";
@@ -63,3 +64,4 @@ export type {
 export type { GameObjectReturn } from "./composables/useGameObject";
 export type { RigidBodyReturn } from "./composables/useRigidBody";
 export type { ColliderReturn } from "./composables/useCollider";
+export type { ContactDetectionReturn } from "./composables/useContactDetection";
