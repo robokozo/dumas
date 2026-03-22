@@ -53,12 +53,6 @@ export const DEMOS: Array<DemoEntry> = [
     description: "Pre-allocate and recycle entities for performant spawning and despawning.",
   },
   {
-    slug: "cannon-wall",
-    title: "Cannon Wall",
-    feature: "Combined",
-    description: "A complete example combining rigid bodies, colliders, pooling, and systems.",
-  },
-  {
     slug: "player-input",
     title: "Player Input",
     feature: "useInput + useActionMap",

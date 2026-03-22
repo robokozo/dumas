@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { watch } from "vue";
+import { Raycaster, Vector2 } from "three";
+import { useEventListener } from "@vueuse/core";
 import { useObjectPool, useSystem } from "@dumas/core";
 import { useTresContext } from "@tresjs/core";
 import { OrbitControls } from "@tresjs/cientos";
@@ -7,14 +8,13 @@ import WallBlock from "./WallBlock.vue";
 import WallGround from "./WallGround.vue";
 import WallCannonball from "./WallCannonball.vue";
 
-const props = defineProps<{ fireCount: number }>();
-
 const { camera } = useTresContext();
 
 const COLS = 8;
 const ROWS = 8;
 const BLOCK_W = 1.05;
 const BLOCK_H = 0.52;
+const FIRE_SPEED = 40;
 
 const blocks: Array<{ position: [number, number, number]; color: string }> = [];
 for (let row = 0; row < ROWS; row++) {
@@ -45,38 +45,46 @@ useSystem({
   },
 });
 
-const FIRE_SPEED = 40;
+const raycaster = new Raycaster();
+const mouseVec = new Vector2();
 
-watch(
-  () => props.fireCount,
-  () => {
-    const cam = camera.activeCamera.value;
-    if (cam === null || cam === undefined) {
-      return;
-    }
+const DRAG_THRESHOLD = 4;
+let mouseDownX = 0;
+let mouseDownY = 0;
 
-    const handle = pool.acquire();
-    if (handle === null) {
-      return;
-    }
+useEventListener(window, "mousedown", (e: MouseEvent) => {
+  mouseDownX = e.clientX;
+  mouseDownY = e.clientY;
+});
 
-    const dir = cam.getWorldDirection(cam.position.clone()).normalize();
+useEventListener(window, "click", (e: MouseEvent) => {
+  const dx = e.clientX - mouseDownX;
+  const dy = e.clientY - mouseDownY;
+  if (Math.sqrt(dx * dx + dy * dy) > DRAG_THRESHOLD) return;
+  const cam = camera.activeCamera.value;
+  if (cam === null || cam === undefined) return;
 
-    handle.rigidBody.setTranslation(
-      {
-        x: cam.position.x + dir.x * 1.5,
-        y: cam.position.y + dir.y * 1.5,
-        z: cam.position.z + dir.z * 1.5,
-      },
-      true,
-    );
-    handle.rigidBody.setLinvel(
-      { x: dir.x * FIRE_SPEED, y: dir.y * FIRE_SPEED, z: dir.z * FIRE_SPEED },
-      true,
-    );
-    handle.rigidBody.enableCcd(true);
-  },
-);
+  mouseVec.set((e.clientX / window.innerWidth) * 2 - 1, -(e.clientY / window.innerHeight) * 2 + 1);
+  raycaster.setFromCamera(mouseVec, cam);
+  const dir = raycaster.ray.direction;
+
+  const handle = pool.acquire();
+  if (handle === null) return;
+
+  handle.rigidBody.setTranslation(
+    {
+      x: cam.position.x + dir.x * 1.5,
+      y: cam.position.y + dir.y * 1.5,
+      z: cam.position.z + dir.z * 1.5,
+    },
+    true,
+  );
+  handle.rigidBody.setLinvel(
+    { x: dir.x * FIRE_SPEED, y: dir.y * FIRE_SPEED, z: dir.z * FIRE_SPEED },
+    true,
+  );
+  handle.rigidBody.enableCcd(true);
+});
 </script>
 
 <template>

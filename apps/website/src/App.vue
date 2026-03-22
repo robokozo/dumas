@@ -1,16 +1,10 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { DEMOS } from "./features/demos/registry/demoRegistry";
+import { DEMOS } from "./pages/examples/registry/demoRegistry";
+import { SAMPLES } from "./pages/samples/registry/sampleRegistry";
 
-const isDropdownOpen = ref<boolean>(false);
-
-function showDropdown(): void {
-  isDropdownOpen.value = true;
-}
-
-function hideDropdown(): void {
-  isDropdownOpen.value = false;
-}
+const isExamplesOpen = ref<boolean>(false);
+const isSamplesOpen = ref<boolean>(false);
 </script>
 
 <template>
@@ -18,19 +12,44 @@ function hideDropdown(): void {
     <nav>
       <RouterLink to="/">Dumas</RouterLink>
       <div class="links">
-        <div class="dropdown" @mouseenter="showDropdown" @mouseleave="hideDropdown">
-          <span class="dropdown-trigger">Demos</span>
-          <div v-if="isDropdownOpen" class="dropdown-menu">
+        <div
+          class="dropdown"
+          @mouseenter="isExamplesOpen = true"
+          @mouseleave="isExamplesOpen = false"
+        >
+          <span class="dropdown-trigger">Examples</span>
+          <div v-if="isExamplesOpen" class="dropdown-menu">
             <div class="dropdown-inner">
               <RouterLink
                 v-for="demo in DEMOS"
                 :key="demo.slug"
-                :to="`/demos/${demo.slug}`"
+                :to="`/examples/${demo.slug}`"
                 class="dropdown-item"
-                @click="hideDropdown"
+                @click="isExamplesOpen = false"
               >
                 <span class="item-title">{{ demo.title }}</span>
                 <span class="item-feature">{{ demo.feature }}</span>
+              </RouterLink>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="dropdown"
+          @mouseenter="isSamplesOpen = true"
+          @mouseleave="isSamplesOpen = false"
+        >
+          <span class="dropdown-trigger">Samples</span>
+          <div v-if="isSamplesOpen" class="dropdown-menu">
+            <div class="dropdown-inner">
+              <RouterLink
+                v-for="sample in SAMPLES"
+                :key="sample.slug"
+                :to="`/samples/${sample.slug}`"
+                class="dropdown-item"
+                @click="isSamplesOpen = false"
+              >
+                <span class="item-title">{{ sample.title }}</span>
               </RouterLink>
             </div>
           </div>
