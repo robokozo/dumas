@@ -8,10 +8,7 @@ import {
   useActions,
   useSystem,
 } from "@dumas/core";
-import type { ActionMapDefinition } from "@dumas/core";
 import { OrbitControls } from "@tresjs/cientos";
-
-type Actions = "move" | "jump";
 
 const MOVE_SPEED = 6;
 const JUMP_SPEED = 8;
@@ -31,7 +28,7 @@ const p1 = useActions({
   actions: {
     move: "leftStick",
     jump: ["south"],
-  } as const satisfies ActionMapDefinition<Actions>,
+  },
 });
 
 const ctx = useDumasContext();

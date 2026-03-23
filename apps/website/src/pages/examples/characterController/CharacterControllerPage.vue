@@ -19,7 +19,7 @@ import CharacterControllerCode from "./CharacterControllerScene.vue?raw";
         <p>
           <code>useCharacterController</code> creates a kinematic character backed by Rapier's
           native KCC. Gravity, slope handling, and ground detection are managed internally — you
-          provide horizontal input each frame and call <code>jump()</code> when needed.
+          provide directional input each frame via <code>move()</code>.
         </p>
         <p>
           <code>isGrounded</code> is a reactive ref updated every frame. The character turns
@@ -28,7 +28,21 @@ import CharacterControllerCode from "./CharacterControllerScene.vue?raw";
         </p>
         <p>
           Use <strong>A / D</strong> or <strong>← →</strong> to move,
-          <strong>Space / W / ↑</strong> to jump. Try landing on the elevated platform.
+          <strong>Space / W / ↑</strong> to jump. Try walking up the ramp or landing on the elevated
+          platform.
+        </p>
+      </section>
+      <section>
+        <h2>When to use this</h2>
+        <p>
+          Use <code>useCharacterController</code> when your character needs physics-aware movement:
+          sliding along slopes, stepping over ledges, pushing dynamic objects, or reliable ground
+          detection. The KCC runs inside the physics step, so collisions and normals are exact.
+        </p>
+        <p>
+          If you only need to read input and drive a non-physics object (a cursor, a UI element, a
+          camera), <code>useActions</code> alone is enough — there is no reason to create a rigid
+          body and collider for that.
         </p>
       </section>
       <section>

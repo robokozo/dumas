@@ -17,17 +17,27 @@ import InputSceneCode from "./InputScene.vue?raw";
       <section>
         <h2>How it works</h2>
         <p>
-          <code>useInput</code> maps physical keys or gamepad buttons to the standard hardware
-          layout: <code>south</code>, <code>east</code>, <code>lb</code>, <code>dpadUp</code>, etc.
-        </p>
-        <p>
-          <code>useActionMap</code> sits on top and translates hardware names into game-specific
-          semantics. Map <code>south</code> to <code>"jump"</code>, <code>leftStick</code> to
+          <code>useActions</code> maps physical keys or gamepad buttons to game-specific action
+          names. Bind <code>south</code> to <code>"jump"</code>, <code>leftStick</code> to
           <code>"move"</code> — then game code only ever references action names, never keys.
         </p>
         <p>
-          The same action map can be shared across multiple players using different input sources.
-          Swap in a gamepad instance for P2 and the game logic stays identical.
+          The same action map works across multiple players using different input sources. Swap in a
+          gamepad instance for P2 and the game logic stays identical.
+        </p>
+      </section>
+      <section>
+        <h2>When to use this</h2>
+        <p>
+          <code>useActions</code> alone is the right choice when you only need to read input and
+          move something that does not interact with the physics world — a camera, a UI cursor, or
+          an object you position manually.
+        </p>
+        <p>
+          If your character needs to collide with geometry, slide along slopes, or detect the
+          ground, combine <code>useActions</code> with <code>useCharacterController</code> instead.
+          The controller feeds its <code>move()</code> function from the same action values returned
+          here.
         </p>
       </section>
       <section>

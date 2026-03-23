@@ -9,18 +9,23 @@ import {
   useActions,
   useSystem,
 } from "@dumas/core";
-import type { ActionMapDefinition } from "@dumas/core";
-
-type Actions = "move" | "jump";
 
 const CAPSULE_HALF_HEIGHT = 0.35;
 const CAPSULE_RADIUS = 0.3;
 const MOVE_SPEED = 6;
 const JUMP_VY = 12;
+const RAMP_ANGLE = Math.PI / 6;
 
 const ground = useGameObject({ position: [0, -0.3, 0] });
 useRigidBody({ eid: ground.eid, type: "fixed" });
 useCollider({ eid: ground.eid, shape: "box", args: [8, 0.3, 2] });
+
+const ramp = useGameObject({
+  position: [-4.5, 0.8, 0],
+  rotation: [0, 0, -Math.sin(RAMP_ANGLE / 2), Math.cos(RAMP_ANGLE / 2)],
+});
+useRigidBody({ eid: ramp.eid, type: "fixed" });
+useCollider({ eid: ramp.eid, shape: "box", args: [2, 0.15, 2] });
 
 const platform = useGameObject({ position: [4, 1, 0] });
 useRigidBody({ eid: platform.eid, type: "fixed" });
@@ -49,7 +54,7 @@ const input = useActions({
   actions: {
     move: "leftStick",
     jump: ["south"],
-  } as const satisfies ActionMapDefinition<Actions>,
+  },
 });
 
 useSystem({
@@ -66,7 +71,7 @@ const characterColor = computed(() => (isGrounded.value === true ? "#4af" : "#f8
 
 <template>
   <GameObject>
-    <TresPerspectiveCamera :position="[0, 2, 18]" :look-at="[0, 1, 0]" />
+    <TresPerspectiveCamera :position="[0, 2, 24]" :look-at="[0, 1, 0]" />
     <TresAmbientLight :intensity="0.4" />
     <TresDirectionalLight :position="[5, 10, 5]" :intensity="1.2" />
 
@@ -80,6 +85,19 @@ const characterColor = computed(() => (isGrounded.value === true ? "#4af" : "#f8
       <TresMesh>
         <TresBoxGeometry :args="[16, 0.6, 4]" />
         <TresMeshStandardMaterial color="#333" />
+      </TresMesh>
+    </TresGroup>
+
+    <TresGroup
+      :ref="
+        (el: any) => {
+          ramp.groupRef.value = el;
+        }
+      "
+    >
+      <TresMesh>
+        <TresBoxGeometry :args="[4, 0.3, 4]" />
+        <TresMeshStandardMaterial color="#444" />
       </TresMesh>
     </TresGroup>
 
