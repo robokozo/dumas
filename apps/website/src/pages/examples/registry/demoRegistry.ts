@@ -59,6 +59,13 @@ export const DEMOS: Array<DemoEntry> = [
     description:
       "Bind keyboard or gamepad to a standard hardware layout, then map to game-specific actions. Supports multiple players with independent configurations.",
   },
+  {
+    slug: "character-controller",
+    title: "Character Controller",
+    feature: "useCharacterController",
+    description:
+      "Move a kinematic character with built-in gravity, slope handling, and ground detection. Jump only when grounded.",
+  },
 ];
 
 export function getDemoBySlug({ slug }: { slug: string }): DemoEntry | null {

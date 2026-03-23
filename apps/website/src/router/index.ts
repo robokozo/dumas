@@ -36,6 +36,10 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("../pages/examples/input/InputPage.vue"),
   },
   {
+    path: "/examples/character-controller",
+    component: () => import("../pages/examples/characterController/CharacterControllerPage.vue"),
+  },
+  {
     path: "/samples/cannon-wall",
     component: () => import("../pages/samples/cannonWall/CannonWallPage.vue"),
   },

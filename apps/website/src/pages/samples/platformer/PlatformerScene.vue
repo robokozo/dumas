@@ -11,8 +11,8 @@ const SPAWN_P1: [number, number, number] = [0, 3, 0];
 const SPAWN_P2: [number, number, number] = [3, 3, 0];
 
 const WALLS: Array<{ position: [number, number, number] }> = [
-  { position: [-10, 1.5, 0] },
-  { position: [10, 1.5, 0] },
+  { position: [-10.25, 1.25, 0] },
+  { position: [10.25, 1.25, 0] },
 ];
 
 const PLATFORMS: Array<{ position: [number, number, number]; width: number }> = [
