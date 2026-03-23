@@ -16,6 +16,7 @@ const CAPSULE_HALF_HEIGHT = 0.5;
 const MOVE_SPEED = 5;
 const STOP_DISTANCE = 0.15;
 const FACE_Z_OFFSET = CAPSULE_RADIUS + 0.1;
+const FACE_ROTATION_SPEED = Math.PI * 4; // rad/s
 
 const COLLECTIBLES: Array<{ id: number; position: [number, number, number] }> = [
   { id: 0, position: [3, 0.4, 2] },
@@ -47,6 +48,7 @@ const { move } = useCharacterController({
 
 const targetPos = shallowRef<{ x: number; z: number } | null>(null);
 const faceAngle = shallowRef(0);
+let faceTargetAngle = 0;
 
 const collectibles = reactive(COLLECTIBLES.map((c) => ({ ...c, collected: false })));
 const collectibleEidToId = new Map<number, number>();
@@ -94,8 +96,15 @@ useSystem({
 
     const nx = dx / dist;
     const nz = dz / dist;
-    faceAngle.value = Math.atan2(nx, nz);
+    faceTargetAngle = Math.atan2(nx, nz);
     move({ x: nx, z: nz, delta });
+
+    // Rotate face toward target along the shortest arc.
+    let diff = faceTargetAngle - faceAngle.value;
+    if (diff > Math.PI) diff -= Math.PI * 2;
+    if (diff < -Math.PI) diff += Math.PI * 2;
+    const step = Math.min(Math.abs(diff), FACE_ROTATION_SPEED * delta);
+    faceAngle.value += Math.sign(diff) * step;
   },
 });
 </script>
