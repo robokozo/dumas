@@ -214,6 +214,11 @@ export interface CharacterControllerKccOptions {
   autostep?: { maxHeight: number; minWidth: number; includeDynamic: boolean } | null;
   /** Whether the KCC pushes dynamic bodies it contacts. Default: true */
   applyImpulsesToDynamicBodies?: boolean;
+  /**
+   * Enable per-frame collision normal tracking for isTouchingCeiling, isTouchingWallLeft, and
+   * isTouchingWallRight. Adds a collision loop each move() call. Default: false
+   */
+  trackContacts?: boolean;
 }
 
 export interface KccCollisionInfo {
@@ -238,6 +243,9 @@ export interface CharacterControllerReturn {
   collider: ShallowRef<RAPIER.Collider | null>;
   controller: Readonly<ShallowRef<RAPIER.KinematicCharacterController | null>>;
   isGrounded: Readonly<ShallowRef<boolean>>;
+  isTouchingCeiling: Readonly<ShallowRef<boolean>>;
+  isTouchingWallLeft: Readonly<ShallowRef<boolean>>;
+  isTouchingWallRight: Readonly<ShallowRef<boolean>>;
   move: (dir: { x: number; z: number; delta: number }) => void;
   jump: (options?: { speed?: number }) => void;
   teleport: (options: { position: Vec3 }) => void;

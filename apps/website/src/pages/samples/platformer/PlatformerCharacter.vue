@@ -49,6 +49,7 @@ const { move, jump, isGrounded, teleport } = useCharacterController({
     halfHeight: CAPSULE_HALF_HEIGHT,
     radius: CAPSULE_RADIUS,
   },
+  kcc: { trackContacts: true },
 });
 
 useCollisionHandler({

@@ -35,6 +35,9 @@ export function useCharacterController({
 
   const controller = shallowRef<RAPIER.KinematicCharacterController | null>(null);
   const isGrounded = shallowRef(false);
+  const isTouchingCeiling = shallowRef(false);
+  const isTouchingWallLeft = shallowRef(false);
+  const isTouchingWallRight = shallowRef(false);
 
   let verticalVelocity = 0;
   // Tracks the last position passed to setNextKinematicTranslation so that teleport()
@@ -49,6 +52,7 @@ export function useCharacterController({
     snapToGround = null,
     autostep = null,
     applyImpulsesToDynamicBodies = true,
+    trackContacts = false,
   } = kcc;
 
   function initController(): void {
@@ -130,6 +134,48 @@ export function useCharacterController({
     }
 
     const actual = kccInstance.computedMovement();
+
+    // A ceiling contact has a normal pointing downward past the slope threshold —
+    // symmetric with how Rapier defines ground contacts (normal pointing upward).
+    if (trackContacts === true || onKccCollision !== undefined) {
+      const slopeThreshold = Math.cos(maxSlopeClimbAngle);
+      let hitCeiling = false;
+      let hitWallLeft = false;
+      let hitWallRight = false;
+      const collisionCount = kccInstance.numComputedCollisions();
+      for (let i = 0; i < collisionCount; i++) {
+        const collision = kccInstance.computedCollision(i);
+        if (collision === null) continue;
+        if (trackContacts === true) {
+          const ny = collision.normal1.y;
+          if (ny < -slopeThreshold) {
+            hitCeiling = true;
+          } else if (Math.abs(ny) < slopeThreshold) {
+            if (collision.normal1.x > 0) {
+              hitWallLeft = true;
+            } else {
+              hitWallRight = true;
+            }
+          }
+        }
+        if (onKccCollision !== undefined) {
+          const handle = collision.collider?.handle ?? null;
+          onKccCollision({
+            colliderHandle: handle ?? -1,
+            eid: handle !== null ? (ctx.colliderEntityMap.get(handle) ?? null) : null,
+          });
+        }
+      }
+      if (trackContacts === true) {
+        isTouchingCeiling.value = hitCeiling;
+        isTouchingWallLeft.value = hitWallLeft;
+        isTouchingWallRight.value = hitWallRight;
+        if (hitCeiling === true && verticalVelocity > 0) {
+          verticalVelocity = 0;
+        }
+      }
+    }
+
     const pos = targetPosition ?? body.translation();
     const next = {
       x: pos.x + actual.x,
@@ -138,20 +184,6 @@ export function useCharacterController({
     };
     body.setNextKinematicTranslation(next);
     targetPosition = next;
-
-    if (onKccCollision !== undefined) {
-      const collisionCount = kccInstance.numComputedCollisions();
-      for (let i = 0; i < collisionCount; i++) {
-        const collision = kccInstance.computedCollision(i);
-        if (collision !== null) {
-          const handle = collision.collider?.handle ?? null;
-          onKccCollision({
-            colliderHandle: handle ?? -1,
-            eid: handle !== null ? (ctx.colliderEntityMap.get(handle) ?? null) : null,
-          });
-        }
-      }
-    }
   }
 
   function jump({ speed = jumpSpeed }: { speed?: number } = {}): void {
@@ -169,5 +201,16 @@ export function useCharacterController({
     verticalVelocity = 0;
   }
 
-  return { rigidBody, collider, controller, isGrounded, move, jump, teleport };
+  return {
+    rigidBody,
+    collider,
+    controller,
+    isGrounded,
+    isTouchingCeiling,
+    isTouchingWallLeft,
+    isTouchingWallRight,
+    move,
+    jump,
+    teleport,
+  };
 }

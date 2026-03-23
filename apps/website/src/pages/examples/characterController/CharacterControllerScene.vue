@@ -37,6 +37,7 @@ const { move, jump, isGrounded } = useCharacterController({
     halfHeight: CAPSULE_HALF_HEIGHT,
     radius: CAPSULE_RADIUS,
   },
+  kcc: { trackContacts: true },
 });
 
 const input = useActions({
