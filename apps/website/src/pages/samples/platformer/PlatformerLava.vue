@@ -1,12 +1,9 @@
 <script setup lang="ts">
+import { onMounted } from "vue";
 import { useGameObject, useRigidBody, useCollider } from "@dumas/core";
 
-const props = defineProps<{
-  playerEids: Array<number>;
-}>();
-
 const emit = defineEmits<{
-  die: [eid: number];
+  ready: [eid: number];
 }>();
 
 const HALF_WIDTH = 20;
@@ -16,18 +13,10 @@ const LAVA_Y = -3;
 
 const { groupRef, eid } = useGameObject({ position: [0, LAVA_Y, 0] });
 useRigidBody({ eid, type: "fixed" });
-useCollider({
-  eid,
-  shape: "box",
-  args: [HALF_WIDTH, HALF_HEIGHT, HALF_DEPTH],
-  isSensor: true,
-  onCollision: ({ eidA, eidB, type }) => {
-    if (type !== "started") return;
-    const hitEid = eidA === eid ? eidB : eidA;
-    if (props.playerEids.includes(hitEid) === true) {
-      emit("die", hitEid);
-    }
-  },
+useCollider({ eid, shape: "box", args: [HALF_WIDTH, HALF_HEIGHT, HALF_DEPTH], isSensor: true });
+
+onMounted(() => {
+  emit("ready", eid);
 });
 </script>
 

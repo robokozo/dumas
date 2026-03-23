@@ -56,6 +56,8 @@ export type {
   ActionMapDefinition,
   ActionMapReturn,
   CharacterMode,
+  CharacterControllerKccOptions,
+  KccCollisionInfo,
   CharacterControllerOptions,
   CharacterControllerReturn,
 } from "./types";

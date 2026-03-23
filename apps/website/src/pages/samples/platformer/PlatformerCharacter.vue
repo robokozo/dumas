@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { watch, onMounted } from "vue";
+import { onMounted } from "vue";
 import {
   useGameObject,
   useCharacterController,
-  useContactDetection,
+  useCollisionHandler,
   useActions,
   useSystem,
 } from "@dumas/core";
@@ -12,14 +12,13 @@ import type { ActionMapDefinition } from "@dumas/core";
 type Actions = "move" | "jump";
 
 const MOVE_SPEED = 8;
-const JUMP_SPEED = 12;
+const JUMP_SPEED = 16;
 const CAPSULE_HALF_HEIGHT = 0.4;
 const CAPSULE_RADIUS = 0.3;
 
 const props = withDefaults(
   defineProps<{
     position: [number, number, number];
-    resetTrigger?: number;
     color?: string;
     leftKeys?: Array<string>;
     rightKeys?: Array<string>;
@@ -34,15 +33,17 @@ const props = withDefaults(
 );
 
 const emit = defineEmits<{
-  ready: [eid: number];
+  ready: [info: { eid: number; resetPlayer: () => void }];
+  collision: [otherEid: number];
 }>();
 
 const { eid, groupRef } = useGameObject({ position: props.position });
 
-const { rigidBody, collider, move, teleport } = useCharacterController({
+const { move, jump, isGrounded, teleport } = useCharacterController({
   eid,
   mode: "2d",
   moveSpeed: MOVE_SPEED,
+  jumpSpeed: JUMP_SPEED,
   collider: {
     shape: "capsule",
     halfHeight: CAPSULE_HALF_HEIGHT,
@@ -50,21 +51,21 @@ const { rigidBody, collider, move, teleport } = useCharacterController({
   },
 });
 
-const { hasContact } = useContactDetection({ collider });
+useCollisionHandler({
+  eid,
+  handler: ({ eidA, eidB, type }) => {
+    if (type !== "started") return;
+    const otherEid = eidA === eid ? eidB : eidA;
+    emit("collision", otherEid);
+  },
+});
 
 function reset(): void {
   teleport({ position: { x: props.position[0], y: props.position[1], z: props.position[2] } });
 }
 
-watch(
-  () => props.resetTrigger,
-  () => {
-    reset();
-  },
-);
-
 onMounted(() => {
-  emit("ready", eid);
+  emit("ready", { eid, resetPlayer: reset });
 });
 
 const input = useActions({
@@ -77,22 +78,15 @@ const input = useActions({
   actions: {
     move: "leftStick",
     jump: ["south"],
-  } as const satisfies ActionMapDefinition<Actions>,
+  },
 });
 
 useSystem({
   fn: ({ delta }) => {
     const { x } = input.axis("move");
     move({ x, z: 0, delta });
-    if (
-      input.wasJustPressed("jump") === true &&
-      hasContact({ direction: { x: 0, y: 1, z: 0 } }) === true
-    ) {
-      const body = rigidBody.value;
-      if (body !== null) {
-        const vel = body.linvel();
-        body.setLinvel({ x: vel.x, y: JUMP_SPEED, z: vel.z }, true);
-      }
+    if (input.wasJustPressed("jump") === true && isGrounded.value === true) {
+      jump();
     }
   },
 });

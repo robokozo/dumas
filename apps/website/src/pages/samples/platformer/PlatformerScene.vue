@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, computed } from "vue";
+import { shallowRef, reactive, computed } from "vue";
 import { GameObject } from "@dumas/core";
 import PlatformerCharacter from "./PlatformerCharacter.vue";
 import PlatformerWall from "./PlatformerWall.vue";
@@ -37,34 +37,34 @@ const emit = defineEmits<{
   "update:score2": [score: number];
 }>();
 
-const player1Eid = ref<number | null>(null);
-const player2Eid = ref<number | null>(null);
-const reset1Trigger = ref(0);
-const reset2Trigger = ref(0);
-const score1 = ref(0);
-const score2 = ref(0);
+const reset1Player = shallowRef<(() => void) | null>(null);
+const reset2Player = shallowRef<(() => void) | null>(null);
+const score1 = shallowRef(0);
+const score2 = shallowRef(0);
 const coins = reactive(COIN_DATA.map((c) => ({ ...c, collected: false })));
 
-const playerEids = computed(() => {
-  const eids: Array<number> = [];
-  if (player1Eid.value !== null) eids.push(player1Eid.value);
-  if (player2Eid.value !== null) eids.push(player2Eid.value);
-  return eids;
-});
+const lavaEid = shallowRef<number | null>(null);
 
-const isReady = computed(() => player1Eid.value !== null && player2Eid.value !== null);
+const coinEidToId = new Map<number, number>();
 
-function onDie({ eid }: { eid: number }): void {
-  if (eid === player1Eid.value) {
-    reset1Trigger.value += 1;
-  } else if (eid === player2Eid.value) {
-    reset2Trigger.value += 1;
-  }
+const isReady = computed(() => reset1Player.value !== null && reset2Player.value !== null);
+
+function onCoinReady({ id, eid }: { id: number; eid: number }): void {
+  coinEidToId.set(eid, id);
 }
 
-function onCoinCollected({ id, collectorEid }: { id: number; collectorEid: number }): void {
-  coins[id].collected = true;
-  if (collectorEid === player1Eid.value) {
+function onCollision({ otherEid, playerIndex }: { otherEid: number; playerIndex: 1 | 2 }): void {
+  if (lavaEid.value !== null && otherEid === lavaEid.value) {
+    const resetPlayer = playerIndex === 1 ? reset1Player.value : reset2Player.value;
+    if (resetPlayer !== null) {
+      resetPlayer();
+    }
+    return;
+  }
+  const coinId = coinEidToId.get(otherEid);
+  if (coinId === undefined) return;
+  coins[coinId].collected = true;
+  if (playerIndex === 1) {
     score1.value += 1;
     emit("update:score1", score1.value);
   } else {
@@ -82,27 +82,35 @@ function onCoinCollected({ id, collectorEid }: { id: number; collectorEid: numbe
 
     <PlatformerCharacter
       :position="SPAWN_P1"
-      :reset-trigger="reset1Trigger"
       :left-keys="['KeyA']"
       :right-keys="['KeyD']"
       :jump-keys="['KeyW']"
       @ready="
-        (eid) => {
-          player1Eid = eid;
+        (info) => {
+          reset1Player = info.resetPlayer;
+        }
+      "
+      @collision="
+        (otherEid) => {
+          onCollision({ otherEid, playerIndex: 1 });
         }
       "
     />
 
     <PlatformerCharacter
       :position="SPAWN_P2"
-      :reset-trigger="reset2Trigger"
       color="#f44"
       :left-keys="['ArrowLeft']"
       :right-keys="['ArrowRight']"
       :jump-keys="['ArrowUp']"
       @ready="
-        (eid) => {
-          player2Eid = eid;
+        (info) => {
+          reset2Player = info.resetPlayer;
+        }
+      "
+      @collision="
+        (otherEid) => {
+          onCollision({ otherEid, playerIndex: 2 });
         }
       "
     />
@@ -121,19 +129,17 @@ function onCoinCollected({ id, collectorEid }: { id: number; collectorEid: numbe
         v-for="coin in coins.filter((c) => c.collected === false)"
         :key="coin.id"
         :position="coin.position"
-        :player-eids="playerEids"
-        @collect="
-          (collectorEid) => {
-            onCoinCollected({ id: coin.id, collectorEid });
+        @ready="
+          (eid) => {
+            onCoinReady({ id: coin.id, eid });
           }
         "
       />
 
       <PlatformerLava
-        :player-eids="playerEids"
-        @die="
+        @ready="
           (eid) => {
-            onDie({ eid });
+            lavaEid = eid;
           }
         "
       />

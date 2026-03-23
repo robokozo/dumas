@@ -201,18 +201,46 @@ export interface ActionMapReturn<TActions extends string> {
 
 export type CharacterMode = "2d" | "3d";
 
+export interface CharacterControllerKccOptions {
+  /** Skin width gap maintained between the character and surfaces. Default: 0.01 */
+  offset?: number;
+  /** Maximum slope angle the character can climb (radians). Default: PI/4 */
+  maxSlopeClimbAngle?: number;
+  /** Minimum slope angle that causes the character to slide (radians). Default: PI/4 */
+  minSlopeSlideAngle?: number;
+  /** Snap-to-ground distance. null disables. Default: null */
+  snapToGround?: number | null;
+  /** Autostep configuration. null disables. Default: null */
+  autostep?: { maxHeight: number; minWidth: number; includeDynamic: boolean } | null;
+  /** Whether the KCC pushes dynamic bodies it contacts. Default: true */
+  applyImpulsesToDynamicBodies?: boolean;
+}
+
+export interface KccCollisionInfo {
+  colliderHandle: number;
+  eid: number | null;
+}
+
 export interface CharacterControllerOptions {
   eid: number;
   collider: Omit<ColliderOptions, "eid">;
   moveSpeed?: number;
+  jumpSpeed?: number;
+  gravity?: number;
   mode?: CharacterMode;
+  kcc?: CharacterControllerKccOptions;
+  /** Called for each KCC collision after computeColliderMovement. */
+  onKccCollision?: (collision: KccCollisionInfo) => void;
 }
 
 export interface CharacterControllerReturn {
   rigidBody: ShallowRef<RAPIER.RigidBody | null>;
   collider: ShallowRef<RAPIER.Collider | null>;
+  controller: Readonly<ShallowRef<RAPIER.KinematicCharacterController | null>>;
+  isGrounded: Readonly<ShallowRef<boolean>>;
   move: (dir: { x: number; z: number; delta: number }) => void;
-  teleport: (options: { position: { x: number; y: number; z: number } }) => void;
+  jump: (options?: { speed?: number }) => void;
+  teleport: (options: { position: Vec3 }) => void;
 }
 
 // -- Object pool --
