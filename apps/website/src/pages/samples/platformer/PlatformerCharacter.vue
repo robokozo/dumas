@@ -12,7 +12,7 @@ import type { ActionMapDefinition } from "@dumas/core";
 type Actions = "move" | "jump";
 
 const MOVE_SPEED = 8;
-const JUMP_SPEED = 16;
+const JUMP_VY = 16;
 const CAPSULE_HALF_HEIGHT = 0.4;
 const CAPSULE_RADIUS = 0.3;
 
@@ -39,11 +39,10 @@ const emit = defineEmits<{
 
 const { eid, groupRef } = useGameObject({ position: props.position });
 
-const { move, jump, isGrounded, teleport } = useCharacterController({
+const { move, isGrounded, teleport } = useCharacterController({
   eid,
   mode: "2d",
   moveSpeed: MOVE_SPEED,
-  jumpSpeed: JUMP_SPEED,
   collider: {
     shape: "capsule",
     halfHeight: CAPSULE_HALF_HEIGHT,
@@ -85,10 +84,9 @@ const input = useActions({
 useSystem({
   fn: ({ delta }) => {
     const { x } = input.axis("move");
-    move({ x, z: 0, delta });
-    if (input.wasJustPressed("jump") === true && isGrounded.value === true) {
-      jump();
-    }
+    const vy =
+      input.wasJustPressed("jump") === true && isGrounded.value === true ? JUMP_VY : undefined;
+    move({ x, z: 0, delta, vy });
   },
 });
 </script>

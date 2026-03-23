@@ -16,7 +16,7 @@ type Actions = "move" | "jump";
 const CAPSULE_HALF_HEIGHT = 0.35;
 const CAPSULE_RADIUS = 0.3;
 const MOVE_SPEED = 6;
-const JUMP_SPEED = 12;
+const JUMP_VY = 12;
 
 const ground = useGameObject({ position: [0, -0.3, 0] });
 useRigidBody({ eid: ground.eid, type: "fixed" });
@@ -27,11 +27,10 @@ useRigidBody({ eid: platform.eid, type: "fixed" });
 useCollider({ eid: platform.eid, shape: "box", args: [2.5, 0.2, 2] });
 
 const character = useGameObject({ position: [0, 1, 0] });
-const { move, jump, isGrounded } = useCharacterController({
+const { move, isGrounded } = useCharacterController({
   eid: character.eid,
   mode: "2d",
   moveSpeed: MOVE_SPEED,
-  jumpSpeed: JUMP_SPEED,
   collider: {
     shape: "capsule",
     halfHeight: CAPSULE_HALF_HEIGHT,
@@ -56,10 +55,9 @@ const input = useActions({
 useSystem({
   fn: ({ delta }) => {
     const { x } = input.axis("move");
-    move({ x, z: 0, delta });
-    if (input.wasJustPressed("jump") === true && isGrounded.value === true) {
-      jump();
-    }
+    const vy =
+      input.wasJustPressed("jump") === true && isGrounded.value === true ? JUMP_VY : undefined;
+    move({ x, z: 0, delta, vy });
   },
 });
 

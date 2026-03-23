@@ -9,7 +9,6 @@ import type { CharacterControllerOptions, CharacterControllerReturn } from "../t
 
 const DEFAULT_OFFSET = 0.01;
 const DEFAULT_MOVE_SPEED = 6;
-const DEFAULT_JUMP_SPEED = 12;
 const DEFAULT_SLOPE_ANGLE = Math.PI / 4;
 
 // Stronger than real gravity (-9.81) for snappy game feel.
@@ -22,7 +21,6 @@ export function useCharacterController({
   eid,
   collider: colliderOptions,
   moveSpeed = DEFAULT_MOVE_SPEED,
-  jumpSpeed = DEFAULT_JUMP_SPEED,
   gravity = DEFAULT_CHARACTER_GRAVITY,
   mode = "3d",
   kcc = {},
@@ -39,7 +37,9 @@ export function useCharacterController({
   const isTouchingWallLeft = shallowRef(false);
   const isTouchingWallRight = shallowRef(false);
 
+  let velocityX = 0;
   let verticalVelocity = 0;
+  let velocityZ = 0;
   // Tracks the last position passed to setNextKinematicTranslation so that teleport()
   // called post-physics-step isn't overwritten by the next move() reading body.translation(),
   // which still reflects the pre-teleport position until the next world.step().
@@ -105,7 +105,32 @@ export function useCharacterController({
     }
   });
 
-  function move({ x, z, delta }: { x: number; z: number; delta: number }): void {
+  function move({
+    x = 0,
+    y = 0,
+    z = 0,
+    delta,
+    vx,
+    vy,
+    vz,
+  }: {
+    x?: number;
+    y?: number;
+    z?: number;
+    delta: number;
+    vx?: number;
+    vy?: number;
+    vz?: number;
+  }): void {
+    if (vx !== undefined) {
+      velocityX = vx;
+    }
+    if (vy !== undefined) {
+      verticalVelocity = vy;
+    }
+    if (vz !== undefined) {
+      velocityZ = vz;
+    }
     const body = rigidBody.value;
     const col = collider.value;
     const kccInstance = controller.value;
@@ -114,9 +139,9 @@ export function useCharacterController({
     verticalVelocity += gravity * delta;
 
     const desiredMovement = {
-      x: x * moveSpeed * delta,
-      y: verticalVelocity * delta,
-      z: mode === "2d" ? 0 : z * moveSpeed * delta,
+      x: x * moveSpeed * delta + velocityX * delta,
+      y: y * moveSpeed * delta + verticalVelocity * delta,
+      z: mode === "2d" ? 0 : z * moveSpeed * delta + velocityZ * delta,
     };
 
     kccInstance.computeColliderMovement(
@@ -186,19 +211,15 @@ export function useCharacterController({
     targetPosition = next;
   }
 
-  function jump({ speed = jumpSpeed }: { speed?: number } = {}): void {
-    if (isGrounded.value === true) {
-      verticalVelocity = speed;
-    }
-  }
-
   function teleport({ position }: { position: { x: number; y: number; z: number } }): void {
     const body = rigidBody.value;
     if (body === null) return;
     const next = { x: position.x, y: position.y, z: mode === "2d" ? 0 : position.z };
     body.setNextKinematicTranslation(next);
     targetPosition = next;
+    velocityX = 0;
     verticalVelocity = 0;
+    velocityZ = 0;
   }
 
   return {
@@ -210,7 +231,6 @@ export function useCharacterController({
     isTouchingWallLeft,
     isTouchingWallRight,
     move,
-    jump,
     teleport,
   };
 }

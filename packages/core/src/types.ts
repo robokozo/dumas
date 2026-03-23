@@ -230,7 +230,6 @@ export interface CharacterControllerOptions {
   eid: number;
   collider: Omit<ColliderOptions, "eid">;
   moveSpeed?: number;
-  jumpSpeed?: number;
   gravity?: number;
   mode?: CharacterMode;
   kcc?: CharacterControllerKccOptions;
@@ -246,8 +245,15 @@ export interface CharacterControllerReturn {
   isTouchingCeiling: Readonly<ShallowRef<boolean>>;
   isTouchingWallLeft: Readonly<ShallowRef<boolean>>;
   isTouchingWallRight: Readonly<ShallowRef<boolean>>;
-  move: (dir: { x: number; z: number; delta: number }) => void;
-  jump: (options?: { speed?: number }) => void;
+  move: (dir: {
+    x?: number;
+    y?: number;
+    z?: number;
+    delta: number;
+    vx?: number;
+    vy?: number;
+    vz?: number;
+  }) => void;
   teleport: (options: { position: Vec3 }) => void;
 }
 
