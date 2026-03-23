@@ -10,6 +10,17 @@ import { SAMPLES } from "../samples/registry/sampleRegistry";
       <p>A declarative game engine for Vue. Explore the features below.</p>
     </header>
 
+    <section class="section section--name">
+      <h2>Why "Dumas"?</h2>
+      <p>
+        Named after Alexandre Dumas, author of <em>The Three Musketeers</em> — a nod to the three
+        TresJS libraries the engine is built with:
+        <a href="https://tresjs.org" target="_blank" rel="noopener">Tres</a>,
+        <a href="https://cientos.tresjs.org" target="_blank" rel="noopener">Cientos</a>, and
+        <a href="https://leches.tresjs.org" target="_blank" rel="noopener">TresLeches</a>.
+      </p>
+    </section>
+
     <section class="section">
       <h2>API Examples</h2>
       <p class="section-desc">Focused demos — one composable or concept per example.</p>
@@ -79,6 +90,22 @@ import { SAMPLES } from "../samples/registry/sampleRegistry";
   font-size: 1.1rem;
   color: #fff;
   margin: 0 0 0.25rem;
+}
+
+.section--name p {
+  color: #888;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin: 0.25rem 0 0;
+}
+
+.section--name a {
+  color: #4af;
+  text-decoration: none;
+}
+
+.section--name a:hover {
+  text-decoration: underline;
 }
 
 .section-desc {
