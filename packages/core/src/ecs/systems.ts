@@ -75,18 +75,22 @@ export function reactiveSyncSystem({
   reactiveEntities: Map<number, ReactiveEntityRefs>;
 }): void {
   for (const [eid, refs] of reactiveEntities) {
-    refs.position.value = {
-      x: Transform.posX[eid],
-      y: Transform.posY[eid],
-      z: Transform.posZ[eid],
-    };
+    const px = Transform.posX[eid];
+    const py = Transform.posY[eid];
+    const pz = Transform.posZ[eid];
+    const pos = refs.position.value;
+    if (pos.x !== px || pos.y !== py || pos.z !== pz) {
+      refs.position.value = { x: px, y: py, z: pz };
+    }
 
-    refs.rotation.value = {
-      x: Transform.rotX[eid],
-      y: Transform.rotY[eid],
-      z: Transform.rotZ[eid],
-      w: Transform.rotW[eid],
-    };
+    const rx = Transform.rotX[eid];
+    const ry = Transform.rotY[eid];
+    const rz = Transform.rotZ[eid];
+    const rw = Transform.rotW[eid];
+    const rot = refs.rotation.value;
+    if (rot.x !== rx || rot.y !== ry || rot.z !== rz || rot.w !== rw) {
+      refs.rotation.value = { x: rx, y: ry, z: rz, w: rw };
+    }
   }
 }
 
@@ -95,10 +99,12 @@ export function reactiveSyncSystem({
 export function collisionEventSystem({
   eventQueue,
   colliderEntityMap,
+  entityColliderMap,
   collisionHandlers,
 }: {
   eventQueue: RAPIER.EventQueue;
   colliderEntityMap: Map<number, number>;
+  entityColliderMap: Map<number, RAPIER.Collider>;
   collisionHandlers: Map<number, Array<CollisionHandler>>;
 }): void {
   eventQueue.drainCollisionEvents((handle1, handle2, isStarted) => {
@@ -109,11 +115,15 @@ export function collisionEventSystem({
       return;
     }
 
+    const isSensor =
+      entityColliderMap.get(eidA)?.isSensor() === true ||
+      entityColliderMap.get(eidB)?.isSensor() === true;
+
     const event: CollisionEvent = {
       eidA,
       eidB,
       type: isStarted === true ? "started" : "stopped",
-      isSensor: false,
+      isSensor,
     };
 
     const handlersA = collisionHandlers.get(eidA);

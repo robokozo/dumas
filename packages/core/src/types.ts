@@ -97,8 +97,8 @@ export interface ColliderOptions {
   friction?: number;
   density?: number;
   isSensor?: boolean;
-  /** Raw Rapier ActiveCollisionTypes bitmask. Overrides the default pair filtering. */
-  activeCollisionTypes?: number;
+  /** Overrides the default collision pair filtering for this collider. */
+  activeCollisionTypes?: RAPIER.ActiveCollisionTypes;
   /** Optional collision handler registered for this entity. Shorthand for a separate useCollisionHandler call. */
   onCollision?: CollisionHandler;
 }

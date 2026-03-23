@@ -21,6 +21,7 @@ export function createWorldContext(options?: WorldOptions): DumasContext {
   function registerSystem({ fn, priority }: { fn: SystemFn; priority: number }): () => void {
     const entry: SystemEntry = { fn, priority };
     systems.push(entry);
+    systems.sort((a, b) => a.priority - b.priority);
 
     return () => {
       const index = systems.indexOf(entry);

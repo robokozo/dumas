@@ -7,7 +7,6 @@ import {
   reactiveSyncSystem,
   collisionEventSystem,
 } from "../ecs/systems";
-import { stepPhysics } from "../physics/sync";
 import type { DumasContext } from "../types";
 
 // Wires up the per-frame game loop inside TresJS's render loop.
@@ -21,10 +20,8 @@ export function useGameLoop({ ctx }: { ctx: DumasContext }): void {
     const rapier = ctx.rapier.value;
     const physicsWorld = ctx.physicsWorld.value;
 
-    // 1. Run user-registered ECS systems (sorted by priority)
-    const sortedSystems = [...ctx.systems].sort((a, b) => a.priority - b.priority);
-
-    for (const entry of sortedSystems) {
+    // 1. Run user-registered ECS systems (kept sorted by registerSystem)
+    for (const entry of ctx.systems) {
       entry.fn({ world: ctx.ecsWorld, delta, elapsed });
     }
 
@@ -34,11 +31,12 @@ export function useGameLoop({ ctx }: { ctx: DumasContext }): void {
         eventQueue = new rapier.EventQueue(true);
       }
 
-      stepPhysics({ physicsWorld, eventQueue });
+      physicsWorld.step(eventQueue);
 
       collisionEventSystem({
         eventQueue,
         colliderEntityMap: ctx.colliderEntityMap,
+        entityColliderMap: ctx.entityColliderMap,
         collisionHandlers: ctx.collisionHandlers,
       });
 
