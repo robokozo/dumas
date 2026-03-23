@@ -47,6 +47,10 @@ const routes: Array<RouteRecordRaw> = [
     path: "/samples/platformer",
     component: () => import("../pages/samples/platformer/PlatformerPage.vue"),
   },
+  {
+    path: "/samples/isometric",
+    component: () => import("../pages/samples/isometric/IsometricPage.vue"),
+  },
 ];
 
 export const router = createRouter({

@@ -15,4 +15,10 @@ export const SAMPLES: Array<SampleEntry> = [
     title: "Platformer",
     description: "Jump between platforms and collect all the coins. Fall into the lava to respawn.",
   },
+  {
+    slug: "isometric",
+    title: "Isometric",
+    description:
+      "Click the ground to move a character around an isometric world and collect spheres.",
+  },
 ];
