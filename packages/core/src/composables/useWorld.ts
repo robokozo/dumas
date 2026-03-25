@@ -18,6 +18,17 @@ export function createWorldContext(options?: WorldOptions): DumasContext {
 
   const systems: Array<SystemEntry> = [];
   const collisionHandlers = new Map<number, Array<CollisionHandler>>();
+  const inputPollCallbacks: Array<() => void> = [];
+
+  function registerInputPoll(fn: () => void): () => void {
+    inputPollCallbacks.push(fn);
+    return () => {
+      const index = inputPollCallbacks.indexOf(fn);
+      if (index !== -1) {
+        inputPollCallbacks.splice(index, 1);
+      }
+    };
+  }
 
   function registerSystem({ fn, priority }: { fn: SystemFn; priority: number }): () => void {
     const entry: SystemEntry = { fn, priority };
@@ -77,6 +88,8 @@ export function createWorldContext(options?: WorldOptions): DumasContext {
     jointMap: new Map(),
     registerSystem,
     registerCollisionHandler,
+    inputPollCallbacks,
+    registerInputPoll,
   };
 
   // Init Rapier WASM asynchronously — physics starts once loaded

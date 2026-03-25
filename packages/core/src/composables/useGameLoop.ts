@@ -34,7 +34,12 @@ export function useGameLoop({ ctx }: { ctx: DumasContext }): void {
     while (accumulator >= fixedDt) {
       totalElapsed += fixedDt;
 
-      // 1. Run user-registered ECS systems (kept sorted by registerSystem)
+      // 1. Poll input — must happen before user systems so wasJustPressed is current
+      for (const poll of ctx.inputPollCallbacks) {
+        poll();
+      }
+
+      // 2. Run user-registered ECS systems (kept sorted by registerSystem)
       for (const entry of ctx.systems) {
         entry.fn({ world: ctx.ecsWorld, delta: fixedDt, elapsed: totalElapsed });
       }

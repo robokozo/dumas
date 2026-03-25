@@ -51,6 +51,13 @@ export interface DumasContext {
   jointMap: Map<number, RAPIER.ImpulseJoint>;
   registerSystem: (entry: { fn: SystemFn; priority: number }) => () => void;
   registerCollisionHandler: (params: { eid: number; handler: CollisionHandler }) => () => void;
+
+  // -- Input --
+  // Callbacks polled by the game loop at the start of each fixed tick, before user systems run.
+  // Input composables register here so edge states (wasJustPressed, wasJustReleased) are computed
+  // in lockstep with the tick rather than racing against a separate rAF callback.
+  inputPollCallbacks: Array<() => void>;
+  registerInputPoll: (fn: () => void) => () => void;
 }
 
 export interface ReactiveEntityRefs {

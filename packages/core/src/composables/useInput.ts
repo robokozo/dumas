@@ -1,5 +1,7 @@
-import { shallowRef, readonly } from "vue";
-import { useEventListener, useRafFn, useGamepad } from "@vueuse/core";
+import { shallowRef, readonly, inject } from "vue";
+import { useEventListener, useRafFn, useGamepad, tryOnUnmounted } from "@vueuse/core";
+
+import { DUMAS_CONTEXT_KEY } from "../keys";
 
 import type { HardwareButton, InputOptions, InputReturn, StickState, TriggerState } from "../types";
 
@@ -64,7 +66,8 @@ export function useInput(options: InputOptions): InputReturn {
   }
 
   if (options.source === "keyboard") {
-    const { bindings } = options;
+    const keyboardOptions = options;
+    const { bindings } = keyboardOptions;
 
     // Reverse map: KeyboardEvent.code → HardwareButton
     const keyToButton = new Map<string, HardwareButton>();
@@ -86,7 +89,9 @@ export function useInput(options: InputOptions): InputReturn {
       pressedKeys.delete(e.code);
     });
 
-    useRafFn(() => {
+    // Keyboard state is event-driven (pressedKeys is always current), so we can sample
+    // it on demand inside the fixed tick rather than racing against a separate rAF callback.
+    function pollKeyboard(): void {
       heldButtons.clear();
       for (const key of pressedKeys) {
         const btn = keyToButton.get(key);
@@ -106,26 +111,36 @@ export function useInput(options: InputOptions): InputReturn {
       leftStick.value = lLen > 0 ? { x: lx / lLen, y: ly / lLen } : { x: 0, y: 0 };
 
       // Derive rightStick from rightStickBindings (if provided)
-      if (options.rightStickBindings !== undefined) {
-        const rsb = options.rightStickBindings;
+      if (keyboardOptions.rightStickBindings !== undefined) {
+        const rsb = keyboardOptions.rightStickBindings;
         let rx = 0;
         let ry = 0;
-        if (rsb.left.some((key) => pressedKeys.has(key))) rx -= 1;
-        if (rsb.right.some((key) => pressedKeys.has(key))) rx += 1;
-        if (rsb.up.some((key) => pressedKeys.has(key))) ry += 1;
-        if (rsb.down.some((key) => pressedKeys.has(key))) ry -= 1;
+        if (rsb.left.some((key: string) => pressedKeys.has(key))) rx -= 1;
+        if (rsb.right.some((key: string) => pressedKeys.has(key))) rx += 1;
+        if (rsb.up.some((key: string) => pressedKeys.has(key))) ry += 1;
+        if (rsb.down.some((key: string) => pressedKeys.has(key))) ry -= 1;
         const rLen = Math.sqrt(rx * rx + ry * ry);
         rightStick.value = rLen > 0 ? { x: rx / rLen, y: ry / rLen } : { x: 0, y: 0 };
       }
 
       updateEdgeStates();
-    });
+    }
+
+    const ctx = inject(DUMAS_CONTEXT_KEY, null);
+    if (ctx !== null) {
+      // Register with game loop so polling is in lockstep with fixed ticks
+      const unregister = ctx.registerInputPoll(pollKeyboard);
+      tryOnUnmounted(unregister);
+    } else {
+      // Fallback for use outside DumasCanvas
+      useRafFn(pollKeyboard);
+    }
   } else {
     const { index } = options.source;
-    // useGamepad handles connection events, isSupported checks, and rAF polling
+    // useGamepad maintains gamepads reactively via its own rAF poll — we just read from it.
     const { gamepads, isSupported } = useGamepad();
 
-    useRafFn(() => {
+    function pollGamepad(): void {
       heldButtons.clear();
 
       if (isSupported.value === false) {
@@ -166,7 +181,15 @@ export function useInput(options: InputOptions): InputReturn {
       };
 
       updateEdgeStates();
-    });
+    }
+
+    const ctx = inject(DUMAS_CONTEXT_KEY, null);
+    if (ctx !== null) {
+      const unregister = ctx.registerInputPoll(pollGamepad);
+      tryOnUnmounted(unregister);
+    } else {
+      useRafFn(pollGamepad);
+    }
   }
 
   return {
