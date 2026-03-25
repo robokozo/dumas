@@ -21,24 +21,24 @@ export function useGameObject(options?: GameObjectOptions): GameObjectReturn {
   const eid = createEntity({ world: ctx.ecsWorld });
 
   // Set initial transform from options
-  const pos = options?.position ?? [0, 0, 0];
-  const rot = options?.rotation ?? [0, 0, 0, 1];
-  const scale = options?.scale ?? [1, 1, 1];
+  const pos = options?.position ?? { x: 0, y: 0, z: 0 };
+  const rot = options?.rotation ?? { x: 0, y: 0, z: 0, w: 1 };
+  const scale = options?.scale ?? { x: 1, y: 1, z: 1 };
 
-  Transform.posX[eid] = pos[0];
-  Transform.posY[eid] = pos[1];
-  Transform.posZ[eid] = pos[2];
-  Transform.rotX[eid] = rot[0];
-  Transform.rotY[eid] = rot[1];
-  Transform.rotZ[eid] = rot[2];
-  Transform.rotW[eid] = rot[3];
-  Transform.scaleX[eid] = scale[0];
-  Transform.scaleY[eid] = scale[1];
-  Transform.scaleZ[eid] = scale[2];
+  Transform.posX[eid] = pos.x;
+  Transform.posY[eid] = pos.y;
+  Transform.posZ[eid] = pos.z;
+  Transform.rotX[eid] = rot.x;
+  Transform.rotY[eid] = rot.y;
+  Transform.rotZ[eid] = rot.z;
+  Transform.rotW[eid] = rot.w;
+  Transform.scaleX[eid] = scale.x;
+  Transform.scaleY[eid] = scale.y;
+  Transform.scaleZ[eid] = scale.z;
 
   // Reactive refs for Vue template bindings (updated each frame by reactiveSyncSystem)
-  const position = shallowRef<Vec3>({ x: pos[0], y: pos[1], z: pos[2] });
-  const rotation = shallowRef<Quat>({ x: rot[0], y: rot[1], z: rot[2], w: rot[3] });
+  const position = shallowRef<Vec3>({ x: pos.x, y: pos.y, z: pos.z });
+  const rotation = shallowRef<Quat>({ x: rot.x, y: rot.y, z: rot.z, w: rot.w });
 
   const reactiveRefs: ReactiveEntityRefs = { position, rotation };
   ctx.reactiveEntities.set(eid, reactiveRefs);
@@ -50,9 +50,9 @@ export function useGameObject(options?: GameObjectOptions): GameObjectReturn {
     const group = groupRef.value;
     if (group !== null) {
       ctx.entityMeshMap.set(eid, group);
-      group.position.set(pos[0], pos[1], pos[2]);
-      group.scale.set(scale[0], scale[1], scale[2]);
-      group.quaternion.set(rot[0], rot[1], rot[2], rot[3]);
+      group.position.set(pos.x, pos.y, pos.z);
+      group.scale.set(scale.x, scale.y, scale.z);
+      group.quaternion.set(rot.x, rot.y, rot.z, rot.w);
     }
   });
 
@@ -67,6 +67,7 @@ export function useGameObject(options?: GameObjectOptions): GameObjectReturn {
         entityMeshMap: ctx.entityMeshMap,
         reactiveEntities: ctx.reactiveEntities,
       },
+      collisionHandlers: ctx.collisionHandlers,
     });
   });
 

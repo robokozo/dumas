@@ -12,7 +12,7 @@ import KinematicSphere from "./KinematicSphere.vue";
     <TresDirectionalLight :position="[5, 8, 5]" :intensity="1" />
 
     <!-- Dynamic ball -->
-    <GameObject :position="[0, 5, 0]">
+    <GameObject :position="{ x: 0, y: 5, z: 0 }">
       <RigidBody type="dynamic">
         <Collider shape="sphere" :radius="0.5" :restitution="0.7" />
       </RigidBody>
@@ -23,7 +23,7 @@ import KinematicSphere from "./KinematicSphere.vue";
     </GameObject>
 
     <!-- Fixed ground -->
-    <GameObject :position="[0, -0.5, 0]">
+    <GameObject :position="{ x: 0, y: -0.5, z: 0 }">
       <RigidBody type="fixed">
         <Collider shape="box" :args="[5, 0.5, 5]" />
       </RigidBody>
@@ -37,7 +37,7 @@ import KinematicSphere from "./KinematicSphere.vue";
     <KinematicSphere />
 
     <!-- Second dynamic ball to show kinematic interaction -->
-    <GameObject :position="[-3, 5, 0]">
+    <GameObject :position="{ x: -3, y: 5, z: 0 }">
       <RigidBody type="dynamic">
         <Collider shape="sphere" :radius="0.4" :restitution="0.5" />
       </RigidBody>

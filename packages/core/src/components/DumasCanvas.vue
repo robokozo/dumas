@@ -8,10 +8,11 @@ import type { Vec3 } from "../types";
 const props = defineProps<
   TresCanvasProps & {
     gravity?: Vec3;
+    fixedTimestep?: number;
   }
 >();
 
-const ctx = createWorldContext({ gravity: props.gravity });
+const ctx = createWorldContext({ gravity: props.gravity, fixedTimestep: props.fixedTimestep });
 </script>
 
 <template>

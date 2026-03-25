@@ -23,9 +23,18 @@ export function useCollider(options: ColliderOptions): ColliderReturn {
   function initCollider(): void {
     const rapier = ctx.rapier.value;
     const physicsWorld = ctx.physicsWorld.value;
+
+    if (rapier === null || physicsWorld === null) {
+      return;
+    }
+
     const body = ctx.entityBodyMap.get(eid) ?? null;
 
-    if (rapier === null || physicsWorld === null || body === null) {
+    if (body === null) {
+      console.warn(
+        `[dumas] useCollider: no rigid body found for entity ${eid}. ` +
+          `Ensure useRigidBody() is called before useCollider().`,
+      );
       return;
     }
 
@@ -34,7 +43,13 @@ export function useCollider(options: ColliderOptions): ColliderReturn {
     collider.value = col;
     addComponent(ctx.ecsWorld, eid, ColliderRef);
     ColliderRef.handle[eid] = col.handle;
-    ctx.entityColliderMap.set(eid, col);
+
+    const existing = ctx.entityColliderMap.get(eid);
+    if (existing !== undefined) {
+      existing.push(col);
+    } else {
+      ctx.entityColliderMap.set(eid, [col]);
+    }
     ctx.colliderEntityMap.set(col.handle, eid);
   }
 
@@ -55,8 +70,18 @@ export function useCollider(options: ColliderOptions): ColliderReturn {
     if (collider.value !== null && physicsWorld !== null) {
       ctx.colliderEntityMap.delete(collider.value.handle);
       physicsWorld.removeCollider(collider.value, true);
+
+      const colliders = ctx.entityColliderMap.get(eid);
+      if (colliders !== undefined) {
+        const index = colliders.indexOf(collider.value);
+        if (index !== -1) {
+          colliders.splice(index, 1);
+        }
+        if (colliders.length === 0) {
+          ctx.entityColliderMap.delete(eid);
+        }
+      }
     }
-    ctx.entityColliderMap.delete(eid);
   });
 
   return { collider };

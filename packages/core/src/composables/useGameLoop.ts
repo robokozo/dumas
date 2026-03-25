@@ -9,50 +9,67 @@ import {
 } from "../ecs/systems";
 import type { DumasContext } from "../types";
 
+// Prevent spiral of death when the tab is backgrounded or a frame takes too long.
+const MAX_ACCUMULATION = 0.25;
+
 // Wires up the per-frame game loop inside TresJS's render loop.
+// Uses a fixed-timestep accumulator so physics and user systems run
+// at a deterministic rate regardless of display refresh rate.
 // Must be called from within a <TresCanvas> child.
 export function useGameLoop({ ctx }: { ctx: DumasContext }): void {
   const { onBeforeRender } = useLoop();
 
   let eventQueue: RAPIER.EventQueue | null = null;
+  let accumulator = 0;
+  let totalElapsed = 0;
 
-  onBeforeRender(({ delta, elapsed }) => {
+  onBeforeRender(({ delta }) => {
     const rapier = ctx.rapier.value;
     const physicsWorld = ctx.physicsWorld.value;
+    const fixedDt = ctx.fixedTimestep;
 
-    // 1. Run user-registered ECS systems (kept sorted by registerSystem)
-    for (const entry of ctx.systems) {
-      entry.fn({ world: ctx.ecsWorld, delta, elapsed });
-    }
+    accumulator += Math.min(delta, MAX_ACCUMULATION);
 
-    // 2-3. Step physics and sync to ECS (only when Rapier is ready)
-    if (rapier !== null && physicsWorld !== null) {
-      if (eventQueue === null) {
-        eventQueue = new rapier.EventQueue(true);
+    // Fixed-rate loop: user systems + physics step at deterministic delta
+    while (accumulator >= fixedDt) {
+      totalElapsed += fixedDt;
+
+      // 1. Run user-registered ECS systems (kept sorted by registerSystem)
+      for (const entry of ctx.systems) {
+        entry.fn({ world: ctx.ecsWorld, delta: fixedDt, elapsed: totalElapsed });
       }
 
-      physicsWorld.step(eventQueue);
+      // 2-3. Step physics and process collision events
+      if (rapier !== null && physicsWorld !== null) {
+        if (eventQueue === null) {
+          eventQueue = new rapier.EventQueue(true);
+        }
 
-      collisionEventSystem({
-        eventQueue,
-        colliderEntityMap: ctx.colliderEntityMap,
-        entityColliderMap: ctx.entityColliderMap,
-        collisionHandlers: ctx.collisionHandlers,
-      });
+        physicsWorld.step(eventQueue);
 
-      physicsSyncSystem({
-        ecsWorld: ctx.ecsWorld,
-        entityBodyMap: ctx.entityBodyMap,
-      });
+        collisionEventSystem({
+          eventQueue,
+          physicsWorld,
+          colliderEntityMap: ctx.colliderEntityMap,
+          collisionHandlers: ctx.collisionHandlers,
+        });
+
+        physicsSyncSystem({
+          ecsWorld: ctx.ecsWorld,
+          entityBodyMap: ctx.entityBodyMap,
+        });
+      }
+
+      accumulator -= fixedDt;
     }
 
-    // 4. Sync ECS transforms → Three.js objects
+    // Per-frame: sync ECS transforms → Three.js objects for smooth visuals
     renderSyncSystem({
-      ecsWorld: ctx.ecsWorld,
+      entityBodyMap: ctx.entityBodyMap,
       entityMeshMap: ctx.entityMeshMap,
     });
 
-    // 5. Sync ECS transforms → Vue reactive refs (batched)
+    // Per-frame: sync ECS transforms → Vue reactive refs (batched)
     reactiveSyncSystem({
       ecsWorld: ctx.ecsWorld,
       reactiveEntities: ctx.reactiveEntities,

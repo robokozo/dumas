@@ -5,11 +5,11 @@ import type { Object3D } from "three";
 
 import { Transform } from "./components";
 import { TRANSFORM_DEFAULTS } from "../constants";
-import type { ReactiveEntityRefs } from "../types";
+import type { CollisionHandler, ReactiveEntityRefs } from "../types";
 
 export interface WorldMaps {
   entityBodyMap: Map<number, RAPIER.RigidBody>;
-  entityColliderMap: Map<number, RAPIER.Collider>;
+  entityColliderMap: Map<number, Array<RAPIER.Collider>>;
   colliderEntityMap: Map<number, number>;
   entityMeshMap: Map<number, Object3D>;
   reactiveEntities: Map<number, ReactiveEntityRefs>;
@@ -47,19 +47,26 @@ export function destroyEntity({
   world,
   eid,
   maps,
+  collisionHandlers,
 }: {
   world: World;
   eid: number;
   maps: WorldMaps;
+  collisionHandlers?: Map<number, Array<CollisionHandler>>;
 }): void {
-  const collider = maps.entityColliderMap.get(eid);
-  if (collider !== undefined) {
-    maps.colliderEntityMap.delete(collider.handle);
+  const colliders = maps.entityColliderMap.get(eid);
+  if (colliders !== undefined) {
+    for (const collider of colliders) {
+      maps.colliderEntityMap.delete(collider.handle);
+    }
   }
   maps.entityBodyMap.delete(eid);
   maps.entityColliderMap.delete(eid);
   maps.entityMeshMap.delete(eid);
   maps.reactiveEntities.delete(eid);
+  if (collisionHandlers !== undefined) {
+    collisionHandlers.delete(eid);
+  }
   removeEntity(world, eid);
 }
 

@@ -34,12 +34,12 @@ const p1 = useActions({
 const ctx = useDumasContext();
 
 // Ground
-const ground = useGameObject({ position: [0, -0.5, 0] });
+const ground = useGameObject({ position: { x: 0, y: -0.5, z: 0 } });
 useRigidBody({ eid: ground.eid, type: "fixed" });
 useCollider({ eid: ground.eid, shape: "box", args: [8, 0.5, 8] });
 
 // Player
-const player = useGameObject({ position: [0, 2, 0] });
+const player = useGameObject({ position: { x: 0, y: 2, z: 0 } });
 const { rigidBody } = useRigidBody({ eid: player.eid, type: "dynamic" });
 const { collider: playerCollider } = useCollider({
   eid: player.eid,

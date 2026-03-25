@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useGameObject, useRigidBody, useCollider, useSystem } from "@dumas/core";
 
-const { groupRef, eid } = useGameObject({ position: [-3, 2, 0] });
+const { groupRef, eid } = useGameObject({ position: { x: -3, y: 2, z: 0 } });
 const { rigidBody } = useRigidBody({ eid, type: "kinematicPosition" });
 useCollider({ eid, shape: "sphere", radius: 0.5 });
 

@@ -2,7 +2,6 @@ import type RAPIER from "@dimforge/rapier3d-compat";
 import type { JointOptions, Vec3 } from "../types";
 
 const DEFAULT_ANCHOR: Vec3 = { x: 0, y: 0, z: 0 } as const;
-const DEFAULT_AXIS: Vec3 = { x: 0, y: 1, z: 0 } as const;
 
 export function createJoint({
   physicsWorld,
@@ -26,14 +25,14 @@ export function createJoint({
       { w: 1, x: 0, y: 0, z: 0 },
     );
   } else if (options.type === "revolute") {
-    const axis = options.axis ?? DEFAULT_AXIS;
+    const axis = options.axis;
     params = rapier.JointData.revolute(
       { x: anchorA.x, y: anchorA.y, z: anchorA.z },
       { x: anchorB.x, y: anchorB.y, z: anchorB.z },
       { x: axis.x, y: axis.y, z: axis.z },
     );
   } else if (options.type === "prismatic") {
-    const axis = options.axis ?? { x: 1, y: 0, z: 0 };
+    const axis = options.axis;
     params = rapier.JointData.prismatic(
       { x: anchorA.x, y: anchorA.y, z: anchorA.z },
       { x: anchorB.x, y: anchorB.y, z: anchorB.z },
@@ -49,9 +48,9 @@ export function createJoint({
 
   const joint = physicsWorld.createImpulseJoint(params, options.bodyA, options.bodyB, true);
 
-  if (options.limits !== undefined && options.type === "revolute") {
+  if (options.type === "revolute" && options.limits !== undefined) {
     (joint as RAPIER.RevoluteImpulseJoint).setLimits(options.limits.min, options.limits.max);
-  } else if (options.limits !== undefined && options.type === "prismatic") {
+  } else if (options.type === "prismatic" && options.limits !== undefined) {
     (joint as RAPIER.PrismaticImpulseJoint).setLimits(options.limits.min, options.limits.max);
   }
 

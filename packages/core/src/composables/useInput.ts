@@ -37,17 +37,24 @@ function applyDeadzone(value: number): number {
 export function useInput(options: InputOptions): InputReturn {
   const heldButtons = new Set<HardwareButton>();
   const justPressedButtons = new Set<HardwareButton>();
+  const justReleasedButtons = new Set<HardwareButton>();
   const prevHeldButtons = new Set<HardwareButton>();
 
   const leftStick = shallowRef<StickState>({ x: 0, y: 0 });
   const rightStick = shallowRef<StickState>({ x: 0, y: 0 });
   const triggers = shallowRef<TriggerState>({ left: 0, right: 0 });
 
-  function updateJustPressed(): void {
+  function updateEdgeStates(): void {
     justPressedButtons.clear();
+    justReleasedButtons.clear();
     for (const btn of heldButtons) {
       if (prevHeldButtons.has(btn) === false) {
         justPressedButtons.add(btn);
+      }
+    }
+    for (const btn of prevHeldButtons) {
+      if (heldButtons.has(btn) === false) {
+        justReleasedButtons.add(btn);
       }
     }
     prevHeldButtons.clear();
@@ -98,7 +105,20 @@ export function useInput(options: InputOptions): InputReturn {
       const lLen = Math.sqrt(lx * lx + ly * ly);
       leftStick.value = lLen > 0 ? { x: lx / lLen, y: ly / lLen } : { x: 0, y: 0 };
 
-      updateJustPressed();
+      // Derive rightStick from rightStickBindings (if provided)
+      if (options.rightStickBindings !== undefined) {
+        const rsb = options.rightStickBindings;
+        let rx = 0;
+        let ry = 0;
+        if (rsb.left.some((key) => pressedKeys.has(key))) rx -= 1;
+        if (rsb.right.some((key) => pressedKeys.has(key))) rx += 1;
+        if (rsb.up.some((key) => pressedKeys.has(key))) ry += 1;
+        if (rsb.down.some((key) => pressedKeys.has(key))) ry -= 1;
+        const rLen = Math.sqrt(rx * rx + ry * ry);
+        rightStick.value = rLen > 0 ? { x: rx / rLen, y: ry / rLen } : { x: 0, y: 0 };
+      }
+
+      updateEdgeStates();
     });
   } else {
     const { index } = options.source;
@@ -109,7 +129,7 @@ export function useInput(options: InputOptions): InputReturn {
       heldButtons.clear();
 
       if (isSupported.value === false) {
-        updateJustPressed();
+        updateEdgeStates();
         return;
       }
 
@@ -119,7 +139,7 @@ export function useInput(options: InputOptions): InputReturn {
         leftStick.value = { x: 0, y: 0 };
         rightStick.value = { x: 0, y: 0 };
         triggers.value = { left: 0, right: 0 };
-        updateJustPressed();
+        updateEdgeStates();
         return;
       }
 
@@ -145,13 +165,14 @@ export function useInput(options: InputOptions): InputReturn {
         y: applyDeadzone(-(gamepad.axes[3] ?? 0)),
       };
 
-      updateJustPressed();
+      updateEdgeStates();
     });
   }
 
   return {
     isHeld: (button) => heldButtons.has(button),
     wasJustPressed: (button) => justPressedButtons.has(button),
+    wasJustReleased: (button) => justReleasedButtons.has(button),
     leftStick: readonly(leftStick),
     rightStick: readonly(rightStick),
     triggers: readonly(triggers),

@@ -18,6 +18,12 @@ export function useActionMap<TActions extends string>(
     return source.some((btn) => input.wasJustPressed(btn));
   }
 
+  function wasJustReleased(action: TActions): boolean {
+    const source = actions[action];
+    if (source === "leftStick" || source === "rightStick") return false;
+    return source.some((btn) => input.wasJustReleased(btn));
+  }
+
   function axis(action: TActions): StickState {
     const source = actions[action];
     if (source === "leftStick") return input.leftStick.value;
@@ -25,5 +31,5 @@ export function useActionMap<TActions extends string>(
     return ZERO_STICK;
   }
 
-  return { isHeld, wasJustPressed, axis };
+  return { isHeld, wasJustPressed, wasJustReleased, axis };
 }

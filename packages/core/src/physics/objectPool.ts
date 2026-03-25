@@ -39,6 +39,9 @@ export function createObjectPool({
   const bodyType = options.bodyType ?? DEFAULT_BODY_TYPE;
 
   const handles: Array<PoolHandle> = [];
+  const freeStack: Array<number> = [];
+  const eidToIndex = new Map<number, number>();
+  let activeCount = 0;
 
   for (let i = 0; i < options.size; i++) {
     const eid = createEntity({ world: ecsWorld });
@@ -69,31 +72,45 @@ export function createObjectPool({
 
     addComponent(ecsWorld, eid, ColliderRef);
     ColliderRef.handle[eid] = collider.handle;
-    maps.entityColliderMap.set(eid, collider);
+    const existingColliders = maps.entityColliderMap.get(eid);
+    if (existingColliders !== undefined) {
+      existingColliders.push(collider);
+    } else {
+      maps.entityColliderMap.set(eid, [collider]);
+    }
     maps.colliderEntityMap.set(collider.handle, eid);
 
     handles.push({ eid, rigidBody, collider, isActive: false });
+    freeStack.push(i);
+    eidToIndex.set(eid, i);
   }
 
   function acquire(): PoolHandle | null {
-    const handle = handles.find((h) => h.isActive === false) ?? null;
-
-    if (handle === null) {
+    if (freeStack.length === 0) {
       console.warn(
         `[dumas] ObjectPool exhausted: all ${options.size} handles are active. Consider increasing pool size.`,
       );
       return null;
     }
 
+    const index = freeStack.pop() as number;
+    const handle = handles[index];
     handle.isActive = true;
     handle.rigidBody.setEnabled(true);
+    activeCount += 1;
     return handle;
   }
 
   function release({ eid }: { eid: number }): void {
-    const handle = handles.find((h) => h.eid === eid) ?? null;
+    const index = eidToIndex.get(eid);
 
-    if (handle === null) {
+    if (index === undefined) {
+      return;
+    }
+
+    const handle = handles[index];
+
+    if (handle.isActive === false) {
       return;
     }
 
@@ -107,6 +124,9 @@ export function createObjectPool({
     Transform.posX[eid] = parkPosition.x;
     Transform.posY[eid] = parkPosition.y;
     Transform.posZ[eid] = parkPosition.z;
+
+    freeStack.push(index);
+    activeCount -= 1;
   }
 
   function destroyAll(): void {
@@ -116,15 +136,18 @@ export function createObjectPool({
       destroyEntity({ world: ecsWorld, eid: handle.eid, maps });
     }
     handles.length = 0;
+    freeStack.length = 0;
+    eidToIndex.clear();
+    activeCount = 0;
   }
 
   return {
     handles: handles as ReadonlyArray<PoolHandle>,
     get availableCount() {
-      return handles.filter((h) => h.isActive === false).length;
+      return freeStack.length;
     },
     get activeCount() {
-      return handles.filter((h) => h.isActive === true).length;
+      return activeCount;
     },
     acquire,
     release,

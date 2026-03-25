@@ -11,7 +11,7 @@ const HALF_HEIGHT = 0.5;
 const HALF_DEPTH = 2;
 const LAVA_Y = -3;
 
-const { groupRef, eid } = useGameObject({ position: [0, LAVA_Y, 0] });
+const { groupRef, eid } = useGameObject({ position: { x: 0, y: LAVA_Y, z: 0 } });
 useRigidBody({ eid, type: "fixed" });
 useCollider({ eid, shape: "box", args: [HALF_WIDTH, HALF_HEIGHT, HALF_DEPTH], isSensor: true });
 

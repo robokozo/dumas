@@ -7,7 +7,7 @@ import {
   useActions,
   useSystem,
 } from "@dumas/core";
-import type { ActionMapDefinition } from "@dumas/core";
+import type { ActionMapDefinition, Vec3 } from "@dumas/core";
 
 type Actions = "move" | "jump";
 
@@ -18,7 +18,7 @@ const CAPSULE_RADIUS = 0.3;
 
 const props = withDefaults(
   defineProps<{
-    position: [number, number, number];
+    position: Vec3;
     color?: string;
     leftKeys?: Array<string>;
     rightKeys?: Array<string>;
@@ -39,7 +39,7 @@ const emit = defineEmits<{
 
 const { eid, groupRef } = useGameObject({ position: props.position });
 
-const { move, isGrounded, teleport } = useCharacterController({
+const { move, setVelocity, isGrounded, teleport } = useCharacterController({
   eid,
   mode: "2d",
   moveSpeed: MOVE_SPEED,
@@ -61,7 +61,7 @@ useCollisionHandler({
 });
 
 function reset(): void {
-  teleport({ position: { x: props.position[0], y: props.position[1], z: props.position[2] } });
+  teleport({ position: props.position });
 }
 
 onMounted(() => {
@@ -84,9 +84,10 @@ const input = useActions({
 useSystem({
   fn: ({ delta }) => {
     const { x } = input.axis("move");
-    const vy =
-      input.wasJustPressed("jump") === true && isGrounded.value === true ? JUMP_VY : undefined;
-    move({ x, z: 0, delta, vy });
+    if (input.wasJustPressed("jump") === true && isGrounded.value === true) {
+      setVelocity({ y: JUMP_VY });
+    }
+    move({ x, z: 0, delta });
   },
 });
 </script>

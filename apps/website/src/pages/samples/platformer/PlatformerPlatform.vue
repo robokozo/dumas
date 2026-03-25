@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { useGameObject, useRigidBody, useCollider } from "@dumas/core";
+import type { Vec3 } from "@dumas/core";
 
 const props = defineProps<{
-  position: [number, number, number];
+  position: Vec3;
   width: number;
 }>();
 

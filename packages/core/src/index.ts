@@ -20,11 +20,10 @@ export { useCharacterController } from "./composables/useCharacterController";
 export { useContactDetection } from "./composables/useContactDetection";
 
 // Pooling
-export { createObjectPool } from "./physics/objectPool";
 export { useObjectPool } from "./composables/useObjectPool";
 
 // ECS components (for advanced users building custom systems)
-export { Transform, Velocity, RigidBodyRef, ColliderRef } from "./ecs/components";
+export { Transform, RigidBodyRef, ColliderRef } from "./ecs/components";
 
 // Types
 export type {

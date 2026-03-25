@@ -105,32 +105,29 @@ export function useCharacterController({
     }
   });
 
+  function setVelocity({ x, y, z }: { x?: number; y?: number; z?: number }): void {
+    if (x !== undefined) {
+      velocityX = x;
+    }
+    if (y !== undefined) {
+      verticalVelocity = y;
+    }
+    if (z !== undefined) {
+      velocityZ = z;
+    }
+  }
+
   function move({
     x = 0,
     y = 0,
     z = 0,
     delta,
-    vx,
-    vy,
-    vz,
   }: {
     x?: number;
     y?: number;
     z?: number;
     delta: number;
-    vx?: number;
-    vy?: number;
-    vz?: number;
   }): void {
-    if (vx !== undefined) {
-      velocityX = vx;
-    }
-    if (vy !== undefined) {
-      verticalVelocity = vy;
-    }
-    if (vz !== undefined) {
-      velocityZ = vz;
-    }
     const body = rigidBody.value;
     const col = collider.value;
     const kccInstance = controller.value;
@@ -177,9 +174,9 @@ export function useCharacterController({
             hitCeiling = true;
           } else if (Math.abs(ny) < slopeThreshold) {
             if (collision.normal1.x > 0) {
-              hitWallLeft = true;
-            } else {
               hitWallRight = true;
+            } else {
+              hitWallLeft = true;
             }
           }
         }
@@ -230,6 +227,7 @@ export function useCharacterController({
     isTouchingCeiling,
     isTouchingWallLeft,
     isTouchingWallRight,
+    setVelocity,
     move,
     teleport,
   };

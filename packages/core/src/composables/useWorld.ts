@@ -3,11 +3,12 @@ import type RAPIER from "@dimforge/rapier3d-compat";
 
 import { createDumasWorld } from "../ecs/world";
 import { initRapier, createPhysicsWorld } from "../physics/init";
-import { DEFAULT_GRAVITY } from "../constants";
+import { DEFAULT_GRAVITY, DEFAULT_TIMESTEP } from "../constants";
 import type { DumasContext, WorldOptions, SystemFn, SystemEntry, CollisionHandler } from "../types";
 
 export function createWorldContext(options?: WorldOptions): DumasContext {
   const gravity = options?.gravity ?? DEFAULT_GRAVITY;
+  const fixedTimestep = options?.fixedTimestep ?? DEFAULT_TIMESTEP;
 
   const { ecsWorld, maps } = createDumasWorld();
 
@@ -65,6 +66,7 @@ export function createWorldContext(options?: WorldOptions): DumasContext {
     physicsWorld,
     rapier,
     isReady,
+    fixedTimestep,
     entityBodyMap: maps.entityBodyMap,
     entityColliderMap: maps.entityColliderMap,
     colliderEntityMap: maps.colliderEntityMap,
@@ -81,7 +83,9 @@ export function createWorldContext(options?: WorldOptions): DumasContext {
   const initPhysics = async () => {
     const rapierModule = await initRapier();
     rapier.value = rapierModule;
-    physicsWorld.value = createPhysicsWorld({ gravity });
+    const world = createPhysicsWorld({ gravity });
+    world.timestep = fixedTimestep;
+    physicsWorld.value = world;
     isReady.value = true;
   };
 

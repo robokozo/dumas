@@ -2,6 +2,7 @@
 import { Raycaster, Vector2 } from "three";
 import { useEventListener } from "@vueuse/core";
 import { GameObject, useObjectPool, useSystem } from "@dumas/core";
+import type { Vec3 } from "@dumas/core";
 import { useTresContext } from "@tresjs/core";
 import { OrbitControls } from "@tresjs/cientos";
 import WallBlock from "./WallBlock.vue";
@@ -16,14 +17,14 @@ const BLOCK_W = 1.05;
 const BLOCK_H = 0.52;
 const FIRE_SPEED = 40;
 
-const blocks: Array<{ position: [number, number, number]; color: string }> = [];
+const blocks: Array<{ position: Vec3; color: string }> = [];
 for (let row = 0; row < ROWS; row++) {
   const offset = (row % 2) * (BLOCK_W / 2);
   const hue = Math.round((row / ROWS) * 360);
   const color = `hsl(${hue}, 80%, 55%)`;
   for (let col = 0; col < COLS; col++) {
     blocks.push({
-      position: [offset + (col - (COLS - 1) / 2) * BLOCK_W, 0.26 + row * BLOCK_H, 0],
+      position: { x: offset + (col - (COLS - 1) / 2) * BLOCK_W, y: 0.26 + row * BLOCK_H, z: 0 },
       color,
     });
   }

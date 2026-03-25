@@ -2,7 +2,7 @@
 import { useGameObject, useSystem } from "@dumas/core";
 
 const { groupRef } = useGameObject({
-  position: [0, 2, 0],
+  position: { x: 0, y: 2, z: 0 },
 });
 
 useSystem({

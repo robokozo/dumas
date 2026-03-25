@@ -58,7 +58,7 @@ useSystem({
 
     <PoolBall v-for="handle in handles" :key="handle.eid" :handle="handle" />
 
-    <GameObject :position="[0, -0.25, 0]">
+    <GameObject :position="{ x: 0, y: -0.25, z: 0 }">
       <RigidBody type="fixed">
         <Collider shape="box" :args="[1.5, 0.25, 1.5]" />
       </RigidBody>

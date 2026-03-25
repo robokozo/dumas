@@ -11,7 +11,7 @@ import { OrbitControls } from "@tresjs/cientos";
     <TresDirectionalLight :position="[5, 8, 5]" :intensity="1" />
 
     <!-- Box collider, low bounce -->
-    <GameObject :position="[-3, 4, 0]">
+    <GameObject :position="{ x: -3, y: 4, z: 0 }">
       <RigidBody type="dynamic">
         <Collider shape="box" :args="[0.5, 0.5, 0.5]" :restitution="0.3" />
       </RigidBody>
@@ -22,7 +22,7 @@ import { OrbitControls } from "@tresjs/cientos";
     </GameObject>
 
     <!-- Sphere collider, high bounce -->
-    <GameObject :position="[0, 6, 0]">
+    <GameObject :position="{ x: 0, y: 6, z: 0 }">
       <RigidBody type="dynamic">
         <Collider shape="sphere" :radius="0.5" :restitution="0.9" />
       </RigidBody>
@@ -33,7 +33,7 @@ import { OrbitControls } from "@tresjs/cientos";
     </GameObject>
 
     <!-- Capsule collider, medium bounce -->
-    <GameObject :position="[3, 5, 0]">
+    <GameObject :position="{ x: 3, y: 5, z: 0 }">
       <RigidBody type="dynamic">
         <Collider shape="capsule" :radius="0.3" :half-height="0.5" :restitution="0.5" />
       </RigidBody>
@@ -44,7 +44,7 @@ import { OrbitControls } from "@tresjs/cientos";
     </GameObject>
 
     <!-- Ground -->
-    <GameObject :position="[0, -0.5, 0]">
+    <GameObject :position="{ x: 0, y: -0.5, z: 0 }">
       <RigidBody type="fixed">
         <Collider shape="box" :args="[6, 0.5, 3]" :friction="0.8" />
       </RigidBody>

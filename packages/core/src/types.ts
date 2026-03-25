@@ -27,15 +27,25 @@ export interface Quat {
 // -- World context --
 
 export interface DumasContext {
+  // -- ECS --
   ecsWorld: World;
+
+  // -- Physics --
   physicsWorld: ShallowRef<RAPIER.World | null>;
   rapier: ShallowRef<typeof RAPIER | null>;
+
+  // -- Lifecycle --
   isReady: Ref<boolean>;
+  fixedTimestep: number;
+
+  // -- Entity lookup maps --
   entityBodyMap: Map<number, RAPIER.RigidBody>;
-  entityColliderMap: Map<number, RAPIER.Collider>;
+  entityColliderMap: Map<number, Array<RAPIER.Collider>>;
   colliderEntityMap: Map<number, number>;
   entityMeshMap: Map<number, Object3D>;
   reactiveEntities: Map<number, ReactiveEntityRefs>;
+
+  // -- Systems & events --
   systems: Array<SystemEntry>;
   collisionHandlers: Map<number, Array<CollisionHandler>>;
   jointMap: Map<number, RAPIER.ImpulseJoint>;
@@ -59,32 +69,18 @@ export interface SystemEntry {
 
 export interface WorldOptions {
   gravity?: Vec3;
+  fixedTimestep?: number;
 }
 
 export interface GameObjectOptions {
-  position?: [number, number, number];
-  rotation?: [number, number, number, number];
-  scale?: [number, number, number];
-}
-
-export interface GameObjectReturn {
-  groupRef: ShallowRef<Object3D | null>;
-  eid: number;
-  position: Readonly<Ref<Vec3>>;
-  rotation: Readonly<Ref<Quat>>;
+  position?: Vec3;
+  rotation?: Quat;
+  scale?: Vec3;
 }
 
 export interface RigidBodyOptions {
   eid: number;
   type?: RigidBodyType;
-}
-
-export interface RigidBodyReturn {
-  rigidBody: ShallowRef<RAPIER.RigidBody | null>;
-  applyImpulse: (impulse: Vec3) => void;
-  applyForce: (force: Vec3) => void;
-  setLinvel: (vel: Vec3) => void;
-  setAngvel: (vel: Vec3) => void;
 }
 
 export interface ColliderOptions {
@@ -101,10 +97,6 @@ export interface ColliderOptions {
   activeCollisionTypes?: RAPIER.ActiveCollisionTypes;
   /** Optional collision handler registered for this entity. Shorthand for a separate useCollisionHandler call. */
   onCollision?: CollisionHandler;
-}
-
-export interface ColliderReturn {
-  collider: ShallowRef<RAPIER.Collider | null>;
 }
 
 // -- Collision events --
@@ -124,15 +116,38 @@ export type CollisionHandler = (event: CollisionEvent) => void;
 
 export type JointType = "fixed" | "revolute" | "prismatic" | "spherical";
 
-export interface JointOptions {
+interface JointOptionsBase {
   bodyA: RAPIER.RigidBody;
   bodyB: RAPIER.RigidBody;
-  type: JointType;
   anchorA?: Vec3;
   anchorB?: Vec3;
-  axis?: Vec3;
+}
+
+interface FixedJointOptions extends JointOptionsBase {
+  type: "fixed";
+}
+
+interface SphericalJointOptions extends JointOptionsBase {
+  type: "spherical";
+}
+
+interface RevoluteJointOptions extends JointOptionsBase {
+  type: "revolute";
+  axis: Vec3;
   limits?: { min: number; max: number };
 }
+
+interface PrismaticJointOptions extends JointOptionsBase {
+  type: "prismatic";
+  axis: Vec3;
+  limits?: { min: number; max: number };
+}
+
+export type JointOptions =
+  | FixedJointOptions
+  | SphericalJointOptions
+  | RevoluteJointOptions
+  | PrismaticJointOptions;
 
 export interface JointReturn {
   joint: ShallowRef<RAPIER.ImpulseJoint | null>;
@@ -168,9 +183,17 @@ export interface TriggerState {
   right: number;
 }
 
+export interface StickBindings {
+  up: Array<string>;
+  down: Array<string>;
+  left: Array<string>;
+  right: Array<string>;
+}
+
 export interface KeyboardInputOptions {
   source: "keyboard";
   bindings: Partial<Record<HardwareButton, Array<string>>>;
+  rightStickBindings?: StickBindings;
 }
 
 export interface GamepadInputOptions {
@@ -182,6 +205,7 @@ export type InputOptions = KeyboardInputOptions | GamepadInputOptions;
 export interface InputReturn {
   isHeld: (button: HardwareButton) => boolean;
   wasJustPressed: (button: HardwareButton) => boolean;
+  wasJustReleased: (button: HardwareButton) => boolean;
   leftStick: Readonly<ShallowRef<StickState>>;
   rightStick: Readonly<ShallowRef<StickState>>;
   triggers: Readonly<ShallowRef<TriggerState>>;
@@ -194,6 +218,7 @@ export type ActionMapDefinition<TActions extends string> = Record<TActions, Acti
 export interface ActionMapReturn<TActions extends string> {
   isHeld: (action: TActions) => boolean;
   wasJustPressed: (action: TActions) => boolean;
+  wasJustReleased: (action: TActions) => boolean;
   axis: (action: TActions) => StickState;
 }
 
@@ -245,15 +270,8 @@ export interface CharacterControllerReturn {
   isTouchingCeiling: Readonly<ShallowRef<boolean>>;
   isTouchingWallLeft: Readonly<ShallowRef<boolean>>;
   isTouchingWallRight: Readonly<ShallowRef<boolean>>;
-  move: (dir: {
-    x?: number;
-    y?: number;
-    z?: number;
-    delta: number;
-    vx?: number;
-    vy?: number;
-    vz?: number;
-  }) => void;
+  setVelocity: (velocity: { x?: number; y?: number; z?: number }) => void;
+  move: (dir: { x?: number; y?: number; z?: number; delta: number }) => void;
   teleport: (options: { position: Vec3 }) => void;
 }
 

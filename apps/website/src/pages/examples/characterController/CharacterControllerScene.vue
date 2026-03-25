@@ -16,23 +16,23 @@ const MOVE_SPEED = 6;
 const JUMP_VY = 12;
 const RAMP_ANGLE = Math.PI / 6;
 
-const ground = useGameObject({ position: [0, -0.3, 0] });
+const ground = useGameObject({ position: { x: 0, y: -0.3, z: 0 } });
 useRigidBody({ eid: ground.eid, type: "fixed" });
 useCollider({ eid: ground.eid, shape: "box", args: [8, 0.3, 2] });
 
 const ramp = useGameObject({
-  position: [-4.5, 0.8, 0],
-  rotation: [0, 0, -Math.sin(RAMP_ANGLE / 2), Math.cos(RAMP_ANGLE / 2)],
+  position: { x: -4.5, y: 0.8, z: 0 },
+  rotation: { x: 0, y: 0, z: -Math.sin(RAMP_ANGLE / 2), w: Math.cos(RAMP_ANGLE / 2) },
 });
 useRigidBody({ eid: ramp.eid, type: "fixed" });
 useCollider({ eid: ramp.eid, shape: "box", args: [2, 0.15, 2] });
 
-const platform = useGameObject({ position: [4, 1, 0] });
+const platform = useGameObject({ position: { x: 4, y: 1, z: 0 } });
 useRigidBody({ eid: platform.eid, type: "fixed" });
 useCollider({ eid: platform.eid, shape: "box", args: [2.5, 0.2, 2] });
 
-const character = useGameObject({ position: [0, 1, 0] });
-const { move, isGrounded } = useCharacterController({
+const character = useGameObject({ position: { x: 0, y: 1, z: 0 } });
+const { move, setVelocity, isGrounded } = useCharacterController({
   eid: character.eid,
   mode: "2d",
   moveSpeed: MOVE_SPEED,
@@ -60,9 +60,10 @@ const input = useActions({
 useSystem({
   fn: ({ delta }) => {
     const { x } = input.axis("move");
-    const vy =
-      input.wasJustPressed("jump") === true && isGrounded.value === true ? JUMP_VY : undefined;
-    move({ x, z: 0, delta, vy });
+    if (input.wasJustPressed("jump") === true && isGrounded.value === true) {
+      setVelocity({ y: JUMP_VY });
+    }
+    move({ x, z: 0, delta });
   },
 });
 

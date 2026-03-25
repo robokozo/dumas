@@ -9,6 +9,7 @@ import {
   useCollisionHandler,
   useSystem,
 } from "@dumas/core";
+import type { Vec3 } from "@dumas/core";
 import IsometricCollectible from "./IsometricCollectible.vue";
 
 const CAPSULE_RADIUS = 0.3;
@@ -18,23 +19,23 @@ const STOP_DISTANCE = 0.15;
 const FACE_Z_OFFSET = CAPSULE_RADIUS + 0.1;
 const FACE_ROTATION_SPEED = Math.PI * 4; // rad/s
 
-const COLLECTIBLES: Array<{ id: number; position: [number, number, number] }> = [
-  { id: 0, position: [3, 0.4, 2] },
-  { id: 1, position: [-2, 0.4, 3] },
-  { id: 2, position: [4, 0.4, -3] },
-  { id: 3, position: [-3, 0.4, -2] },
-  { id: 4, position: [1, 0.4, -4] },
+const COLLECTIBLES: Array<{ id: number; position: Vec3 }> = [
+  { id: 0, position: { x: 3, y: 0.4, z: 2 } },
+  { id: 1, position: { x: -2, y: 0.4, z: 3 } },
+  { id: 2, position: { x: 4, y: 0.4, z: -3 } },
+  { id: 3, position: { x: -3, y: 0.4, z: -2 } },
+  { id: 4, position: { x: 1, y: 0.4, z: -4 } },
 ];
 
 const emit = defineEmits<{
   "update:score": [score: number];
 }>();
 
-const ground = useGameObject({ position: [0, -0.1, 0] });
+const ground = useGameObject({ position: { x: 0, y: -0.1, z: 0 } });
 useRigidBody({ eid: ground.eid, type: "fixed" });
 useCollider({ eid: ground.eid, shape: "box", args: [12, 0.1, 12] });
 
-const character = useGameObject({ position: [0, 1.5, 0] });
+const character = useGameObject({ position: { x: 0, y: 1.5, z: 0 } });
 const { move } = useCharacterController({
   eid: character.eid,
   mode: "3d",

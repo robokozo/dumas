@@ -3,7 +3,7 @@ import type { World } from "bitecs";
 import type RAPIER from "@dimforge/rapier3d-compat";
 import type { Object3D } from "three";
 
-import { Transform, RigidBodyRef } from "./components";
+import { Transform } from "./components";
 import type { CollisionEvent, CollisionHandler, ReactiveEntityRefs } from "../types";
 
 // Syncs Rapier rigid body transforms → bitECS Transform SoA arrays
@@ -14,7 +14,7 @@ export function physicsSyncSystem({
   ecsWorld: World;
   entityBodyMap: Map<number, RAPIER.RigidBody>;
 }): void {
-  const entities = query(ecsWorld, [Transform, RigidBodyRef]);
+  const entities = query(ecsWorld, [Transform]);
 
   for (const eid of entities) {
     const body = entityBodyMap.get(eid);
@@ -36,17 +36,17 @@ export function physicsSyncSystem({
   }
 }
 
-// Syncs bitECS Transform SoA arrays → Three.js Object3D position/quaternion
+// Syncs bitECS Transform SoA arrays → Three.js Object3D position/quaternion.
+// Only runs for physics-driven entities — non-physics entities animate their mesh
+// directly from user systems and must not be overwritten with stale ECS data.
 export function renderSyncSystem({
-  ecsWorld,
+  entityBodyMap,
   entityMeshMap,
 }: {
-  ecsWorld: World;
+  entityBodyMap: Map<number, RAPIER.RigidBody>;
   entityMeshMap: Map<number, Object3D>;
 }): void {
-  const entities = query(ecsWorld, [Transform, RigidBodyRef]);
-
-  for (const eid of entities) {
+  for (const eid of entityBodyMap.keys()) {
     const mesh = entityMeshMap.get(eid);
 
     if (mesh === undefined) {
@@ -98,13 +98,13 @@ export function reactiveSyncSystem({
 // drainCollisionEvents covers both solid-solid contacts and sensor intersections in Rapier 0.12.
 export function collisionEventSystem({
   eventQueue,
+  physicsWorld,
   colliderEntityMap,
-  entityColliderMap,
   collisionHandlers,
 }: {
   eventQueue: RAPIER.EventQueue;
+  physicsWorld: RAPIER.World;
   colliderEntityMap: Map<number, number>;
-  entityColliderMap: Map<number, RAPIER.Collider>;
   collisionHandlers: Map<number, Array<CollisionHandler>>;
 }): void {
   eventQueue.drainCollisionEvents((handle1, handle2, isStarted) => {
@@ -116,8 +116,8 @@ export function collisionEventSystem({
     }
 
     const isSensor =
-      entityColliderMap.get(eidA)?.isSensor() === true ||
-      entityColliderMap.get(eidB)?.isSensor() === true;
+      physicsWorld.getCollider(handle1)?.isSensor() === true ||
+      physicsWorld.getCollider(handle2)?.isSensor() === true;
 
     const event: CollisionEvent = {
       eidA,

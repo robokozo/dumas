@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
 import { useGameObject, useRigidBody, useCollider } from "@dumas/core";
+import type { Vec3 } from "@dumas/core";
 
 const props = defineProps<{
-  position: [number, number, number];
+  position: Vec3;
 }>();
 
 const emit = defineEmits<{

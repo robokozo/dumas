@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { useGameObject, useRigidBody, useCollider, useJoint } from "@dumas/core";
 
-const anchor = useGameObject({ position: [0, 5, 0] });
+const anchor = useGameObject({ position: { x: 0, y: 5, z: 0 } });
 const anchorBody = useRigidBody({ eid: anchor.eid, type: "fixed" });
 useCollider({ eid: anchor.eid, shape: "sphere", radius: 0.1, isSensor: true });
 
-const ball = useGameObject({ position: [2, 3, 0] });
+const ball = useGameObject({ position: { x: 2, y: 3, z: 0 } });
 const ballBody = useRigidBody({ eid: ball.eid, type: "dynamic" });
 useCollider({ eid: ball.eid, shape: "sphere", radius: 0.4 });
 

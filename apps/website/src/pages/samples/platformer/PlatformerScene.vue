@@ -1,35 +1,36 @@
 <script setup lang="ts">
 import { shallowRef, reactive, computed } from "vue";
 import { GameObject } from "@dumas/core";
+import type { Vec3 } from "@dumas/core";
 import PlatformerCharacter from "./PlatformerCharacter.vue";
 import PlatformerWall from "./PlatformerWall.vue";
 import PlatformerPlatform from "./PlatformerPlatform.vue";
 import PlatformerCoin from "./PlatformerCoin.vue";
 import PlatformerLava from "./PlatformerLava.vue";
 
-const SPAWN_P1: [number, number, number] = [0, 3, 0];
-const SPAWN_P2: [number, number, number] = [3, 3, 0];
+const SPAWN_P1: Vec3 = { x: 0, y: 3, z: 0 };
+const SPAWN_P2: Vec3 = { x: 3, y: 3, z: 0 };
 
-const WALLS: Array<{ position: [number, number, number] }> = [
-  { position: [-10.25, 1.25, 0] },
-  { position: [10.25, 1.25, 0] },
+const WALLS: Array<{ position: Vec3 }> = [
+  { position: { x: -10.25, y: 1.25, z: 0 } },
+  { position: { x: 10.25, y: 1.25, z: 0 } },
 ];
 
-const PLATFORMS: Array<{ position: [number, number, number]; width: number }> = [
-  { position: [0, 0, 0], width: 20 },
-  { position: [-6, 3, 0], width: 4 },
-  { position: [6, 3, 0], width: 4 },
-  { position: [0, 6, 0], width: 4 },
-  { position: [-4, 9, 0], width: 3.5 },
-  { position: [4, 9, 0], width: 3.5 },
+const PLATFORMS: Array<{ position: Vec3; width: number }> = [
+  { position: { x: 0, y: 0, z: 0 }, width: 20 },
+  { position: { x: -6, y: 3, z: 0 }, width: 4 },
+  { position: { x: 6, y: 3, z: 0 }, width: 4 },
+  { position: { x: 0, y: 6, z: 0 }, width: 4 },
+  { position: { x: -4, y: 9, z: 0 }, width: 3.5 },
+  { position: { x: 4, y: 9, z: 0 }, width: 3.5 },
 ];
 
-const COIN_DATA: Array<{ id: number; position: [number, number, number] }> = [
-  { id: 0, position: [-6, 4.5, 0] },
-  { id: 1, position: [6, 4.5, 0] },
-  { id: 2, position: [0, 7.5, 0] },
-  { id: 3, position: [-4, 10.5, 0] },
-  { id: 4, position: [4, 10.5, 0] },
+const COIN_DATA: Array<{ id: number; position: Vec3 }> = [
+  { id: 0, position: { x: -6, y: 4.5, z: 0 } },
+  { id: 1, position: { x: 6, y: 4.5, z: 0 } },
+  { id: 2, position: { x: 0, y: 7.5, z: 0 } },
+  { id: 3, position: { x: -4, y: 10.5, z: 0 } },
+  { id: 4, position: { x: 4, y: 10.5, z: 0 } },
 ];
 
 const emit = defineEmits<{

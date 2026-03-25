@@ -35,7 +35,7 @@ export function useContactDetection({
       world.contactPair(col, otherCollider, (manifold) => {
         const n = manifold.normal();
         const dot = n.x * direction.x + n.y * direction.y + n.z * direction.z;
-        if (Math.abs(dot) > threshold) {
+        if (dot > threshold) {
           detected = true;
         }
       });

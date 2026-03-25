@@ -20,7 +20,7 @@ const RESTITUTION = 1.0;
 
 const ballColor = ref<string>("#888");
 
-const leftWall = useGameObject({ position: [-WALL_X, 0, 0] });
+const leftWall = useGameObject({ position: { x: -WALL_X, y: 0, z: 0 } });
 useRigidBody({ eid: leftWall.eid, type: "fixed" });
 useCollider({
   eid: leftWall.eid,
@@ -30,7 +30,7 @@ useCollider({
   friction: 0,
 });
 
-const rightWall = useGameObject({ position: [WALL_X, 0, 0] });
+const rightWall = useGameObject({ position: { x: WALL_X, y: 0, z: 0 } });
 useRigidBody({ eid: rightWall.eid, type: "fixed" });
 useCollider({
   eid: rightWall.eid,
@@ -40,7 +40,7 @@ useCollider({
   friction: 0,
 });
 
-const ball = useGameObject({ position: [0, 0, 0] });
+const ball = useGameObject({ position: { x: 0, y: 0, z: 0 } });
 const { rigidBody: ballBody } = useRigidBody({ eid: ball.eid, type: "dynamic" });
 useCollider({
   eid: ball.eid,
