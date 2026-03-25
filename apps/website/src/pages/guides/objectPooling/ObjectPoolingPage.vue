@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { DumasCanvas } from "@dumas/core";
+import SiteCanvas from "../../../components/SiteCanvas.vue";
 import DemoLayout from "../layout/DemoLayout.vue";
 import CodeBlock from "../layout/CodeBlock.vue";
 import ObjectPoolingScene from "./ObjectPoolingScene.vue";
@@ -31,9 +31,9 @@ function handlePoolUpdate({
 <template>
   <DemoLayout slug="object-pooling">
     <template #scene>
-      <DumasCanvas clear-color="#111" render-mode="always" :gravity="{ x: 0, y: -9.81, z: 0 }">
+      <SiteCanvas clear-color="#111" render-mode="always" :gravity="{ x: 0, y: -9.81, z: 0 }">
         <ObjectPoolingScene :spawn-count="spawnCount" @pool-update="handlePoolUpdate" />
-      </DumasCanvas>
+      </SiteCanvas>
     </template>
     <template #content>
       <section>

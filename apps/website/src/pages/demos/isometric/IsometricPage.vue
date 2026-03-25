@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { DumasCanvas } from "@dumas/core";
+import SiteCanvas from "../../../components/SiteCanvas.vue";
 import SampleLayout from "../layout/SampleLayout.vue";
 import IsometricScene from "./IsometricScene.vue";
 
@@ -11,7 +11,7 @@ const score = ref(0);
 <template>
   <SampleLayout>
     <template #scene>
-      <DumasCanvas clear-color="#1a2a1a" render-mode="always">
+      <SiteCanvas clear-color="#1a2a1a" render-mode="always">
         <IsometricScene
           @update:score="
             (s) => {
@@ -19,7 +19,7 @@ const score = ref(0);
             }
           "
         />
-      </DumasCanvas>
+      </SiteCanvas>
     </template>
     <template #hud>
       <div class="hud">

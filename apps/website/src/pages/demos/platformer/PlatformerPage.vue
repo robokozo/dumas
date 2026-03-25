@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { DumasCanvas } from "@dumas/core";
+import SiteCanvas from "../../../components/SiteCanvas.vue";
 import SampleLayout from "../layout/SampleLayout.vue";
 import PlatformerScene from "./PlatformerScene.vue";
 
@@ -12,7 +12,7 @@ const score2 = ref(0);
 <template>
   <SampleLayout>
     <template #scene>
-      <DumasCanvas clear-color="#1a1a2e" render-mode="always" :gravity="{ x: 0, y: -20, z: 0 }">
+      <SiteCanvas clear-color="#1a1a2e" render-mode="always" :gravity="{ x: 0, y: -20, z: 0 }">
         <PlatformerScene
           @update:score1="
             (s) => {
@@ -25,7 +25,7 @@ const score2 = ref(0);
             }
           "
         />
-      </DumasCanvas>
+      </SiteCanvas>
     </template>
     <template #hud>
       <div class="hud">

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { useIntervalFn } from "@vueuse/core";
-import { DumasCanvas } from "@dumas/core";
+import SiteCanvas from "../../../components/SiteCanvas.vue";
 import SampleLayout from "../layout/SampleLayout.vue";
 import DysonSwarmScene from "./DysonSwarmScene.vue";
 
@@ -70,14 +70,14 @@ function buySatellite(): void {
 <template>
   <SampleLayout>
     <template #scene>
-      <DumasCanvas clear-color="#03030f" render-mode="always" :gravity="{ x: 0, y: 0, z: 0 }">
+      <SiteCanvas clear-color="#03030f" render-mode="always" :gravity="{ x: 0, y: 0, z: 0 }">
         <DysonSwarmScene
           :satellite-count="satelliteCount"
           :reset-key="resetKey"
           @sun-clicked="onSunClicked"
           @collision="(n) => onCollision(n)"
         />
-      </DumasCanvas>
+      </SiteCanvas>
     </template>
 
     <template #hud>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { DumasCanvas } from "@dumas/core";
+import SiteCanvas from "../../../components/SiteCanvas.vue";
 import DemoLayout from "../layout/DemoLayout.vue";
 import CodeBlock from "../layout/CodeBlock.vue";
 import CollisionEventsScene from "./CollisionEventsScene.vue";
@@ -9,9 +9,9 @@ import CollisionEventsCode from "./CollisionEventsScene.vue?raw";
 <template>
   <DemoLayout slug="collision-events">
     <template #scene>
-      <DumasCanvas clear-color="#111" render-mode="always" :gravity="{ x: 0, y: 0, z: 0 }">
+      <SiteCanvas clear-color="#111" render-mode="always" :gravity="{ x: 0, y: 0, z: 0 }">
         <CollisionEventsScene />
-      </DumasCanvas>
+      </SiteCanvas>
     </template>
     <template #content>
       <section>

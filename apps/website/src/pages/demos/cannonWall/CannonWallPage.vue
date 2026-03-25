@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { DumasCanvas } from "@dumas/core";
+import SiteCanvas from "../../../components/SiteCanvas.vue";
 import SampleLayout from "../layout/SampleLayout.vue";
 import CannonWallScene from "./CannonWallScene.vue";
 </script>
@@ -7,9 +7,9 @@ import CannonWallScene from "./CannonWallScene.vue";
 <template>
   <SampleLayout>
     <template #scene>
-      <DumasCanvas clear-color="#111" render-mode="always" :gravity="{ x: 0, y: -9.81, z: 0 }">
+      <SiteCanvas clear-color="#111" render-mode="always" :gravity="{ x: 0, y: -9.81, z: 0 }">
         <CannonWallScene />
-      </DumasCanvas>
+      </SiteCanvas>
     </template>
     <template #hud>
       <p class="hint">Click to fire</p>

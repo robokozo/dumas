@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { DumasCanvas } from "@dumas/core";
+import SiteCanvas from "../../../components/SiteCanvas.vue";
 import DemoLayout from "../layout/DemoLayout.vue";
 import CodeBlock from "../layout/CodeBlock.vue";
 import CharacterControllerScene from "./CharacterControllerScene.vue";
@@ -9,9 +9,9 @@ import CharacterControllerCode from "./CharacterControllerScene.vue?raw";
 <template>
   <DemoLayout slug="character-controller">
     <template #scene>
-      <DumasCanvas clear-color="#111" render-mode="always">
+      <SiteCanvas clear-color="#111" render-mode="always">
         <CharacterControllerScene />
-      </DumasCanvas>
+      </SiteCanvas>
     </template>
     <template #content>
       <section>

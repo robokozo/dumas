@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { DumasCanvas } from "@dumas/core";
+import SiteCanvas from "../../../components/SiteCanvas.vue";
 import DemoLayout from "../layout/DemoLayout.vue";
 import CodeBlock from "../layout/CodeBlock.vue";
 import InputScene from "./InputScene.vue";
@@ -9,9 +9,9 @@ import InputSceneCode from "./InputScene.vue?raw";
 <template>
   <DemoLayout slug="player-input">
     <template #scene>
-      <DumasCanvas clear-color="#111" render-mode="always" :gravity="{ x: 0, y: -9.81, z: 0 }">
+      <SiteCanvas clear-color="#111" render-mode="always" :gravity="{ x: 0, y: -9.81, z: 0 }">
         <InputScene />
-      </DumasCanvas>
+      </SiteCanvas>
     </template>
     <template #content>
       <section>

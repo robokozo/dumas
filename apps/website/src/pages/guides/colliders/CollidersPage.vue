@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { DumasCanvas } from "@dumas/core";
+import SiteCanvas from "../../../components/SiteCanvas.vue";
 import DemoLayout from "../layout/DemoLayout.vue";
 import CodeBlock from "../layout/CodeBlock.vue";
 import CollidersScene from "./CollidersScene.vue";
@@ -9,9 +9,9 @@ import CollidersCode from "./CollidersScene.vue?raw";
 <template>
   <DemoLayout slug="colliders">
     <template #scene>
-      <DumasCanvas clear-color="#111" render-mode="always" :gravity="{ x: 0, y: -9.81, z: 0 }">
+      <SiteCanvas clear-color="#111" render-mode="always" :gravity="{ x: 0, y: -9.81, z: 0 }">
         <CollidersScene />
-      </DumasCanvas>
+      </SiteCanvas>
     </template>
     <template #content>
       <section>

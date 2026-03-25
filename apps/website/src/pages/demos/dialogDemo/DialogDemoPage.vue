@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { DumasCanvas } from "@dumas/core";
+import SiteCanvas from "../../../components/SiteCanvas.vue";
 import SampleLayout from "../layout/SampleLayout.vue";
 import DialogDemoScene from "./DialogDemoScene.vue";
 import GameDialog from "./GameDialog.vue";
@@ -16,7 +16,7 @@ const activeDialog = ref<DialogContent | null>(null);
 <template>
   <SampleLayout>
     <template #scene>
-      <DumasCanvas clear-color="#111814" render-mode="always">
+      <SiteCanvas clear-color="#111814" render-mode="always">
         <DialogDemoScene
           @enter-zone="
             (content) => {
@@ -25,7 +25,7 @@ const activeDialog = ref<DialogContent | null>(null);
           "
           @exit-zone="() => {}"
         />
-      </DumasCanvas>
+      </SiteCanvas>
     </template>
     <template #hud>
       <Transition name="dialog">

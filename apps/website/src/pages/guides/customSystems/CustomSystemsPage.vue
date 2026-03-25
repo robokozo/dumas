@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { DumasCanvas } from "@dumas/core";
+import SiteCanvas from "../../../components/SiteCanvas.vue";
 import DemoLayout from "../layout/DemoLayout.vue";
 import CodeBlock from "../layout/CodeBlock.vue";
 import CustomSystemsScene from "./CustomSystemsScene.vue";
@@ -9,9 +9,9 @@ import SpinningBoxCode from "./SpinningBox.vue?raw";
 <template>
   <DemoLayout slug="custom-systems">
     <template #scene>
-      <DumasCanvas clear-color="#111" render-mode="always">
+      <SiteCanvas clear-color="#111" render-mode="always">
         <CustomSystemsScene />
-      </DumasCanvas>
+      </SiteCanvas>
     </template>
     <template #content>
       <section>
