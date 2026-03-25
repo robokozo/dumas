@@ -33,4 +33,10 @@ export const DEMOS: Array<DemoEntry> = [
     description:
       "Click the sun to collect energy. Buy satellites to generate energy passively and build a Dyson swarm.",
   },
+  {
+    slug: "ball-dropper",
+    title: "Ball Dropper",
+    description:
+      "Click to drop balls onto a spinning plate. Land in colored bowls to score points — 100 balls per round.",
+  },
 ];
