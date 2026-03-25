@@ -55,6 +55,10 @@ const routes: Array<RouteRecordRaw> = [
     path: "/samples/dialog-demo",
     component: () => import("../pages/samples/dialogDemo/DialogDemoPage.vue"),
   },
+  {
+    path: "/samples/dyson-swarm",
+    component: () => import("../pages/samples/dysonSwarm/DysonSwarmPage.vue"),
+  },
 ];
 
 export const router = createRouter({

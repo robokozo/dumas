@@ -27,4 +27,10 @@ export const SAMPLES: Array<SampleEntry> = [
     description:
       "Walk a character into trigger zones to open HTML dialog boxes — showing how game events can drive reactive UI.",
   },
+  {
+    slug: "dyson-swarm",
+    title: "Dyson Swarm",
+    description:
+      "Click the sun to collect energy. Buy satellites to generate energy passively and build a Dyson swarm.",
+  },
 ];
