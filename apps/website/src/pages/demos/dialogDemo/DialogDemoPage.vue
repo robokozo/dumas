@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import SiteCanvas from "../../../components/SiteCanvas.vue";
-import SampleLayout from "../layout/SampleLayout.vue";
+import DemoLayout from "../layout/DemoLayout.vue";
 import DialogDemoScene from "./DialogDemoScene.vue";
 import GameDialog from "./GameDialog.vue";
 
@@ -14,7 +14,7 @@ const activeDialog = ref<DialogContent | null>(null);
 </script>
 
 <template>
-  <SampleLayout>
+  <DemoLayout>
     <template #scene>
       <SiteCanvas clear-color="#111814" render-mode="always">
         <DialogDemoScene
@@ -38,7 +38,7 @@ const activeDialog = ref<DialogContent | null>(null);
       </Transition>
       <p class="hint">WASD · walk into a glowing marker to interact · Esc to close</p>
     </template>
-  </SampleLayout>
+  </DemoLayout>
 </template>
 
 <style scoped>

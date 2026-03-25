@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import SiteCanvas from "../../../components/SiteCanvas.vue";
-import SampleLayout from "../layout/SampleLayout.vue";
+import DemoLayout from "../layout/DemoLayout.vue";
 import IsometricScene from "./IsometricScene.vue";
 
 const TOTAL_COLLECTIBLES = 5;
@@ -9,7 +9,7 @@ const score = ref(0);
 </script>
 
 <template>
-  <SampleLayout>
+  <DemoLayout>
     <template #scene>
       <SiteCanvas clear-color="#1a2a1a" render-mode="always">
         <IsometricScene
@@ -32,7 +32,7 @@ const score = ref(0);
         </p>
       </div>
     </template>
-  </SampleLayout>
+  </DemoLayout>
 </template>
 
 <style scoped>

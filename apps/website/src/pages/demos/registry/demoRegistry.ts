@@ -1,10 +1,10 @@
-export interface SampleEntry {
+export interface DemoEntry {
   slug: string;
   title: string;
   description: string;
 }
 
-export const SAMPLES: Array<SampleEntry> = [
+export const DEMOS: Array<DemoEntry> = [
   {
     slug: "cannon-wall",
     title: "Cannon Wall",

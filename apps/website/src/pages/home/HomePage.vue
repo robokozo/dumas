@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { DEMOS } from "../guides/registry/demoRegistry";
-import { SAMPLES } from "../demos/registry/sampleRegistry";
+import { DEMOS as GAME_DEMOS } from "../demos/registry/demoRegistry";
 </script>
 
 <template>
@@ -43,13 +43,13 @@ import { SAMPLES } from "../demos/registry/sampleRegistry";
       <p class="section-desc">Complete mini-games combining multiple engine features.</p>
       <div class="grid">
         <RouterLink
-          v-for="sample in SAMPLES"
-          :key="sample.slug"
-          :to="`/demos/${sample.slug}`"
-          class="card card--sample"
+          v-for="demo in GAME_DEMOS"
+          :key="demo.slug"
+          :to="`/demos/${demo.slug}`"
+          class="card card--demo"
         >
-          <h3>{{ sample.title }}</h3>
-          <p>{{ sample.description }}</p>
+          <h3>{{ demo.title }}</h3>
+          <p>{{ demo.description }}</p>
         </RouterLink>
       </div>
     </section>
@@ -138,7 +138,7 @@ import { SAMPLES } from "../demos/registry/sampleRegistry";
   background: rgba(255, 255, 255, 0.05);
 }
 
-.card--sample:hover {
+.card--demo:hover {
   border-color: rgba(100, 255, 150, 0.3);
 }
 

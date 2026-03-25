@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import SiteCanvas from "../../../components/SiteCanvas.vue";
-import SampleLayout from "../layout/SampleLayout.vue";
+import DemoLayout from "../layout/DemoLayout.vue";
 import CannonWallScene from "./CannonWallScene.vue";
 </script>
 
 <template>
-  <SampleLayout>
+  <DemoLayout>
     <template #scene>
       <SiteCanvas clear-color="#111" render-mode="always" :gravity="{ x: 0, y: -9.81, z: 0 }">
         <CannonWallScene />
@@ -14,7 +14,7 @@ import CannonWallScene from "./CannonWallScene.vue";
     <template #hud>
       <p class="hint">Click to fire</p>
     </template>
-  </SampleLayout>
+  </DemoLayout>
 </template>
 
 <style scoped>

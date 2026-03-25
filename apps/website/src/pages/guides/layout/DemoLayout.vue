@@ -25,11 +25,11 @@ const { prev, next } = getAdjacentDemos({ slug: props.slug });
         <slot name="content" />
 
         <nav class="pagination">
-          <RouterLink v-if="prev !== null" :to="`/examples/${prev.slug}`" class="prev">
+          <RouterLink v-if="prev !== null" :to="`/guides/${prev.slug}`" class="prev">
             &larr; {{ prev.title }}
           </RouterLink>
           <span v-else />
-          <RouterLink v-if="next !== null" :to="`/examples/${next.slug}`" class="next">
+          <RouterLink v-if="next !== null" :to="`/guides/${next.slug}`" class="next">
             {{ next.title }} &rarr;
           </RouterLink>
         </nav>

@@ -2,7 +2,7 @@
 import { ref, computed } from "vue";
 import { useIntervalFn } from "@vueuse/core";
 import SiteCanvas from "../../../components/SiteCanvas.vue";
-import SampleLayout from "../layout/SampleLayout.vue";
+import DemoLayout from "../layout/DemoLayout.vue";
 import DysonSwarmScene from "./DysonSwarmScene.vue";
 
 const BASE_SATELLITE_COST = 10;
@@ -68,7 +68,7 @@ function buySatellite(): void {
 </script>
 
 <template>
-  <SampleLayout>
+  <DemoLayout>
     <template #scene>
       <SiteCanvas clear-color="#03030f" render-mode="always" :gravity="{ x: 0, y: 0, z: 0 }">
         <DysonSwarmScene
@@ -120,7 +120,7 @@ function buySatellite(): void {
 
       <p class="hint">Click the sun to collect energy</p>
     </template>
-  </SampleLayout>
+  </DemoLayout>
 </template>
 
 <style scoped>

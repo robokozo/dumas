@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import SiteCanvas from "../../../components/SiteCanvas.vue";
-import SampleLayout from "../layout/SampleLayout.vue";
+import DemoLayout from "../layout/DemoLayout.vue";
 import PlatformerScene from "./PlatformerScene.vue";
 
 const TOTAL_COINS = 5;
@@ -10,7 +10,7 @@ const score2 = ref(0);
 </script>
 
 <template>
-  <SampleLayout>
+  <DemoLayout>
     <template #scene>
       <SiteCanvas clear-color="#1a1a2e" render-mode="always" :gravity="{ x: 0, y: -20, z: 0 }">
         <PlatformerScene
@@ -42,7 +42,7 @@ const score2 = ref(0);
         <p class="controls">P1: WASD + W to jump &middot; P2: Arrows + ↑ to jump</p>
       </div>
     </template>
-  </SampleLayout>
+  </DemoLayout>
 </template>
 
 <style scoped>

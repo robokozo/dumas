@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { DEMOS } from "./pages/guides/registry/demoRegistry";
-import { SAMPLES } from "./pages/demos/registry/sampleRegistry";
+import { DEMOS as GAME_DEMOS } from "./pages/demos/registry/demoRegistry";
 
 const isGuidesOpen = ref<boolean>(false);
 const isDemosOpen = ref<boolean>(false);
@@ -35,13 +35,13 @@ const isDemosOpen = ref<boolean>(false);
           <div v-if="isDemosOpen" class="dropdown-menu">
             <div class="dropdown-inner">
               <RouterLink
-                v-for="sample in SAMPLES"
-                :key="sample.slug"
-                :to="`/demos/${sample.slug}`"
+                v-for="demo in GAME_DEMOS"
+                :key="demo.slug"
+                :to="`/demos/${demo.slug}`"
                 class="dropdown-item"
                 @click="isDemosOpen = false"
               >
-                <span class="item-title">{{ sample.title }}</span>
+                <span class="item-title">{{ demo.title }}</span>
               </RouterLink>
             </div>
           </div>
