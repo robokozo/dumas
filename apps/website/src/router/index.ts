@@ -51,6 +51,10 @@ const routes: Array<RouteRecordRaw> = [
     path: "/samples/isometric",
     component: () => import("../pages/samples/isometric/IsometricPage.vue"),
   },
+  {
+    path: "/samples/dialog-demo",
+    component: () => import("../pages/samples/dialogDemo/DialogDemoPage.vue"),
+  },
 ];
 
 export const router = createRouter({

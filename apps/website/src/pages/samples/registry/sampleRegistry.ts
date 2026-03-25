@@ -21,4 +21,10 @@ export const SAMPLES: Array<SampleEntry> = [
     description:
       "Click the ground to move a character around an isometric world and collect spheres.",
   },
+  {
+    slug: "dialog-demo",
+    title: "Dialog Demo",
+    description:
+      "Walk a character into trigger zones to open HTML dialog boxes — showing how game events can drive reactive UI.",
+  },
 ];
