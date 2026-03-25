@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { DEMOS } from "../examples/registry/demoRegistry";
-import { SAMPLES } from "../samples/registry/sampleRegistry";
+import { DEMOS } from "../guides/registry/demoRegistry";
+import { SAMPLES } from "../demos/registry/sampleRegistry";
 </script>
 
 <template>
@@ -22,13 +22,13 @@ import { SAMPLES } from "../samples/registry/sampleRegistry";
     </section>
 
     <section class="section">
-      <h2>API Examples</h2>
+      <h2>Guides</h2>
       <p class="section-desc">Focused demos — one composable or concept per example.</p>
       <div class="grid">
         <RouterLink
           v-for="demo in DEMOS"
           :key="demo.slug"
-          :to="`/examples/${demo.slug}`"
+          :to="`/guides/${demo.slug}`"
           class="card"
         >
           <span class="feature-tag">{{ demo.feature }}</span>
@@ -39,13 +39,13 @@ import { SAMPLES } from "../samples/registry/sampleRegistry";
     </section>
 
     <section class="section">
-      <h2>Game Samples</h2>
+      <h2>Demos</h2>
       <p class="section-desc">Complete mini-games combining multiple engine features.</p>
       <div class="grid">
         <RouterLink
           v-for="sample in SAMPLES"
           :key="sample.slug"
-          :to="`/samples/${sample.slug}`"
+          :to="`/demos/${sample.slug}`"
           class="card card--sample"
         >
           <h3>{{ sample.title }}</h3>

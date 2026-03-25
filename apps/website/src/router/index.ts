@@ -4,60 +4,60 @@ import HomePage from "../pages/home/HomePage.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
-    path: "/examples/world-setup",
-    component: () => import("../pages/examples/worldSetup/WorldSetupPage.vue"),
+    path: "/guides/world-setup",
+    component: () => import("../pages/guides/worldSetup/WorldSetupPage.vue"),
   },
   {
-    path: "/examples/rigid-body",
-    component: () => import("../pages/examples/rigidBody/RigidBodyPage.vue"),
+    path: "/guides/rigid-body",
+    component: () => import("../pages/guides/rigidBody/RigidBodyPage.vue"),
   },
   {
-    path: "/examples/colliders",
-    component: () => import("../pages/examples/colliders/CollidersPage.vue"),
+    path: "/guides/colliders",
+    component: () => import("../pages/guides/colliders/CollidersPage.vue"),
   },
   {
-    path: "/examples/collision-events",
-    component: () => import("../pages/examples/collisionEvents/CollisionEventsPage.vue"),
+    path: "/guides/collision-events",
+    component: () => import("../pages/guides/collisionEvents/CollisionEventsPage.vue"),
   },
   {
-    path: "/examples/custom-systems",
-    component: () => import("../pages/examples/customSystems/CustomSystemsPage.vue"),
+    path: "/guides/custom-systems",
+    component: () => import("../pages/guides/customSystems/CustomSystemsPage.vue"),
   },
   {
-    path: "/examples/joints",
-    component: () => import("../pages/examples/joints/JointsPage.vue"),
+    path: "/guides/joints",
+    component: () => import("../pages/guides/joints/JointsPage.vue"),
   },
   {
-    path: "/examples/object-pooling",
-    component: () => import("../pages/examples/objectPooling/ObjectPoolingPage.vue"),
+    path: "/guides/object-pooling",
+    component: () => import("../pages/guides/objectPooling/ObjectPoolingPage.vue"),
   },
   {
-    path: "/examples/player-input",
-    component: () => import("../pages/examples/input/InputPage.vue"),
+    path: "/guides/player-input",
+    component: () => import("../pages/guides/input/InputPage.vue"),
   },
   {
-    path: "/examples/character-controller",
-    component: () => import("../pages/examples/characterController/CharacterControllerPage.vue"),
+    path: "/guides/character-controller",
+    component: () => import("../pages/guides/characterController/CharacterControllerPage.vue"),
   },
   {
-    path: "/samples/cannon-wall",
-    component: () => import("../pages/samples/cannonWall/CannonWallPage.vue"),
+    path: "/demos/cannon-wall",
+    component: () => import("../pages/demos/cannonWall/CannonWallPage.vue"),
   },
   {
-    path: "/samples/platformer",
-    component: () => import("../pages/samples/platformer/PlatformerPage.vue"),
+    path: "/demos/platformer",
+    component: () => import("../pages/demos/platformer/PlatformerPage.vue"),
   },
   {
-    path: "/samples/isometric",
-    component: () => import("../pages/samples/isometric/IsometricPage.vue"),
+    path: "/demos/isometric",
+    component: () => import("../pages/demos/isometric/IsometricPage.vue"),
   },
   {
-    path: "/samples/dialog-demo",
-    component: () => import("../pages/samples/dialogDemo/DialogDemoPage.vue"),
+    path: "/demos/dialog-demo",
+    component: () => import("../pages/demos/dialogDemo/DialogDemoPage.vue"),
   },
   {
-    path: "/samples/dyson-swarm",
-    component: () => import("../pages/samples/dysonSwarm/DysonSwarmPage.vue"),
+    path: "/demos/dyson-swarm",
+    component: () => import("../pages/demos/dysonSwarm/DysonSwarmPage.vue"),
   },
 ];
 

@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { DEMOS } from "./pages/examples/registry/demoRegistry";
-import { SAMPLES } from "./pages/samples/registry/sampleRegistry";
+import { DEMOS } from "./pages/guides/registry/demoRegistry";
+import { SAMPLES } from "./pages/demos/registry/sampleRegistry";
 
-const isExamplesOpen = ref<boolean>(false);
-const isSamplesOpen = ref<boolean>(false);
+const isGuidesOpen = ref<boolean>(false);
+const isDemosOpen = ref<boolean>(false);
 </script>
 
 <template>
@@ -12,20 +12,16 @@ const isSamplesOpen = ref<boolean>(false);
     <nav>
       <RouterLink to="/">Dumas</RouterLink>
       <div class="links">
-        <div
-          class="dropdown"
-          @mouseenter="isExamplesOpen = true"
-          @mouseleave="isExamplesOpen = false"
-        >
-          <span class="dropdown-trigger">Examples</span>
-          <div v-if="isExamplesOpen" class="dropdown-menu">
+        <div class="dropdown" @mouseenter="isGuidesOpen = true" @mouseleave="isGuidesOpen = false">
+          <span class="dropdown-trigger">Guides</span>
+          <div v-if="isGuidesOpen" class="dropdown-menu">
             <div class="dropdown-inner">
               <RouterLink
                 v-for="demo in DEMOS"
                 :key="demo.slug"
-                :to="`/examples/${demo.slug}`"
+                :to="`/guides/${demo.slug}`"
                 class="dropdown-item"
-                @click="isExamplesOpen = false"
+                @click="isGuidesOpen = false"
               >
                 <span class="item-title">{{ demo.title }}</span>
                 <span class="item-feature">{{ demo.feature }}</span>
@@ -34,20 +30,16 @@ const isSamplesOpen = ref<boolean>(false);
           </div>
         </div>
 
-        <div
-          class="dropdown"
-          @mouseenter="isSamplesOpen = true"
-          @mouseleave="isSamplesOpen = false"
-        >
-          <span class="dropdown-trigger">Samples</span>
-          <div v-if="isSamplesOpen" class="dropdown-menu">
+        <div class="dropdown" @mouseenter="isDemosOpen = true" @mouseleave="isDemosOpen = false">
+          <span class="dropdown-trigger">Demos</span>
+          <div v-if="isDemosOpen" class="dropdown-menu">
             <div class="dropdown-inner">
               <RouterLink
                 v-for="sample in SAMPLES"
                 :key="sample.slug"
-                :to="`/samples/${sample.slug}`"
+                :to="`/demos/${sample.slug}`"
                 class="dropdown-item"
-                @click="isSamplesOpen = false"
+                @click="isDemosOpen = false"
               >
                 <span class="item-title">{{ sample.title }}</span>
               </RouterLink>

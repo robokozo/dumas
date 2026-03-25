@@ -11,7 +11,7 @@ defineProps<{
     <RouterLink
       v-for="demo in DEMOS"
       :key="demo.slug"
-      :to="`/examples/${demo.slug}`"
+      :to="`/guides/${demo.slug}`"
       :class="{ active: demo.slug === currentSlug }"
     >
       <span class="title">{{ demo.title }}</span>
