@@ -66,6 +66,12 @@ export const DEMOS: Array<DemoEntry> = [
     description:
       "Move a kinematic character with built-in gravity, slope handling, and ground detection. Jump only when grounded.",
   },
+  {
+    slug: "3d-models",
+    title: "3D Models",
+    feature: "useGLTF",
+    description: "Load a GLTF/GLB model into the scene and rotate it with orbit controls.",
+  },
 ];
 
 export function getDemoBySlug({ slug }: { slug: string }): DemoEntry | null {

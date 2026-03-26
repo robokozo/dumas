@@ -40,6 +40,10 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("../pages/guides/characterController/CharacterControllerPage.vue"),
   },
   {
+    path: "/guides/3d-models",
+    component: () => import("../pages/guides/mageViewer/MageViewerPage.vue"),
+  },
+  {
     path: "/demos/cannon-wall",
     component: () => import("../pages/demos/cannonWall/CannonWallPage.vue"),
   },
