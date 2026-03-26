@@ -75,8 +75,8 @@ function onTouch(event: TouchEvent): void {
 }
 
 function onCollision(destroyedCount: number): void {
-  satellitesLost.value += destroyedCount;
-  satelliteCount.value = Math.max(0, satelliteCount.value - destroyedCount);
+  // satellitesLost.value += destroyedCount;
+  // satelliteCount.value = Math.max(0, satelliteCount.value - destroyedCount);
 }
 
 function buySatellite(): void {
