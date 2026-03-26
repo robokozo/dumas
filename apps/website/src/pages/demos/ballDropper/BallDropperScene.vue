@@ -7,9 +7,21 @@ import Bowl from "./Bowl.vue";
 const PLATE_ROTATION_SPEED = 0.4;
 const PLATE_RADIUS = 3;
 const PLATE_HALF_HEIGHT = 0.1;
-const BOWL_RADIUS_ON_PLATE = 1.8;
+const BOWL_RADIUS_ON_PLATE = 2.4;
 const DROPPER_Y = 5;
 const JITTER = 0.2;
+
+// Cup wall visual geometry — matches physics constants in Bowl.vue
+const CUP_RADIUS = 0.46;
+const CUP_HEIGHT = 0.5;
+const WALL_COUNT = 8;
+const WALL_THICKNESS = 0.06;
+const WALL_ARC_WIDTH = ((Math.PI * CUP_RADIUS) / WALL_COUNT) * 2 + 0.04;
+// Plate-local angle for each wall segment relative to the cup center
+const WALL_SEGMENT_ANGLES = Array.from(
+  { length: WALL_COUNT },
+  (_, i) => (i / WALL_COUNT) * Math.PI * 2,
+);
 
 const BOWLS = [
   { angle: 0, points: 100, color: "#ff3333" },
@@ -135,7 +147,12 @@ function setPlateGroupRef(el: object | null): void {
   <!-- Dropper device — positioned over the bowl track, closest to camera -->
   <TresMesh :position="[0, DROPPER_Y, BOWL_RADIUS_ON_PLATE]">
     <TresCylinderGeometry :args="[0.12, 0.18, 0.8, 16]" />
-    <TresMeshStandardMaterial color="#333333" :metalness="0.8" :roughness="0.2" />
+    <TresMeshStandardMaterial
+      color="#aaaacc"
+      :emissive="'#6666aa'"
+      :emissive-intensity="0.4"
+      :roughness="0.4"
+    />
   </TresMesh>
 
   <!-- Rotating plate (visual bowls are children — rotate with plate) -->
@@ -151,24 +168,46 @@ function setPlateGroupRef(el: object | null): void {
       <TresCylinderGeometry :args="[PLATE_RADIUS, PLATE_RADIUS, 0.2, 64]" />
       <TresMeshStandardMaterial color="#999999" :metalness="0.4" :roughness="0.4" />
     </TresMesh>
-    <!-- Bowl visuals — rotate with plate automatically -->
-    <TresMesh
+    <!-- Bowl cups — 8 box wall segments + base disc per bowl -->
+    <TresGroup
       v-for="(bowl, i) in BOWLS"
       :key="i"
       :position="[
         Math.cos(bowl.angle) * BOWL_RADIUS_ON_PLATE,
-        0.13,
+        PLATE_HALF_HEIGHT,
         Math.sin(bowl.angle) * BOWL_RADIUS_ON_PLATE,
       ]"
     >
-      <TresCylinderGeometry :args="[0.42, 0.42, 0.07, 32]" />
-      <TresMeshStandardMaterial
-        :color="bowl.color"
-        :emissive="bowl.color"
-        :emissive-intensity="0.4"
-        :roughness="0.4"
-      />
-    </TresMesh>
+      <!-- Base disc: sensor zone indicator -->
+      <TresMesh>
+        <TresCylinderGeometry :args="[CUP_RADIUS, CUP_RADIUS, 0.02, 32]" />
+        <TresMeshStandardMaterial
+          :color="bowl.color"
+          :emissive="bowl.color"
+          :emissive-intensity="0.6"
+          :roughness="0.3"
+        />
+      </TresMesh>
+      <!-- Wall boxes: matching physics collider positions -->
+      <TresMesh
+        v-for="(segAngle, si) in WALL_SEGMENT_ANGLES"
+        :key="si"
+        :position="[
+          Math.cos(segAngle) * CUP_RADIUS,
+          CUP_HEIGHT / 2,
+          Math.sin(segAngle) * CUP_RADIUS,
+        ]"
+        :rotation="[0, -segAngle, 0]"
+      >
+        <TresBoxGeometry :args="[WALL_THICKNESS, CUP_HEIGHT, WALL_ARC_WIDTH]" />
+        <TresMeshStandardMaterial
+          :color="bowl.color"
+          :emissive="bowl.color"
+          :emissive-intensity="0.3"
+          :roughness="0.4"
+        />
+      </TresMesh>
+    </TresGroup>
   </TresGroup>
 
   <!-- Bowl sensors (kinematic physics bodies, no visuals) -->
