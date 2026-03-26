@@ -80,7 +80,7 @@ watch(
 function onSatelliteDestroyed(id: number): void {
   const index = satellites.findIndex((s) => s.id === id);
   if (index !== -1) {
-    satellites.splice(index, 1);
+    // satellites.splice(index, 1);
     emit("collision", 1);
   }
 }
@@ -113,7 +113,7 @@ watch(
 function onStationDestroyed(id: number): void {
   const index = stations.findIndex((s) => s.id === id);
   if (index !== -1) {
-    stations.splice(index, 1);
+    // stations.splice(index, 1);
     emit("collision", 1);
   }
 }
