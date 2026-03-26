@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { shallowReactive, shallowRef, watch } from "vue";
+import { shallowReactive, watch } from "vue";
 import { OrbitControls } from "@tresjs/cientos";
 import Satellite from "./Satellite.vue";
 
@@ -24,18 +24,17 @@ const emit = defineEmits<{
   collision: [destroyedCount: number];
 }>();
 
-const orbitControlsRef = shallowRef<{ reset: () => void } | null>(null);
-
-function setOrbitControls(el: { reset: () => void } | null): void {
-  orbitControlsRef.value = el;
+// Star field — generated once, static
+const STAR_COUNT = 2000;
+const starPositions = new Float32Array(STAR_COUNT * 3);
+for (let i = 0; i < STAR_COUNT; i++) {
+  const theta = Math.random() * Math.PI * 2;
+  const phi = Math.acos(2 * Math.random() - 1);
+  const r = 80 + Math.random() * 20;
+  starPositions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+  starPositions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+  starPositions[i * 3 + 2] = r * Math.cos(phi);
 }
-
-watch(
-  () => props.resetKey,
-  () => {
-    orbitControlsRef.value?.reset();
-  },
-);
 
 // shallowReactive so splice() triggers v-for re-renders
 const satellites = shallowReactive<Array<SatelliteState>>([]);
@@ -86,15 +85,15 @@ function onSatelliteDestroyed(id: number): void {
   <TresPointLight :position="[0, 0, 0]" :intensity="80" :distance="20" color="#ffaa44" />
   <TresDirectionalLight :position="[8, 6, 4]" :intensity="0.4" color="#ffffff" />
 
-  <TresPerspectiveCamera :position="[0, 4, 11]" :look-at="[0, 0, 0]" />
-  <OrbitControls
-    make-default
-    :ref="
-      (el: any) => {
-        setOrbitControls(el);
-      }
-    "
-  />
+  <!-- key forces remount on reset, which snaps camera back to initial position -->
+  <TresPerspectiveCamera :key="props.resetKey" :position="[0, 4, 11]" :look-at="[0, 0, 0]" />
+  <OrbitControls :key="props.resetKey" make-default />
+
+  <!-- Star field -->
+  <TresPoints>
+    <TresBufferGeometry :position="[starPositions, 3]" />
+    <TresPointsMaterial color="#ffffff" :size="0.12" :size-attenuation="true" />
+  </TresPoints>
 
   <!-- Sun core (clickable) — high emissive-intensity drives tone-mapping bloom -->
   <TresMesh @click="emit('sun-clicked')">

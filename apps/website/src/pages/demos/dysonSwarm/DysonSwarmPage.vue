@@ -55,6 +55,13 @@ function onSunClicked(): void {
   energy.value += 1;
 }
 
+function onTouch(event: TouchEvent): void {
+  // Each changedTouch is a finger that just made contact — fire once per finger
+  for (let i = 0; i < event.changedTouches.length; i++) {
+    onSunClicked();
+  }
+}
+
 function onCollision(destroyedCount: number): void {
   satellitesLost.value += destroyedCount;
   satelliteCount.value = Math.max(0, satelliteCount.value - destroyedCount);
@@ -70,14 +77,17 @@ function buySatellite(): void {
 <template>
   <DemoLayout>
     <template #scene>
-      <SiteCanvas clear-color="#03030f" render-mode="always" :gravity="{ x: 0, y: 0, z: 0 }">
-        <DysonSwarmScene
-          :satellite-count="satelliteCount"
-          :reset-key="resetKey"
-          @sun-clicked="onSunClicked"
-          @collision="(n) => onCollision(n)"
-        />
-      </SiteCanvas>
+      <!-- touchstart.prevent fires per finger and blocks the subsequent click to avoid double-counting -->
+      <div class="touch-layer" @touchstart.prevent="(e) => onTouch(e)">
+        <SiteCanvas clear-color="#03030f" render-mode="always" :gravity="{ x: 0, y: 0, z: 0 }">
+          <DysonSwarmScene
+            :satellite-count="satelliteCount"
+            :reset-key="resetKey"
+            @sun-clicked="onSunClicked"
+            @collision="(n) => onCollision(n)"
+          />
+        </SiteCanvas>
+      </div>
     </template>
 
     <template #hud>
@@ -124,6 +134,11 @@ function buySatellite(): void {
 </template>
 
 <style scoped>
+.touch-layer {
+  height: 100%;
+  width: 100%;
+}
+
 .hud {
   position: absolute;
   top: 1.5rem;
