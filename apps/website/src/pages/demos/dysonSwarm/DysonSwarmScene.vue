@@ -2,6 +2,7 @@
 import { shallowReactive, watch } from "vue";
 import { OrbitControls } from "@tresjs/cientos";
 import Satellite from "./Satellite.vue";
+import SpaceStation from "./SpaceStation.vue";
 
 interface SatelliteState {
   id: number;
@@ -14,8 +15,16 @@ interface SatelliteState {
   panelH: number;
 }
 
+interface StationState {
+  id: number;
+  orbitRadius: number;
+  orbitSpeed: number;
+  initialAngle: number;
+}
+
 const props = defineProps<{
   satelliteCount: number;
+  stationCount: number;
   resetKey: number;
 }>();
 
@@ -75,6 +84,39 @@ function onSatelliteDestroyed(id: number): void {
     emit("collision", 1);
   }
 }
+
+const stations = shallowReactive<Array<StationState>>([]);
+let nextStationId = 0;
+
+function addStationState(): void {
+  const i = stations.length;
+  // Stations orbit well beyond satellites (2.4–5.1), spread across a band 6–8
+  const orbitRadius = 6.0 + (i % 5) * 0.4;
+  const initialAngle = i * 2.3998; // near-golden angle, keeps stations spread
+  stations.push({
+    id: nextStationId++,
+    orbitRadius,
+    orbitSpeed: 0.12 - (i % 3) * 0.02,
+    initialAngle,
+  });
+}
+
+watch(
+  () => props.stationCount,
+  (count) => {
+    while (stations.length < count) {
+      addStationState();
+    }
+  },
+);
+
+function onStationDestroyed(id: number): void {
+  const index = stations.findIndex((s) => s.id === id);
+  if (index !== -1) {
+    stations.splice(index, 1);
+    emit("collision", 1);
+  }
+}
 </script>
 
 <template>
@@ -125,5 +167,15 @@ function onSatelliteDestroyed(id: number): void {
     :panel-w="sat.panelW"
     :panel-h="sat.panelH"
     @destroyed="() => onSatelliteDestroyed(sat.id)"
+  />
+
+  <!-- Space Stations -->
+  <SpaceStation
+    v-for="station in stations"
+    :key="station.id"
+    :orbit-radius="station.orbitRadius"
+    :orbit-speed="station.orbitSpeed"
+    :initial-angle="station.initialAngle"
+    @destroyed="() => onStationDestroyed(station.id)"
   />
 </template>

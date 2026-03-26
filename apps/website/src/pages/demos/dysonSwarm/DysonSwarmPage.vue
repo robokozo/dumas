@@ -8,10 +8,14 @@ import DysonSwarmScene from "./DysonSwarmScene.vue";
 const BASE_SATELLITE_COST = 10;
 const COST_SCALE = 1.18;
 const SATELLITE_ENERGY_RATE = 0.8; // energy per second per satellite
+const BASE_STATION_COST = 500;
+const STATION_COST_SCALE = 2.5;
+const STATION_ENERGY_RATE = 8; // energy per second per station
 const CPS_TICK_MS = 100;
 
 const energy = ref(0);
 const satelliteCount = ref(0);
+const stationCount = ref(0);
 const resetKey = ref(0);
 const satellitesLost = ref(0);
 
@@ -22,8 +26,14 @@ function resetCamera(): void {
 const nextCost = computed(() =>
   Math.floor(BASE_SATELLITE_COST * Math.pow(COST_SCALE, satelliteCount.value)),
 );
-const energyPerSecond = computed(() => satelliteCount.value * SATELLITE_ENERGY_RATE);
+const nextStationCost = computed(() =>
+  Math.floor(BASE_STATION_COST * Math.pow(STATION_COST_SCALE, stationCount.value)),
+);
+const energyPerSecond = computed(
+  () => satelliteCount.value * SATELLITE_ENERGY_RATE + stationCount.value * STATION_ENERGY_RATE,
+);
 const canBuy = computed(() => energy.value >= nextCost.value);
+const canBuyStation = computed(() => energy.value >= nextStationCost.value);
 
 const MILESTONES: Array<{ count: number; label: string }> = [
   { count: 1, label: "First satellite online." },
@@ -44,10 +54,12 @@ const milestone = computed(() => {
   return current;
 });
 
-// Passive energy accumulation from satellites
+// Passive energy accumulation from satellites and stations
 useIntervalFn(() => {
-  if (satelliteCount.value > 0) {
-    energy.value += (satelliteCount.value * SATELLITE_ENERGY_RATE * CPS_TICK_MS) / 1000;
+  const totalRate =
+    satelliteCount.value * SATELLITE_ENERGY_RATE + stationCount.value * STATION_ENERGY_RATE;
+  if (totalRate > 0) {
+    energy.value += (totalRate * CPS_TICK_MS) / 1000;
   }
 }, CPS_TICK_MS);
 
@@ -72,6 +84,12 @@ function buySatellite(): void {
   energy.value -= nextCost.value;
   satelliteCount.value += 1;
 }
+
+function buyStation(): void {
+  if (canBuyStation.value === false) return;
+  energy.value -= nextStationCost.value;
+  stationCount.value += 1;
+}
 </script>
 
 <template>
@@ -82,6 +100,7 @@ function buySatellite(): void {
         <SiteCanvas clear-color="#03030f" render-mode="always" :gravity="{ x: 0, y: 0, z: 0 }">
           <DysonSwarmScene
             :satellite-count="satelliteCount"
+            :station-count="stationCount"
             :reset-key="resetKey"
             @sun-clicked="onSunClicked"
             @collision="(n) => onCollision(n)"
@@ -107,7 +126,7 @@ function buySatellite(): void {
           <span class="value collision-value">{{ satellitesLost }}</span>
         </div>
 
-        <!-- Buy button -->
+        <!-- Buy satellite -->
         <div class="panel buy-panel">
           <div class="swarm-header">
             <span class="label">Dyson Swarm</span>
@@ -123,6 +142,23 @@ function buySatellite(): void {
             <span class="cost">{{ nextCost.toLocaleString() }} ⚡</span>
           </button>
           <p v-if="milestone !== null" class="milestone">{{ milestone }}</p>
+        </div>
+
+        <!-- Buy station -->
+        <div class="panel buy-panel">
+          <div class="swarm-header">
+            <span class="label">Space Stations</span>
+            <span class="swarm-count">{{ stationCount }}</span>
+          </div>
+          <button
+            class="buy-btn"
+            :class="{ enabled: canBuyStation }"
+            :disabled="!canBuyStation"
+            @click="buyStation"
+          >
+            Deploy Station
+            <span class="cost">{{ nextStationCost.toLocaleString() }} ⚡</span>
+          </button>
         </div>
       </div>
 
