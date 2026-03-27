@@ -10,12 +10,24 @@
     <section class="section section--name">
       <h2>Why "Dumas"?</h2>
       <p>
-        Named after Alexandre Dumas, author of <em>The Three Musketeers</em> — a nod to the three
+        Named after Alexandre Dumas, author of <em>The Three Musketeers</em> - a nod to the three
         TresJS libraries the engine is built with:
         <a href="https://tresjs.org" target="_blank" rel="noopener">Tres</a>,
         <a href="https://cientos.tresjs.org" target="_blank" rel="noopener">Cientos</a>, and
         <a href="https://leches.tresjs.org" target="_blank" rel="noopener">TresLeches</a>.
       </p>
+    </section>
+
+    <section class="section">
+      <h2>Guides</h2>
+      <p class="section-desc">Learn the core concepts.</p>
+      <div class="grid">
+        <RouterLink to="/guides/world-setup" class="card">
+          <div class="feature-tag">Core</div>
+          <h3>World Setup</h3>
+          <p>Mount a scene, register a system, and animate your first object.</p>
+        </RouterLink>
+      </div>
     </section>
   </div>
 </template>

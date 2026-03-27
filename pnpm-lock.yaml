@@ -15,6 +15,9 @@ catalogs:
     '@vueuse/core':
       specifier: ^14.2.1
       version: 14.2.1
+    bitecs:
+      specifier: ^0.4.0
+      version: 0.4.0
     shiki:
       specifier: ^4.0.2
       version: 4.0.2
@@ -97,9 +100,9 @@ importers:
       '@tresjs/core':
         specifier: ^5.0.0
         version: 5.7.0(three@0.183.2)(vue@3.5.30(typescript@5.9.3))
-      '@tresjs/rapier':
-        specifier: file:../../../tresjs-rapier
-        version: file:../tresjs-rapier(@tresjs/core@5.7.0(three@0.183.2)(vue@3.5.30(typescript@5.9.3)))(three@0.183.2)(vue@3.5.30(typescript@5.9.3))
+      bitecs:
+        specifier: 'catalog:'
+        version: 0.4.0
       vue:
         specifier: ^3.5.0
         version: 3.5.30(typescript@5.9.3)
@@ -119,6 +122,40 @@ importers:
       bumpp:
         specifier: ^11.0.1
         version: 11.0.1
+      three:
+        specifier: 'catalog:'
+        version: 0.183.2
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vite-plus:
+        specifier: ^0.1.11
+        version: 0.1.12(@types/node@25.5.0)(jiti@2.6.1)(typescript@5.9.3)(vite@8.0.0(@types/node@25.5.0)(jiti@2.6.1)(yaml@2.8.2))(yaml@2.8.2)
+      vue-tsc:
+        specifier: 'catalog:'
+        version: 3.2.6(typescript@5.9.3)
+
+  packages/rapier:
+    dependencies:
+      '@tresjs/core':
+        specifier: ^5.0.0
+        version: 5.7.0(three@0.183.2)(vue@3.5.30(typescript@5.9.3))
+      '@tresjs/rapier':
+        specifier: file:../../../tresjs-rapier
+        version: file:../tresjs-rapier(@tresjs/core@5.7.0(three@0.183.2)(vue@3.5.30(typescript@5.9.3)))(three@0.183.2)(vue@3.5.30(typescript@5.9.3))
+      vue:
+        specifier: ^3.5.0
+        version: 3.5.30(typescript@5.9.3)
+    devDependencies:
+      '@types/node':
+        specifier: ^25.5.0
+        version: 25.5.0
+      '@types/three':
+        specifier: 'catalog:'
+        version: 0.183.1
+      '@vitejs/plugin-vue':
+        specifier: 'catalog:'
+        version: 6.0.5(vite@8.0.0(@types/node@25.5.0)(jiti@2.6.1)(yaml@2.8.2))(vue@3.5.30(typescript@5.9.3))
       three:
         specifier: 'catalog:'
         version: 0.183.2
@@ -1209,6 +1246,9 @@ packages:
 
   birpc@2.9.0:
     resolution: {integrity: sha512-KrayHS5pBi69Xi9JmvoqrIgYGDkD6mcSe/i6YKi3w5kekCLzrX4+nawcXqrj2tIp50Kw/mT/s3p+GVK0A0sKxw==}
+
+  bitecs@0.4.0:
+    resolution: {integrity: sha512-ho6Zop/L79DRTnBAfakPpGPuX7y0+lAjX06CpaAW+5tnAc7BH3L3RlSrWAXAqwnQGDZ10GsoxaxyTTsddlun3g==}
 
   bumpp@11.0.1:
     resolution: {integrity: sha512-X0ti27I/ewsx/u0EJSyl0IZWWOE95q+wIpAG/60kc5gqMNR4a23YJdd3lL7JsBN11TgLbCM4KpfGMuFfdigb4g==}
@@ -2966,6 +3006,8 @@ snapshots:
   assertion-error@2.0.1: {}
 
   birpc@2.9.0: {}
+
+  bitecs@0.4.0: {}
 
   bumpp@11.0.1:
     dependencies:

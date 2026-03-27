@@ -4,6 +4,9 @@
   <div class="app">
     <nav>
       <RouterLink to="/">Dumas</RouterLink>
+      <div class="links">
+        <RouterLink to="/guides/world-setup">Guides</RouterLink>
+      </div>
     </nav>
     <main>
       <RouterView />

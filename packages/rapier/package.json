@@ -1,20 +1,8 @@
 {
-  "name": "@dumas/core",
+  "name": "@dumas/rapier",
   "version": "0.0.0",
-  "description": "A starter for creating a TypeScript package.",
-  "homepage": "https://github.com/author/library#readme",
-  "bugs": {
-    "url": "https://github.com/author/library/issues"
-  },
+  "description": "Rapier physics integration for Dumas, powered by @tresjs/rapier.",
   "license": "MIT",
-  "author": "Author Name <author.name@mail.com>",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/author/library.git"
-  },
-  "files": [
-    "dist"
-  ],
   "type": "module",
   "types": "./dist/index.d.ts",
   "exports": {
@@ -30,19 +18,16 @@
   "scripts": {
     "build": "vp pack && vue-tsc --project tsconfig.build.json --declaration --emitDeclarationOnly",
     "dev": "vp pack --watch",
-    "test": "vp test",
     "check": "vp check",
     "prepublishOnly": "vp run build"
   },
   "dependencies": {
-    "bitecs": "catalog:"
+    "@tresjs/rapier": "file:../../../tresjs-rapier"
   },
   "devDependencies": {
     "@types/node": "^25.5.0",
     "@types/three": "catalog:",
-    "@typescript/native-preview": "7.0.0-dev.20260316.1",
     "@vitejs/plugin-vue": "catalog:",
-    "bumpp": "^11.0.1",
     "three": "catalog:",
     "typescript": "^5.9.3",
     "vite-plus": "^0.1.11",
