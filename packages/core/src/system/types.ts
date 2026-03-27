@@ -1,3 +1,5 @@
+import type { World } from "bitecs";
+
 export interface SystemOptions {
   /**
    * Execution order relative to other systems. Lower numbers run first.
@@ -13,4 +15,4 @@ export interface SystemOptions {
  * Do NOT access Vue reactive state inside this function — it runs in the
  * hot render path. Read directly from bitECS SoA arrays instead.
  */
-export type SystemFn = (params: { delta: number; elapsed: number }) => void;
+export type SystemFn = (params: { delta: number; elapsed: number; world: World }) => void;

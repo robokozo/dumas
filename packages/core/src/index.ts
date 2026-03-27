@@ -8,6 +8,8 @@ export { default as SpawnPoint } from "./entity/SpawnPoint.vue";
 export { useWorld } from "./world/useWorld";
 export { useScene } from "./scene/useScene";
 export { useEntity } from "./entity/useEntity";
+export { useEntityContext } from "./entity/useEntityContext";
+export { useEcsComponent } from "./entity/useEcsComponent";
 export { useSystem } from "./system/useSystem";
 
 // ECS (for advanced users building custom systems)

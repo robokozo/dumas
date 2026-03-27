@@ -9,9 +9,16 @@ import { Transform } from "./components";
 export function createEcsWorld(): World {
   const world = createWorld();
 
-  // Quaternion identity (w = 1) and unit scale cannot be expressed as bitECS
-  // defaults, so we apply them reactively via onAdd observers.
+  // Plain JS arrays have no default values — every field must be explicitly
+  // initialized on add. Quaternion identity requires rotW = 1; scale defaults
+  // to 1 on all axes; position and rotX/Y/Z default to 0.
   observe(world, onAdd(Transform), (eid) => {
+    Transform.posX[eid] = 0;
+    Transform.posY[eid] = 0;
+    Transform.posZ[eid] = 0;
+    Transform.rotX[eid] = 0;
+    Transform.rotY[eid] = 0;
+    Transform.rotZ[eid] = 0;
     Transform.rotW[eid] = 1;
     Transform.scaleX[eid] = 1;
     Transform.scaleY[eid] = 1;
