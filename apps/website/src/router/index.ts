@@ -7,6 +7,10 @@ const routes: Array<RouteRecordRaw> = [
     path: "/guides/world-setup",
     component: () => import("../pages/guides/worldSetup/WorldSetupPage.vue"),
   },
+  {
+    path: "/guides/physics",
+    component: () => import("../pages/guides/physics/PhysicsPage.vue"),
+  },
 ];
 
 export const router = createRouter({

@@ -27,6 +27,14 @@
           <h3>World Setup</h3>
           <p>Mount a scene, register a system, and animate your first object.</p>
         </RouterLink>
+        <RouterLink to="/guides/physics" class="card">
+          <div class="feature-tag">Physics</div>
+          <h3>Physics</h3>
+          <p>
+            Add rigid bodies and colliders with Rapier. Dynamic objects, fixed ground planes, and
+            automatic collider generation.
+          </p>
+        </RouterLink>
       </div>
     </section>
   </div>

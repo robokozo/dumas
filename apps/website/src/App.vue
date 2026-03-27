@@ -1,11 +1,47 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { ref } from "vue";
+import { onClickOutside } from "@vueuse/core";
+import { useRouter } from "vue-router";
+
+const isOpen = ref(false);
+const dropdownRef = ref<HTMLElement | null>(null);
+
+onClickOutside(dropdownRef, () => {
+  isOpen.value = false;
+});
+
+const GUIDES = [
+  { path: "/guides/world-setup", title: "World Setup", tag: "Core" },
+  { path: "/guides/physics", title: "Physics", tag: "Physics" },
+];
+
+const router = useRouter();
+router.afterEach(() => {
+  isOpen.value = false;
+});
+</script>
 
 <template>
   <div class="app">
     <nav>
       <RouterLink to="/">Dumas</RouterLink>
       <div class="links">
-        <RouterLink to="/guides/world-setup">Guides</RouterLink>
+        <div ref="dropdownRef" class="dropdown">
+          <button class="dropdown-trigger" @click="isOpen = !isOpen">Guides ▾</button>
+          <div v-if="isOpen === true" class="dropdown-menu">
+            <div class="dropdown-inner">
+              <RouterLink
+                v-for="guide in GUIDES"
+                :key="guide.path"
+                :to="guide.path"
+                class="dropdown-item"
+              >
+                <span class="item-title">{{ guide.title }}</span>
+                <span class="item-feature">{{ guide.tag }}</span>
+              </RouterLink>
+            </div>
+          </div>
+        </div>
       </div>
     </nav>
     <main>
@@ -81,6 +117,9 @@ main {
 }
 
 .dropdown-trigger {
+  background: none;
+  border: none;
+  font-family: inherit;
   color: #eee;
   font-size: 0.9rem;
   cursor: pointer;

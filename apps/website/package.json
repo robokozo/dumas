@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@dumas/core": "workspace:*",
+    "@dumas/rapier": "workspace:*",
     "@tresjs/cientos": "^5.0.0",
     "@tresjs/core": "^5.0.0",
     "@tresjs/leches": "^1.1.4",
