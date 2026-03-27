@@ -41,7 +41,7 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: "/guides/3d-models",
-    component: () => import("../pages/guides/mageViewer/MageViewerPage.vue"),
+    component: () => import("../pages/guides/spellAndSteel/SpellAndSteelPage.vue"),
   },
   {
     path: "/demos/cannon-wall",

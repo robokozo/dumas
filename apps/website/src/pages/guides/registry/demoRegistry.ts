@@ -68,9 +68,9 @@ export const DEMOS: Array<DemoEntry> = [
   },
   {
     slug: "3d-models",
-    title: "3D Models",
-    feature: "useGLTF",
-    description: "Load a GLTF/GLB model into the scene and rotate it with orbit controls.",
+    title: "Spell & Steel",
+    feature: "useGLTF + useAnimations",
+    description: "Load animated GLTF characters and crossfade between animation clips.",
   },
 ];
 
