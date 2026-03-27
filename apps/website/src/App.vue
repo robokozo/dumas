@@ -1,52 +1,9 @@
-<script setup lang="ts">
-import { ref } from "vue";
-import { DEMOS } from "./pages/guides/registry/demoRegistry";
-import { DEMOS as GAME_DEMOS } from "./pages/demos/registry/demoRegistry";
-
-const isGuidesOpen = ref<boolean>(false);
-const isDemosOpen = ref<boolean>(false);
-</script>
+<script setup lang="ts"></script>
 
 <template>
   <div class="app">
     <nav>
       <RouterLink to="/">Dumas</RouterLink>
-      <div class="links">
-        <div class="dropdown" @mouseenter="isGuidesOpen = true" @mouseleave="isGuidesOpen = false">
-          <span class="dropdown-trigger">Guides</span>
-          <div v-if="isGuidesOpen" class="dropdown-menu">
-            <div class="dropdown-inner">
-              <RouterLink
-                v-for="demo in DEMOS"
-                :key="demo.slug"
-                :to="`/guides/${demo.slug}`"
-                class="dropdown-item"
-                @click="isGuidesOpen = false"
-              >
-                <span class="item-title">{{ demo.title }}</span>
-                <span class="item-feature">{{ demo.feature }}</span>
-              </RouterLink>
-            </div>
-          </div>
-        </div>
-
-        <div class="dropdown" @mouseenter="isDemosOpen = true" @mouseleave="isDemosOpen = false">
-          <span class="dropdown-trigger">Demos</span>
-          <div v-if="isDemosOpen" class="dropdown-menu">
-            <div class="dropdown-inner">
-              <RouterLink
-                v-for="demo in GAME_DEMOS"
-                :key="demo.slug"
-                :to="`/demos/${demo.slug}`"
-                class="dropdown-item"
-                @click="isDemosOpen = false"
-              >
-                <span class="item-title">{{ demo.title }}</span>
-              </RouterLink>
-            </div>
-          </div>
-        </div>
-      </div>
     </nav>
     <main>
       <RouterView />

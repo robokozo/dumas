@@ -9,7 +9,6 @@
     "preview": "vp preview"
   },
   "dependencies": {
-    "@dimforge/rapier3d-compat": "*",
     "@dumas/core": "workspace:*",
     "@tresjs/cientos": "^5.0.0",
     "@tresjs/core": "^5.0.0",

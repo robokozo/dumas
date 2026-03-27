@@ -1,7 +1,4 @@
-<script setup lang="ts">
-import { DEMOS } from "../guides/registry/demoRegistry";
-import { DEMOS as GAME_DEMOS } from "../demos/registry/demoRegistry";
-</script>
+<script setup lang="ts"></script>
 
 <template>
   <div class="home">
@@ -19,39 +16,6 @@ import { DEMOS as GAME_DEMOS } from "../demos/registry/demoRegistry";
         <a href="https://cientos.tresjs.org" target="_blank" rel="noopener">Cientos</a>, and
         <a href="https://leches.tresjs.org" target="_blank" rel="noopener">TresLeches</a>.
       </p>
-    </section>
-
-    <section class="section">
-      <h2>Guides</h2>
-      <p class="section-desc">Focused demos — one composable or concept per example.</p>
-      <div class="grid">
-        <RouterLink
-          v-for="demo in DEMOS"
-          :key="demo.slug"
-          :to="`/guides/${demo.slug}`"
-          class="card"
-        >
-          <span class="feature-tag">{{ demo.feature }}</span>
-          <h3>{{ demo.title }}</h3>
-          <p>{{ demo.description }}</p>
-        </RouterLink>
-      </div>
-    </section>
-
-    <section class="section">
-      <h2>Demos</h2>
-      <p class="section-desc">Complete mini-games combining multiple engine features.</p>
-      <div class="grid">
-        <RouterLink
-          v-for="demo in GAME_DEMOS"
-          :key="demo.slug"
-          :to="`/demos/${demo.slug}`"
-          class="card card--demo"
-        >
-          <h3>{{ demo.title }}</h3>
-          <p>{{ demo.description }}</p>
-        </RouterLink>
-      </div>
     </section>
   </div>
 </template>
