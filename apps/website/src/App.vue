@@ -11,8 +11,11 @@ onClickOutside(dropdownRef, () => {
 });
 
 const GUIDES = [
-  { path: "/guides/world-setup", title: "World Setup", tag: "Core" },
-  { path: "/guides/physics", title: "Physics", tag: "Physics" },
+  { path: "/guides/world-setup", title: "<World>", tag: "Core" },
+  { path: "/guides/use-system", title: "useSystem", tag: "ECS" },
+  { path: "/guides/use-ecs-component", title: "useEcsComponent", tag: "ECS" },
+  { path: "/guides/queries", title: "useQuery", tag: "ECS" },
+  { path: "/guides/physics", title: "<Physics>", tag: "Physics" },
 ];
 
 const router = useRouter();

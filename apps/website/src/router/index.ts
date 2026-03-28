@@ -8,8 +8,20 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("../pages/guides/worldSetup/WorldSetupPage.vue"),
   },
   {
+    path: "/guides/use-system",
+    component: () => import("../pages/guides/useSystem/UseSystemPage.vue"),
+  },
+  {
+    path: "/guides/use-ecs-component",
+    component: () => import("../pages/guides/useEcsComponent/UseEcsComponentPage.vue"),
+  },
+  {
     path: "/guides/physics",
     component: () => import("../pages/guides/physics/PhysicsPage.vue"),
+  },
+  {
+    path: "/guides/queries",
+    component: () => import("../pages/guides/queries/QueriesPage.vue"),
   },
 ];
 

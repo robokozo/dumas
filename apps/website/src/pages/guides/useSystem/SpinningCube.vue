@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { shallowRef } from "vue";
-import { useLoop } from "@tresjs/core";
+import { useSystem } from "@dumas/core";
 
 const CUBE_SIZE = 0.75;
 const WAVE_SPEED = 2.5;
@@ -12,10 +12,11 @@ const props = defineProps<{ startX: number; color: string; phase: number }>();
 const posY = shallowRef(Math.sin(props.phase) * WAVE_AMPLITUDE);
 const rotY = shallowRef(0);
 
-const { onBeforeRender } = useLoop();
-onBeforeRender(({ delta, elapsed }) => {
-  posY.value = Math.sin(elapsed * WAVE_SPEED + props.phase) * WAVE_AMPLITUDE;
-  rotY.value += delta * SPIN_SPEED;
+useSystem({
+  fn: ({ delta, elapsed }) => {
+    posY.value = Math.sin(elapsed * WAVE_SPEED + props.phase) * WAVE_AMPLITUDE;
+    rotY.value += delta * SPIN_SPEED;
+  },
 });
 </script>
 

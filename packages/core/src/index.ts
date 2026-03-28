@@ -11,6 +11,7 @@ export { useEntity } from "./entity/useEntity";
 export { useEntityContext } from "./entity/useEntityContext";
 export { useEcsComponent } from "./entity/useEcsComponent";
 export { useSystem } from "./system/useSystem";
+export { useQuery } from "./query/useQuery";
 
 // ECS (for advanced users building custom systems)
 export { Transform, PersistentTag, SceneTag, SpawnPointTag } from "./ecs/components";
@@ -27,5 +28,11 @@ export type {
   SpawnPointRecord,
 } from "./scene/types";
 export type { EntityOptions, EntityContext } from "./entity/types";
-export type { SystemFn, SystemOptions } from "./system/types";
+export type {
+  SystemFn,
+  SystemFnWithEntities,
+  SystemOptions,
+  SystemParams,
+  SystemParamsWithEntities,
+} from "./system/types";
 export type { Vec3, Quat, RigidBodyType } from "./types";

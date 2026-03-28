@@ -35,6 +35,11 @@
             automatic collider generation.
           </p>
         </RouterLink>
+        <RouterLink to="/guides/queries" class="card">
+          <div class="feature-tag">ECS</div>
+          <h3>Queries</h3>
+          <p>Use useQuery to iterate every matching entity in one system callback.</p>
+        </RouterLink>
       </div>
     </section>
   </div>

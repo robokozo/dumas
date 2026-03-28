@@ -1,4 +1,4 @@
-import type { World } from "bitecs";
+import type { QueryResult, World } from "bitecs";
 
 export interface SystemOptions {
   /**
@@ -8,11 +8,22 @@ export interface SystemOptions {
   priority?: number;
 }
 
+export interface SystemParams {
+  delta: number;
+  elapsed: number;
+  world: World;
+}
+
+export interface SystemParamsWithEntities extends SystemParams {
+  entities: QueryResult;
+}
+
 /**
- * A per-frame callback registered via useSystem().
+ * Per-frame callback registered via useSystem().
  * Runs inside TresJS's onBeforeRender loop.
  *
  * Do NOT access Vue reactive state inside this function — it runs in the
  * hot render path. Read directly from bitECS SoA arrays instead.
  */
-export type SystemFn = (params: { delta: number; elapsed: number; world: World }) => void;
+export type SystemFn = (params: SystemParams) => void;
+export type SystemFnWithEntities = (params: SystemParamsWithEntities) => void;

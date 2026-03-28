@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { OrbitControls } from "@tresjs/cientos";
 import { World, Scene } from "@dumas/core";
-import SpinningCube from "./SpinningCube.vue";
+import OrbitingCube from "./OrbitingCube.vue";
 
 interface Column {
   startX: number;
@@ -31,7 +31,7 @@ const COLUMNS: Array<Column> = [
       <TresDirectionalLight :position="[5, 8, 5]" :intensity="2" />
       <TresAmbientLight :intensity="0.4" />
 
-      <SpinningCube
+      <OrbitingCube
         v-for="col in COLUMNS"
         :key="col.startX"
         :start-x="col.startX"

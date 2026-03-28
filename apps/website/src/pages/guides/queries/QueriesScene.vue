@@ -1,7 +1,10 @@
 <script setup lang="ts">
+import { provide } from "vue";
 import { OrbitControls } from "@tresjs/cientos";
 import { World, Scene } from "@dumas/core";
-import SpinningCube from "./SpinningCube.vue";
+import WaveCube from "./WaveCube.vue";
+import WaveSystem from "./WaveSystem.vue";
+import { WAVE_REGISTRY_KEY, type WaveEntry } from "./waveRegistry";
 
 interface Column {
   startX: number;
@@ -21,6 +24,9 @@ const COLUMNS: Array<Column> = [
   { startX: 3, color: "#44aaff", phase: (TWO_PI * 5) / COLUMN_COUNT },
   { startX: 4.5, color: "#c9b1ff", phase: (TWO_PI * 6) / COLUMN_COUNT },
 ];
+
+const waveRegistry = new Map<number, WaveEntry>();
+provide(WAVE_REGISTRY_KEY, waveRegistry);
 </script>
 
 <template>
@@ -31,7 +37,9 @@ const COLUMNS: Array<Column> = [
       <TresDirectionalLight :position="[5, 8, 5]" :intensity="2" />
       <TresAmbientLight :intensity="0.4" />
 
-      <SpinningCube
+      <WaveSystem />
+
+      <WaveCube
         v-for="col in COLUMNS"
         :key="col.startX"
         :start-x="col.startX"
