@@ -13,6 +13,10 @@ import SceneControls from "./SceneControls.vue";
         <TresBoxGeometry :args="[1.2, 1.2, 1.2]" />
         <TresMeshStandardMaterial color="#2196f3" />
       </TresMesh>
+
+      <template #overlay>
+        <div class="scene-label">Forest</div>
+      </template>
     </Scene>
 
     <Scene name="desert">
@@ -23,6 +27,10 @@ import SceneControls from "./SceneControls.vue";
         <TresSphereGeometry :args="[0.8, 32, 32]" />
         <TresMeshStandardMaterial color="#f44336" />
       </TresMesh>
+
+      <template #overlay>
+        <div class="scene-label">Desert</div>
+      </template>
     </Scene>
 
     <template #overlay>
@@ -30,3 +38,17 @@ import SceneControls from "./SceneControls.vue";
     </template>
   </Game>
 </template>
+
+<style scoped>
+.scene-label {
+  position: absolute;
+  top: 1.25rem;
+  left: 1.25rem;
+  color: rgba(255, 255, 255, 0.5);
+  font-family: sans-serif;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+</style>

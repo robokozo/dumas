@@ -1,5 +1,5 @@
 import type { World } from "bitecs";
-import type { DeepReadonly, Ref } from "vue";
+import type { DeepReadonly, Ref, Slot } from "vue";
 import type { ComponentFactory, ComponentStore } from "../types";
 import type { LoadSceneOptions } from "../scene/types";
 
@@ -26,4 +26,8 @@ export interface GameContext {
   registerScene: (params: { name: string }) => void;
   /** @internal Called by <Scene> on unmount. */
   unregisterScene: (params: { name: string }) => void;
+  /** @internal Called by <Scene> to register its #overlay slot for rendering outside TresCanvas. */
+  registerOverlay: (params: { name: string; slot: Slot }) => void;
+  /** @internal Called by <Scene> on unmount to remove its overlay slot. */
+  unregisterOverlay: (params: { name: string }) => void;
 }

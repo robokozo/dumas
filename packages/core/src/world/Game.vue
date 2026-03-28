@@ -3,6 +3,7 @@ import { provide, readonly, shallowRef, useAttrs } from "vue";
 import { TresCanvas } from "@tresjs/core";
 import { createWorld } from "bitecs";
 import { GAME_KEY } from "../keys";
+import type { Slot, VNode } from "vue";
 import type { ComponentFactory, ComponentStore } from "../types";
 import type { GameContext } from "./types";
 import type { LoadSceneOptions } from "../scene/types";
@@ -16,6 +17,7 @@ const attrs = useAttrs();
 
 const world = createWorld();
 const storeRegistry = new Map<ComponentFactory, ComponentStore>();
+const sceneOverlays = shallowRef(new Map<string, Slot>());
 const scenes = shallowRef<Array<string>>([]);
 const activeScene = shallowRef<string | null>(null);
 
@@ -33,6 +35,30 @@ function unregisterScene({ name }: { name: string }): void {
   scenes.value = scenes.value.filter((s) => s !== name);
 }
 
+function registerOverlay({ name, slot }: { name: string; slot: Slot }): void {
+  const next = new Map(sceneOverlays.value);
+  next.set(name, slot);
+  sceneOverlays.value = next;
+}
+
+function unregisterOverlay({ name }: { name: string }): void {
+  const next = new Map(sceneOverlays.value);
+  next.delete(name);
+  sceneOverlays.value = next;
+}
+
+// Renders the active scene's overlay slot from Game's DOM context so it
+// never enters TresJS's custom renderer — Teleport from inside TresCanvas
+// would route through Three.js createElement and fail on HTML elements.
+const ActiveSceneOverlay = {
+  render(): Array<VNode> | null {
+    if (activeScene.value === null) return null;
+    const slotFn = sceneOverlays.value.get(activeScene.value);
+    if (slotFn === undefined) return null;
+    return slotFn({ name: activeScene.value });
+  },
+};
+
 const ctx: GameContext = {
   world,
   storeRegistry,
@@ -41,6 +67,8 @@ const ctx: GameContext = {
   activeScene: readonly(activeScene),
   registerScene,
   unregisterScene,
+  registerOverlay,
+  unregisterOverlay,
 };
 
 provide(GAME_KEY, ctx);
@@ -52,7 +80,8 @@ provide(GAME_KEY, ctx);
       <slot />
     </TresCanvas>
     <div style="position: absolute; inset: 0; pointer-events: none">
-      <slot name="overlay" />
+      <slot name="overlay" :active-scene="activeScene" :scenes="scenes" :load-scene="loadScene" />
+      <component :is="ActiveSceneOverlay" />
     </div>
   </div>
 </template>
