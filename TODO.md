@@ -1,23 +1,5 @@
 # Dumas — TODO
 
-## ~~useQuery~~
-
-~~Wrap bitECS `query(world, components)` in a `useQuery({ components })` composable. Systems need a way to iterate matching entities — without this the ECS half of the engine is decorative.~~
-
-## ~~World setup guide split~~
-
-~~The World Setup guide currently covered both `<World>` scene bootstrapping and `useSystem` in one page. Split into two guides: one for world/scene setup and one dedicated to `useSystem` — including the `components` shorthand that pipes query results into `entities` in the callback.~~
-
-## ~~useEcsComponent guide~~
-
-~~There is no dedicated guide for `useEcsComponent`. Add one showing how to attach components to an entity and co-locate per-entity frame logic via the `fn` callback — contrasting it with `useSystem` which operates across all matching entities.~~
-
----
-
-## Scene switching
-
-Make `loadScene({ name })` actually work: conditionally render only the active `<Scene>`, tear down non-persistent entities on exit, fire `onSceneEnter` / `onSceneExit` hooks, and relocate persistent entities to the target spawn point.
-
 ## Object pooling
 
 Pre-allocate a fixed set of entities and recycle them instead of creating/destroying on every spawn. Critical for projectiles, particles, and anything that spawns frequently.

@@ -20,8 +20,8 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("../pages/guides/physics/PhysicsPage.vue"),
   },
   {
-    path: "/guides/rooms",
-    component: () => import("../pages/guides/rooms/RoomsPage.vue"),
+    path: "/advanced/scene-switching",
+    component: () => import("../pages/advanced/sceneSwitching/RoomsPage.vue"),
   },
 ];
 

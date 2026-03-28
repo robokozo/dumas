@@ -55,8 +55,8 @@
       <h2>Advanced Guides</h2>
       <p class="section-desc">Game-specific scenarios and patterns.</p>
       <div class="grid">
-        <RouterLink to="/guides/rooms" class="card card--demo">
-          <div class="feature-tag feature-tag--demo">Demo</div>
+        <RouterLink to="/advanced/scene-switching" class="card card--demo">
+          <div class="feature-tag feature-tag--demo">Core</div>
           <h3>Room Navigation</h3>
           <p>
             Three interconnected rooms with a capsule character that spawns at the door it entered
