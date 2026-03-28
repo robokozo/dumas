@@ -92,10 +92,3 @@ export const PersistentTag = {};
 export function createSceneTag(): SceneTagStore {
   return { sceneHash: [] };
 }
-
-/**
- * SpawnPointTag — zero-field tag marking entities that represent spawn
- * anchors within a scene.
- * Safe as a global singleton — bitECS queries are world-scoped.
- */
-export const SpawnPointTag = {};

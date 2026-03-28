@@ -1,6 +1,3 @@
-export type Direction = "north" | "south" | "east" | "west";
-export type EntryPoint = "center" | `from-${Direction}`;
-
 export interface Exits {
   north?: string;
   south?: string;

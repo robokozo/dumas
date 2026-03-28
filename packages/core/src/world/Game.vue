@@ -6,7 +6,6 @@ import { GAME_KEY } from "../keys";
 import type { Slot, VNode } from "vue";
 import type { ComponentFactory, ComponentStore } from "../types";
 import type { GameContext } from "./types";
-import type { LoadSceneOptions } from "../scene/types";
 
 // Disable automatic attribute inheritance so we can forward attrs to TresCanvas
 // manually — TresCanvasProps uses internal @tresjs/core types that can't be
@@ -20,10 +19,18 @@ const storeRegistry = new Map<ComponentFactory, ComponentStore>();
 const sceneOverlays = shallowRef(new Map<string, Slot>());
 const scenes = shallowRef<Array<string>>([]);
 const activeScene = shallowRef<string | null>(null);
+const transitionState = shallowRef<Record<string, unknown>>({});
 
-async function loadScene({ name }: { name: string; options?: LoadSceneOptions }): Promise<void> {
-  // Implementation will live here — scene teardown, spawn point resolution,
-  // lifecycle hook dispatch, and persistent entity relocation.
+async function loadScene({
+  name,
+  state = {},
+}: {
+  name: string;
+  state?: Record<string, unknown>;
+}): Promise<void> {
+  // Implementation will live here — scene teardown, lifecycle hook dispatch,
+  // and persistent entity relocation.
+  transitionState.value = { from: activeScene.value, ...state };
   activeScene.value = name;
 }
 
@@ -65,6 +72,7 @@ const ctx: GameContext = {
   scenes: readonly(scenes),
   loadScene,
   activeScene: readonly(activeScene),
+  transitionState: readonly(transitionState),
   registerScene,
   unregisterScene,
   registerOverlay,

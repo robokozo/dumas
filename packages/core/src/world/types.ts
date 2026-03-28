@@ -1,7 +1,6 @@
 import type { World } from "bitecs";
-import type { DeepReadonly, Ref, Slot } from "vue";
+import type { DeepReadonly, Ref, ShallowRef, Slot } from "vue";
 import type { ComponentFactory, ComponentStore } from "../types";
-import type { LoadSceneOptions } from "../scene/types";
 
 export interface GameContext {
   /** The bitECS world instance. Use for ECS queries and component access. */
@@ -15,13 +14,20 @@ export interface GameContext {
   /** Names of all currently mounted <Scene> components, in mount order. */
   scenes: DeepReadonly<Ref<Array<string>>>;
   /**
-   * Transition to a named scene. Destroys non-persistent entities from the
-   * current scene, moves persistent entities to the target spawn point,
-   * and fires onSceneExit / onSceneEnter lifecycle hooks.
+   * Transition to a named scene and fire onSceneExit / onSceneEnter lifecycle hooks.
+   *
+   * Pass `state` to hand arbitrary data to the incoming scene. It is available
+   * immediately when the scene renders via `useGame().transitionState`.
    */
-  loadScene: (params: { name: string; options?: LoadSceneOptions }) => Promise<void>;
+  loadScene: (params: { name: string; state?: Record<string, unknown> }) => Promise<void>;
   /** Name of the currently active scene, or null before any scene is loaded. */
   activeScene: DeepReadonly<Ref<string | null>>;
+  /**
+   * State passed to the most recent loadScene() call. Readable by any
+   * component inside <Game> — use it to pass context from one scene to the
+   * next (entry direction, inventory, quest flags, etc.).
+   */
+  transitionState: DeepReadonly<ShallowRef<Record<string, unknown>>>;
   /** @internal Called by <Scene> on mount. */
   registerScene: (params: { name: string }) => void;
   /** @internal Called by <Scene> on unmount. */

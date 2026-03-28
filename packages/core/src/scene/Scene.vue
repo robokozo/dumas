@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, inject, onMounted, onUnmounted, provide, useSlots } from "vue";
 import { GAME_KEY, SCENE_KEY } from "../keys";
-import type { SceneContext, SpawnPointRecord } from "./types";
+import type { SceneContext } from "./types";
 
 const props = defineProps<{
   name: string;
@@ -21,21 +21,9 @@ const isActive = computed(() => {
   return game.activeScene.value === props.name;
 });
 
-const spawnPoints = new Map<string, SpawnPointRecord>();
-
-function registerSpawnPoint(record: SpawnPointRecord): void {
-  spawnPoints.set(record.name, record);
-}
-
-function unregisterSpawnPoint({ name }: { name: string }): void {
-  spawnPoints.delete(name);
-}
-
 const ctx: SceneContext = {
   name: props.name,
   isActive,
-  registerSpawnPoint,
-  unregisterSpawnPoint,
 };
 
 provide(SCENE_KEY, ctx);
