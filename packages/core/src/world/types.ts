@@ -1,20 +1,17 @@
 import type { World } from "bitecs";
-import type { Vec3 } from "../types";
+import type { DeepReadonly, Ref } from "vue";
+import type { ComponentFactory, ComponentStore } from "../types";
 import type { LoadSceneOptions } from "../scene/types";
 
-export interface WorldOptions {
-  /** Gravity vector. Default: { x: 0, y: -9.81, z: 0 } */
-  gravity?: Vec3;
-  /**
-   * Physics timestep in seconds. Default: 1/60.
-   * Forwarded to <Physics> from @tresjs/rapier.
-   */
-  timestep?: number;
-}
-
-export interface WorldContext {
+export interface GameContext {
   /** The bitECS world instance. Use for ECS queries and component access. */
-  ecsWorld: World;
+  world: World;
+  /**
+   * Per-game registry mapping component factories to their store instances.
+   * Ensures each <Game> gets isolated store arrays — prevents eid collisions
+   * when multiple games run on the same page.
+   */
+  storeRegistry: Map<ComponentFactory, ComponentStore>;
   /**
    * Transition to a named scene. Destroys non-persistent entities from the
    * current scene, moves persistent entities to the target spawn point,
@@ -22,5 +19,5 @@ export interface WorldContext {
    */
   loadScene: (params: { name: string; options?: LoadSceneOptions }) => Promise<void>;
   /** Name of the currently active scene, or null before any scene is loaded. */
-  activeScene: string | null;
+  activeScene: DeepReadonly<Ref<string | null>>;
 }

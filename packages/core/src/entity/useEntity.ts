@@ -1,21 +1,21 @@
 import { onUnmounted } from "vue";
 import { addComponent, addEntity, removeEntity } from "bitecs";
-import { useWorld } from "../world/useWorld";
+import { useGame } from "../world/useGame";
 import { PersistentTag } from "../ecs/components";
 import type { EntityContext, EntityOptions } from "./types";
 
-export function useEntity(options?: EntityOptions): EntityContext {
-  const { ecsWorld } = useWorld();
-  const isPersistent = options?.persistent === true;
+export function useEntity({ persistent }: EntityOptions = {}): EntityContext {
+  const { world } = useGame();
+  const isPersistent = persistent === true;
 
-  const eid = addEntity(ecsWorld);
+  const eid = addEntity(world);
 
   if (isPersistent === true) {
-    addComponent(ecsWorld, eid, PersistentTag);
+    addComponent(world, eid, PersistentTag);
   }
 
   onUnmounted(() => {
-    removeEntity(ecsWorld, eid);
+    removeEntity(world, eid);
   });
 
   return { eid, isPersistent };

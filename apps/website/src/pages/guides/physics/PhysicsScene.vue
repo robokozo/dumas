@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { OrbitControls } from "@tresjs/cientos";
 import { Physics, RigidBody } from "@dumas/rapier";
-import { World, Scene } from "@dumas/core";
+import { Game, Scene } from "@dumas/core";
 
 interface Box {
   id: number;
@@ -23,7 +23,7 @@ const BOXES: Array<Box> = [
 </script>
 
 <template>
-  <World style="width: 100%; height: 100%">
+  <Game style="width: 100%; height: 100%">
     <Scene name="main">
       <TresPerspectiveCamera :position="[0, 10, 22]" :look-at="[0, 5, 0]" />
       <OrbitControls />
@@ -51,5 +51,5 @@ const BOXES: Array<Box> = [
         </Physics>
       </Suspense>
     </Scene>
-  </World>
+  </Game>
 </template>

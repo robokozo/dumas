@@ -1,18 +1,10 @@
-<script lang="ts">
-import type { Vec3 } from "../types";
-
-// Module-scope constants for withDefaults factories — defineProps is hoisted
-// outside setup() so factory functions cannot close over setup-scoped locals.
-const DEFAULT_GRAVITY: Vec3 = { x: 0, y: -9.81, z: 0 };
-const DEFAULT_TIMESTEP = 1 / 60;
-</script>
-
 <script setup lang="ts">
-import { provide, ref, useAttrs } from "vue";
+import { provide, readonly, shallowRef, useAttrs } from "vue";
 import { TresCanvas } from "@tresjs/core";
 import { createWorld } from "bitecs";
-import { WORLD_KEY } from "../keys";
-import type { WorldContext, WorldOptions } from "./types";
+import { GAME_KEY } from "../keys";
+import type { ComponentFactory, ComponentStore } from "../types";
+import type { GameContext } from "./types";
 import type { LoadSceneOptions } from "../scene/types";
 
 // Disable automatic attribute inheritance so we can forward attrs to TresCanvas
@@ -22,13 +14,9 @@ defineOptions({ inheritAttrs: false });
 
 const attrs = useAttrs();
 
-const props = withDefaults(defineProps<WorldOptions>(), {
-  gravity: () => DEFAULT_GRAVITY,
-  timestep: () => DEFAULT_TIMESTEP,
-});
-
-const ecsWorld = createWorld();
-const activeScene = ref<string | null>(null);
+const world = createWorld();
+const storeRegistry = new Map<ComponentFactory, ComponentStore>();
+const activeScene = shallowRef<string | null>(null);
 
 async function loadScene({ name }: { name: string; options?: LoadSceneOptions }): Promise<void> {
   // Implementation will live here — scene teardown, spawn point resolution,
@@ -36,15 +24,14 @@ async function loadScene({ name }: { name: string; options?: LoadSceneOptions })
   activeScene.value = name;
 }
 
-const ctx: WorldContext = {
-  ecsWorld,
+const ctx: GameContext = {
+  world,
+  storeRegistry,
   loadScene,
-  get activeScene() {
-    return activeScene.value;
-  },
+  activeScene: readonly(activeScene),
 };
 
-provide(WORLD_KEY, ctx);
+provide(GAME_KEY, ctx);
 </script>
 
 <template>

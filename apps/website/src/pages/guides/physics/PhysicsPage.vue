@@ -14,7 +14,7 @@ import sceneSource from "./PhysicsScene.vue?raw";
     <h1>&lt;Physics&gt;</h1>
     <p>
       Dumas physics is powered by <code>@tresjs/rapier</code>, which wraps the Rapier physics
-      engine. Drop <code>&lt;Physics&gt;</code> anywhere inside <code>&lt;World&gt;</code> to enable
+      engine. Drop <code>&lt;Physics&gt;</code> anywhere inside <code>&lt;Game&gt;</code> to enable
       simulation for its subtree.
     </p>
 

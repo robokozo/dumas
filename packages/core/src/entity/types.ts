@@ -1,4 +1,4 @@
-import type { ComponentStore } from "../types";
+import type { ComponentStore, ComponentFactory } from "../types";
 
 /**
  * Slices a single ComponentStore to the values at a specific entity ID.
@@ -15,6 +15,13 @@ export type SlicedStore<S extends ComponentStore> = {
  */
 export type SlicedComponents<R extends Record<string, ComponentStore>> = {
   [K in keyof R]: SlicedStore<R[K]>;
+};
+
+/**
+ * Maps a record of ComponentFactories to their return types (store instances).
+ */
+export type InstancesOf<F extends Record<string, ComponentFactory>> = {
+  [K in keyof F]: ReturnType<F[K]>;
 };
 
 export interface EntityOptions {

@@ -1,23 +1,23 @@
 // Components
-export { default as World } from "./world/World.vue";
+export { default as Game } from "./world/Game.vue";
 export { default as Scene } from "./scene/Scene.vue";
 export { default as Entity } from "./entity/Entity.vue";
 export { default as SpawnPoint } from "./entity/SpawnPoint.vue";
 
 // Composables
-export { useWorld } from "./world/useWorld";
+export { useGame } from "./world/useGame";
 export { useScene } from "./scene/useScene";
 export { useEntity } from "./entity/useEntity";
-export { useEntityContext } from "./entity/useEntityContext";
 export { useEcsComponent } from "./entity/useEcsComponent";
 export { useSystem } from "./system/useSystem";
 export { useQuery } from "./query/useQuery";
 
 // ECS (for advanced users building custom systems)
-export { Transform, PersistentTag, SceneTag, SpawnPointTag } from "./ecs/components";
+export { createTransform, createSceneTag, PersistentTag, SpawnPointTag } from "./ecs/components";
+export type { TransformStore } from "./ecs/components";
 
 // Types
-export type { WorldContext, WorldOptions } from "./world/types";
+export type { GameContext } from "./world/types";
 export type {
   SceneContext,
   SceneEnterContext,
@@ -27,6 +27,12 @@ export type {
   LoadSceneOptions,
   SpawnPointRecord,
 } from "./scene/types";
-export type { EntityOptions, EntityContext, SlicedStore, SlicedComponents } from "./entity/types";
+export type {
+  EntityOptions,
+  EntityContext,
+  SlicedStore,
+  SlicedComponents,
+  InstancesOf,
+} from "./entity/types";
 export type { SystemFnWithEntities, SystemOptions, SystemParamsWithEntities } from "./system/types";
-export type { Vec3, Quat, RigidBodyType, ComponentStore } from "./types";
+export type { Vec3, Quat, RigidBodyType, ComponentStore, ComponentFactory } from "./types";

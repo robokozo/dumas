@@ -1,13 +1,13 @@
 import { query } from "bitecs";
 import type { QueryResult, QueryTerm } from "bitecs";
-import { useWorld } from "../world/useWorld";
+import { useGame } from "../world/useGame";
 
 export function useQuery({ components }: { components: Array<QueryTerm> }): {
   query: () => QueryResult;
 } {
-  const { ecsWorld } = useWorld();
+  const { world } = useGame();
 
   return {
-    query: () => query(ecsWorld, components),
+    query: () => query(world, components),
   };
 }

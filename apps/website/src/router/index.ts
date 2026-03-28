@@ -4,8 +4,8 @@ import HomePage from "../pages/home/HomePage.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
-    path: "/guides/world-setup",
-    component: () => import("../pages/guides/worldSetup/WorldSetupPage.vue"),
+    path: "/guides/game-setup",
+    component: () => import("../pages/guides/gameSetup/GameSetupPage.vue"),
   },
   {
     path: "/guides/use-ecs-component",

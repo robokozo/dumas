@@ -2,7 +2,7 @@ import { shallowRef } from "vue";
 import type { ShallowRef } from "vue";
 import type { ComponentStore } from "../types";
 
-interface TransformStore extends ComponentStore {
+export interface TransformStore extends ComponentStore {
   posX: Array<ShallowRef<number>>;
   posY: Array<ShallowRef<number>>;
   posZ: Array<ShallowRef<number>>;
@@ -15,80 +15,87 @@ interface TransformStore extends ComponentStore {
   scaleZ: Array<ShallowRef<number>>;
 }
 
-interface SceneTagStore {
+interface SceneTagStore extends ComponentStore {
   sceneHash: Array<number>;
 }
 
+const TRANSFORM_FIELDS = [
+  "posX",
+  "posY",
+  "posZ",
+  "rotX",
+  "rotY",
+  "rotZ",
+  "rotW",
+  "scaleX",
+  "scaleY",
+  "scaleZ",
+] as const;
+
 /**
- * Transform — world-space position, rotation (quaternion), and scale.
- * Each field holds a ShallowRef so systems can write directly (.value = x)
- * and TresJS template bindings react without a separate sync step.
+ * createTransform — factory that returns a fresh TransformStore instance.
  *
- * useEcsComponent calls onMounted() synchronously before addComponents, so refs
- * are always present by the time setup code accesses them.
+ * Each <Game> registers one instance per factory call, preventing eid
+ * collisions when multiple games run on the same page.
+ *
+ * Fields hold ShallowRefs so TresJS template bindings react to system writes
+ * without a separate sync step.
  */
-export const Transform: TransformStore = {
-  posX: [],
-  posY: [],
-  posZ: [],
-  rotX: [],
-  rotY: [],
-  rotZ: [],
-  rotW: [],
-  scaleX: [],
-  scaleY: [],
-  scaleZ: [],
+export function createTransform(): TransformStore {
+  const store: TransformStore = {
+    posX: [],
+    posY: [],
+    posZ: [],
+    rotX: [],
+    rotY: [],
+    rotZ: [],
+    rotW: [],
+    scaleX: [],
+    scaleY: [],
+    scaleZ: [],
 
-  onMounted({ eid }) {
-    Transform.posX[eid] = shallowRef(0);
-    Transform.posY[eid] = shallowRef(0);
-    Transform.posZ[eid] = shallowRef(0);
-    Transform.rotX[eid] = shallowRef(0);
-    Transform.rotY[eid] = shallowRef(0);
-    Transform.rotZ[eid] = shallowRef(0);
-    Transform.rotW[eid] = shallowRef(1);
-    Transform.scaleX[eid] = shallowRef(1);
-    Transform.scaleY[eid] = shallowRef(1);
-    Transform.scaleZ[eid] = shallowRef(1);
-  },
+    onMounted({ eid }) {
+      store.posX[eid] = shallowRef(0);
+      store.posY[eid] = shallowRef(0);
+      store.posZ[eid] = shallowRef(0);
+      store.rotX[eid] = shallowRef(0);
+      store.rotY[eid] = shallowRef(0);
+      store.rotZ[eid] = shallowRef(0);
+      store.rotW[eid] = shallowRef(1);
+      store.scaleX[eid] = shallowRef(1);
+      store.scaleY[eid] = shallowRef(1);
+      store.scaleZ[eid] = shallowRef(1);
+    },
 
-  onUnmounted({ eid }) {
-    const store = Transform as unknown as Record<string, Array<unknown>>;
-    for (const field of [
-      "posX",
-      "posY",
-      "posZ",
-      "rotX",
-      "rotY",
-      "rotZ",
-      "rotW",
-      "scaleX",
-      "scaleY",
-      "scaleZ",
-    ]) {
-      store[field][eid] = undefined;
-    }
-  },
-};
+    onUnmounted({ eid }) {
+      const raw = store as unknown as Record<string, Array<unknown>>;
+      for (const field of TRANSFORM_FIELDS) {
+        raw[field][eid] = undefined;
+      }
+    },
+  };
+  return store;
+}
 
 /**
  * PersistentTag — zero-field tag. Entities with this component survive
  * scene transitions and are not destroyed on scene exit.
+ * Safe as a global singleton — bitECS queries are world-scoped.
  */
 export const PersistentTag = {};
 
 /**
- * SceneTag — records a numeric hash of the owning scene's name.
- * The scene manager uses this to bulk-query and destroy all non-persistent
- * entities belonging to a scene when it unloads.
+ * createSceneTag — factory that returns a fresh SceneTagStore instance.
+ * Records a numeric hash of the owning scene's name so the scene manager
+ * can bulk-destroy non-persistent entities on scene exit.
  */
-export const SceneTag: SceneTagStore = {
-  sceneHash: [],
-};
+export function createSceneTag(): SceneTagStore {
+  return { sceneHash: [] };
+}
 
 /**
  * SpawnPointTag — zero-field tag marking entities that represent spawn
- * anchors within a scene. Used by the scene manager to locate spawn points
- * for persistent entity placement on scene transitions.
+ * anchors within a scene.
+ * Safe as a global singleton — bitECS queries are world-scoped.
  */
 export const SpawnPointTag = {};

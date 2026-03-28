@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { World, Scene } from "@dumas/core";
+import { Game, Scene } from "@dumas/core";
 </script>
 
 <template>
-  <World style="width: 100%; height: 100%">
+  <Game style="width: 100%; height: 100%">
     <Scene name="main">
       <TresPerspectiveCamera :position="[0, 2, 6]" :look-at="[0, 0, 0]" />
       <TresDirectionalLight :position="[5, 8, 5]" :intensity="2" />
@@ -14,5 +14,5 @@ import { World, Scene } from "@dumas/core";
         <TresMeshStandardMaterial color="#4ecdc4" />
       </TresMesh>
     </Scene>
-  </World>
+  </Game>
 </template>

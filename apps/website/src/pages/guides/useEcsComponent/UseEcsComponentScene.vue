@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { OrbitControls } from "@tresjs/cientos";
-import { World, Scene } from "@dumas/core";
+import { Game, Scene } from "@dumas/core";
 import OrbitingCube from "./OrbitingCube.vue";
 
 interface Column {
@@ -24,7 +24,7 @@ const COLUMNS: Array<Column> = [
 </script>
 
 <template>
-  <World style="width: 100%; height: 100%">
+  <Game style="width: 100%; height: 100%">
     <Scene name="main">
       <TresPerspectiveCamera :position="[0, 3, 12]" :look-at="[0, 0, 0]" />
       <OrbitControls />
@@ -39,5 +39,5 @@ const COLUMNS: Array<Column> = [
         :phase="col.phase"
       />
     </Scene>
-  </World>
+  </Game>
 </template>

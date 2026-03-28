@@ -22,9 +22,9 @@
       <h2>Guides</h2>
       <p class="section-desc">Learn the core concepts.</p>
       <div class="grid">
-        <RouterLink to="/guides/world-setup" class="card">
+        <RouterLink to="/guides/game-setup" class="card">
           <div class="feature-tag">Core</div>
-          <h3>World Setup</h3>
+          <h3>Game Setup</h3>
           <p>Mount a scene, register a system, and animate your first object.</p>
         </RouterLink>
         <RouterLink to="/guides/use-ecs-component" class="card">

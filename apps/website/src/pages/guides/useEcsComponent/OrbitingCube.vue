@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useEcsComponent, Transform } from "@dumas/core";
+import { useEcsComponent, createTransform } from "@dumas/core";
 
 const CUBE_SIZE = 0.75;
 const WAVE_SPEED = 2.5;
@@ -9,7 +9,7 @@ const SPIN_SPEED = 1.2;
 const props = defineProps<{ startX: number; color: string; phase: number }>();
 
 const { transform } = useEcsComponent({
-  components: { transform: Transform },
+  components: { transform: createTransform },
   fn: ({ transform, delta, elapsed }) => {
     transform.posY.value = Math.sin(elapsed * WAVE_SPEED + props.phase) * WAVE_AMPLITUDE;
     transform.rotY.value += delta * SPIN_SPEED;

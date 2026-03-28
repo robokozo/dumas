@@ -3,6 +3,14 @@ export interface ComponentStore {
   onUnmounted?: ({ eid }: { eid: number }) => void;
 }
 
+/**
+ * A factory function that creates a fresh ComponentStore instance.
+ * Used as the identity key in the Game store registry — each <Game>
+ * maintains its own instance per factory, preventing data collisions
+ * when multiple games run on the same page.
+ */
+export type ComponentFactory<S extends ComponentStore = ComponentStore> = () => S;
+
 export interface Vec3 {
   x: number;
   y: number;
