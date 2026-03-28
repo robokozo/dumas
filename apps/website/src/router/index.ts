@@ -12,6 +12,10 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("../pages/guides/useEcsComponent/UseEcsComponentPage.vue"),
   },
   {
+    path: "/guides/scene-switching",
+    component: () => import("../pages/guides/sceneSwitching/SceneSwitchingPage.vue"),
+  },
+  {
     path: "/guides/physics",
     component: () => import("../pages/guides/physics/PhysicsPage.vue"),
   },

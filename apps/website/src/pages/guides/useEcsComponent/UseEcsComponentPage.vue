@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import UseEcsComponentScene from "./UseEcsComponentScene.vue";
+import UseEcsComponentGame from "./UseEcsComponentGame.vue";
 import GuideLayout from "../../../components/GuideLayout.vue";
 import CodeBlock from "../../../components/CodeBlock.vue";
 import orbitingCubeSource from "./OrbitingCube.vue?raw";
@@ -8,7 +8,7 @@ import orbitingCubeSource from "./OrbitingCube.vue?raw";
 <template>
   <GuideLayout>
     <template #demo>
-      <UseEcsComponentScene />
+      <UseEcsComponentGame />
     </template>
 
     <h1>useEcsComponent</h1>

@@ -1,3 +1,4 @@
+import type { ComputedRef } from "vue";
 import type { Vec3, Quat } from "../types";
 
 export interface LoadSceneOptions {
@@ -37,7 +38,7 @@ export interface SceneContext {
   /** This scene's registered name. */
   name: string;
   /** Whether this scene is the currently active one. */
-  isActive: boolean;
+  isActive: ComputedRef<boolean>;
   /** Called internally by <SpawnPoint> on mount. */
   registerSpawnPoint: (record: SpawnPointRecord) => void;
   /** Called internally by <SpawnPoint> on unmount. */

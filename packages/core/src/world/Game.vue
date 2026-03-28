@@ -16,6 +16,7 @@ const attrs = useAttrs();
 
 const world = createWorld();
 const storeRegistry = new Map<ComponentFactory, ComponentStore>();
+const scenes = shallowRef<Array<string>>([]);
 const activeScene = shallowRef<string | null>(null);
 
 async function loadScene({ name }: { name: string; options?: LoadSceneOptions }): Promise<void> {
@@ -24,18 +25,34 @@ async function loadScene({ name }: { name: string; options?: LoadSceneOptions })
   activeScene.value = name;
 }
 
+function registerScene({ name }: { name: string }): void {
+  scenes.value = [...scenes.value, name];
+}
+
+function unregisterScene({ name }: { name: string }): void {
+  scenes.value = scenes.value.filter((s) => s !== name);
+}
+
 const ctx: GameContext = {
   world,
   storeRegistry,
+  scenes: readonly(scenes),
   loadScene,
   activeScene: readonly(activeScene),
+  registerScene,
+  unregisterScene,
 };
 
 provide(GAME_KEY, ctx);
 </script>
 
 <template>
-  <TresCanvas v-bind="attrs">
-    <slot />
-  </TresCanvas>
+  <div v-bind="attrs" style="position: relative">
+    <TresCanvas style="width: 100%; height: 100%">
+      <slot />
+    </TresCanvas>
+    <div style="position: absolute; inset: 0; pointer-events: none">
+      <slot name="overlay" />
+    </div>
+  </div>
 </template>

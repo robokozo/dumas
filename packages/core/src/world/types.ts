@@ -12,6 +12,8 @@ export interface GameContext {
    * when multiple games run on the same page.
    */
   storeRegistry: Map<ComponentFactory, ComponentStore>;
+  /** Names of all currently mounted <Scene> components, in mount order. */
+  scenes: DeepReadonly<Ref<Array<string>>>;
   /**
    * Transition to a named scene. Destroys non-persistent entities from the
    * current scene, moves persistent entities to the target spawn point,
@@ -20,4 +22,8 @@ export interface GameContext {
   loadScene: (params: { name: string; options?: LoadSceneOptions }) => Promise<void>;
   /** Name of the currently active scene, or null before any scene is loaded. */
   activeScene: DeepReadonly<Ref<string | null>>;
+  /** @internal Called by <Scene> on mount. */
+  registerScene: (params: { name: string }) => void;
+  /** @internal Called by <Scene> on unmount. */
+  unregisterScene: (params: { name: string }) => void;
 }

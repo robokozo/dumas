@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import PhysicsScene from "./PhysicsScene.vue";
+import PhysicsGame from "./PhysicsGame.vue";
 import GuideLayout from "../../../components/GuideLayout.vue";
 import CodeBlock from "../../../components/CodeBlock.vue";
-import sceneSource from "./PhysicsScene.vue?raw";
+import sceneSource from "./PhysicsGame.vue?raw";
 </script>
 
 <template>
   <GuideLayout>
     <template #demo>
-      <PhysicsScene />
+      <PhysicsGame />
     </template>
 
     <h1>&lt;Physics&gt;</h1>

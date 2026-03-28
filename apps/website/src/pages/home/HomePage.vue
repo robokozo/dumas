@@ -27,6 +27,11 @@
           <h3>Game Setup</h3>
           <p>Mount a scene, register a system, and animate your first object.</p>
         </RouterLink>
+        <RouterLink to="/guides/scene-switching" class="card">
+          <div class="feature-tag">Core</div>
+          <h3>Scene Switching</h3>
+          <p>Transition between named scenes with loadScene() and overlay UI controls.</p>
+        </RouterLink>
         <RouterLink to="/guides/use-ecs-component" class="card">
           <div class="feature-tag">ECS</div>
           <h3>useEcsComponent</h3>

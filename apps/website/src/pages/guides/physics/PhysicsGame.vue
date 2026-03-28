@@ -24,7 +24,7 @@ const BOXES: Array<Box> = [
 
 <template>
   <Game style="width: 100%; height: 100%">
-    <Scene name="main">
+    <Scene name="main" :default="true">
       <TresPerspectiveCamera :position="[0, 10, 22]" :look-at="[0, 5, 0]" />
       <OrbitControls />
       <TresDirectionalLight :position="[5, 10, 5]" :intensity="2" />

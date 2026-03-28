@@ -12,6 +12,7 @@ onClickOutside(dropdownRef, () => {
 
 const GUIDES = [
   { path: "/guides/game-setup", title: "<Game>", tag: "Core" },
+  { path: "/guides/scene-switching", title: "Scene Switching", tag: "Core" },
   { path: "/guides/use-ecs-component", title: "useEcsComponent", tag: "ECS" },
   { path: "/guides/physics", title: "<Physics>", tag: "Physics" },
 ];

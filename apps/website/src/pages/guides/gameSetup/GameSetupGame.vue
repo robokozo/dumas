@@ -4,7 +4,7 @@ import { Game, Scene } from "@dumas/core";
 
 <template>
   <Game style="width: 100%; height: 100%">
-    <Scene name="main">
+    <Scene name="main" :default="true">
       <TresPerspectiveCamera :position="[0, 2, 6]" :look-at="[0, 0, 0]" />
       <TresDirectionalLight :position="[5, 8, 5]" :intensity="2" />
       <TresAmbientLight :intensity="0.4" />

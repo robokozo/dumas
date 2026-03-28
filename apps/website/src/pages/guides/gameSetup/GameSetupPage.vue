@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import GameSetupScene from "./GameSetupScene.vue";
+import GameSetupGame from "./GameSetupGame.vue";
 import GuideLayout from "../../../components/GuideLayout.vue";
 import CodeBlock from "../../../components/CodeBlock.vue";
-import gameSetupSceneSource from "./GameSetupScene.vue?raw";
+import gameSetupSceneSource from "./GameSetupGame.vue?raw";
 </script>
 
 <template>
   <GuideLayout>
     <template #demo>
-      <GameSetupScene />
+      <GameSetupGame />
     </template>
 
     <h1>&lt;Game&gt;</h1>
