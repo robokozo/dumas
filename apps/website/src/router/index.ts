@@ -19,6 +19,10 @@ const routes: Array<RouteRecordRaw> = [
     path: "/guides/physics",
     component: () => import("../pages/guides/physics/PhysicsPage.vue"),
   },
+  {
+    path: "/guides/rooms",
+    component: () => import("../pages/guides/rooms/RoomsPage.vue"),
+  },
 ];
 
 export const router = createRouter({

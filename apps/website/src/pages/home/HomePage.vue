@@ -50,6 +50,21 @@
         </RouterLink>
       </div>
     </section>
+
+    <section class="section">
+      <h2>Advanced Guides</h2>
+      <p class="section-desc">Game-specific scenarios and patterns.</p>
+      <div class="grid">
+        <RouterLink to="/guides/rooms" class="card card--demo">
+          <div class="feature-tag feature-tag--demo">Demo</div>
+          <h3>Room Navigation</h3>
+          <p>
+            Three interconnected rooms with a capsule character that spawns at the door it entered
+            through — isometric Zelda-style traversal.
+          </p>
+        </RouterLink>
+      </div>
+    </section>
   </div>
 </template>
 
@@ -148,6 +163,11 @@
   font-size: 0.7rem;
   font-weight: 600;
   margin-bottom: 0.5rem;
+}
+
+.feature-tag--demo {
+  background: rgba(100, 220, 140, 0.15);
+  color: #6dc;
 }
 
 .card h3 {
