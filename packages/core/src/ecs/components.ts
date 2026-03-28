@@ -1,14 +1,18 @@
-interface TransformStore {
-  posX: Array<number>;
-  posY: Array<number>;
-  posZ: Array<number>;
-  rotX: Array<number>;
-  rotY: Array<number>;
-  rotZ: Array<number>;
-  rotW: Array<number>;
-  scaleX: Array<number>;
-  scaleY: Array<number>;
-  scaleZ: Array<number>;
+import { shallowRef } from "vue";
+import type { ShallowRef } from "vue";
+import type { ComponentStore } from "../types";
+
+interface TransformStore extends ComponentStore {
+  posX: Array<ShallowRef<number>>;
+  posY: Array<ShallowRef<number>>;
+  posZ: Array<ShallowRef<number>>;
+  rotX: Array<ShallowRef<number>>;
+  rotY: Array<ShallowRef<number>>;
+  rotZ: Array<ShallowRef<number>>;
+  rotW: Array<ShallowRef<number>>;
+  scaleX: Array<ShallowRef<number>>;
+  scaleY: Array<ShallowRef<number>>;
+  scaleZ: Array<ShallowRef<number>>;
 }
 
 interface SceneTagStore {
@@ -17,8 +21,11 @@ interface SceneTagStore {
 
 /**
  * Transform — world-space position, rotation (quaternion), and scale.
- * Arrays are indexed by entity ID. Quaternion defaults to identity (w = 1)
- * and scale defaults to 1 — applied via onAdd observers in createEcsWorld().
+ * Each field holds a ShallowRef so systems can write directly (.value = x)
+ * and TresJS template bindings react without a separate sync step.
+ *
+ * useEcsComponent calls onMounted() synchronously before addComponents, so refs
+ * are always present by the time setup code accesses them.
  */
 export const Transform: TransformStore = {
   posX: [],
@@ -31,6 +38,37 @@ export const Transform: TransformStore = {
   scaleX: [],
   scaleY: [],
   scaleZ: [],
+
+  onMounted({ eid }) {
+    Transform.posX[eid] = shallowRef(0);
+    Transform.posY[eid] = shallowRef(0);
+    Transform.posZ[eid] = shallowRef(0);
+    Transform.rotX[eid] = shallowRef(0);
+    Transform.rotY[eid] = shallowRef(0);
+    Transform.rotZ[eid] = shallowRef(0);
+    Transform.rotW[eid] = shallowRef(1);
+    Transform.scaleX[eid] = shallowRef(1);
+    Transform.scaleY[eid] = shallowRef(1);
+    Transform.scaleZ[eid] = shallowRef(1);
+  },
+
+  onUnmounted({ eid }) {
+    const store = Transform as unknown as Record<string, Array<unknown>>;
+    for (const field of [
+      "posX",
+      "posY",
+      "posZ",
+      "rotX",
+      "rotY",
+      "rotZ",
+      "rotW",
+      "scaleX",
+      "scaleY",
+      "scaleZ",
+    ]) {
+      store[field][eid] = undefined;
+    }
+  },
 };
 
 /**

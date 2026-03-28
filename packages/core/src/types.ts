@@ -1,3 +1,8 @@
+export interface ComponentStore {
+  onMounted?: ({ eid }: { eid: number }) => void;
+  onUnmounted?: ({ eid }: { eid: number }) => void;
+}
+
 export interface Vec3 {
   x: number;
   y: number;

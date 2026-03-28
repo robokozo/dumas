@@ -10,8 +10,8 @@ const DEFAULT_TIMESTEP = 1 / 60;
 <script setup lang="ts">
 import { provide, ref, useAttrs } from "vue";
 import { TresCanvas } from "@tresjs/core";
+import { createWorld } from "bitecs";
 import { WORLD_KEY } from "../keys";
-import { createEcsWorld } from "../ecs/world";
 import type { WorldContext, WorldOptions } from "./types";
 import type { LoadSceneOptions } from "../scene/types";
 
@@ -27,7 +27,7 @@ const props = withDefaults(defineProps<WorldOptions>(), {
   timestep: () => DEFAULT_TIMESTEP,
 });
 
-const ecsWorld = createEcsWorld();
+const ecsWorld = createWorld();
 const activeScene = ref<string | null>(null);
 
 async function loadScene({ name }: { name: string; options?: LoadSceneOptions }): Promise<void> {

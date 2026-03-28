@@ -1,3 +1,22 @@
+import type { ComponentStore } from "../types";
+
+/**
+ * Slices a single ComponentStore to the values at a specific entity ID.
+ * Array<T> fields become T; methods and non-array fields are excluded.
+ */
+export type SlicedStore<S extends ComponentStore> = {
+  [K in keyof S as S[K] extends Array<unknown> ? K : never]: S[K] extends Array<infer T>
+    ? T
+    : never;
+};
+
+/**
+ * Maps a record of named ComponentStores to their per-entity sliced forms.
+ */
+export type SlicedComponents<R extends Record<string, ComponentStore>> = {
+  [K in keyof R]: SlicedStore<R[K]>;
+};
+
 export interface EntityOptions {
   /**
    * If true, this entity survives scene transitions instead of being

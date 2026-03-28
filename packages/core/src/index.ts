@@ -27,12 +27,6 @@ export type {
   LoadSceneOptions,
   SpawnPointRecord,
 } from "./scene/types";
-export type { EntityOptions, EntityContext } from "./entity/types";
-export type {
-  SystemFn,
-  SystemFnWithEntities,
-  SystemOptions,
-  SystemParams,
-  SystemParamsWithEntities,
-} from "./system/types";
-export type { Vec3, Quat, RigidBodyType } from "./types";
+export type { EntityOptions, EntityContext, SlicedStore, SlicedComponents } from "./entity/types";
+export type { SystemFnWithEntities, SystemOptions, SystemParamsWithEntities } from "./system/types";
+export type { Vec3, Quat, RigidBodyType, ComponentStore } from "./types";

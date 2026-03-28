@@ -27,6 +27,14 @@
           <h3>World Setup</h3>
           <p>Mount a scene, register a system, and animate your first object.</p>
         </RouterLink>
+        <RouterLink to="/guides/use-ecs-component" class="card">
+          <div class="feature-tag">ECS</div>
+          <h3>useEcsComponent</h3>
+          <p>
+            Attach ECS components to an entity and co-locate per-frame behavior alongside the
+            registration.
+          </p>
+        </RouterLink>
         <RouterLink to="/guides/physics" class="card">
           <div class="feature-tag">Physics</div>
           <h3>Physics</h3>
@@ -34,11 +42,6 @@
             Add rigid bodies and colliders with Rapier. Dynamic objects, fixed ground planes, and
             automatic collider generation.
           </p>
-        </RouterLink>
-        <RouterLink to="/guides/queries" class="card">
-          <div class="feature-tag">ECS</div>
-          <h3>Queries</h3>
-          <p>Use useQuery to iterate every matching entity in one system callback.</p>
         </RouterLink>
       </div>
     </section>

@@ -2,7 +2,7 @@
 import WorldSetupScene from "./WorldSetupScene.vue";
 import GuideLayout from "../../../components/GuideLayout.vue";
 import CodeBlock from "../../../components/CodeBlock.vue";
-import spinningCubeSource from "./SpinningCube.vue?raw";
+import worldSetupSceneSource from "./WorldSetupScene.vue?raw";
 </script>
 
 <template>
@@ -26,7 +26,7 @@ import spinningCubeSource from "./SpinningCube.vue?raw";
     </p>
 
     <div class="code-wrap">
-      <CodeBlock :code="spinningCubeSource" lang="vue" />
+      <CodeBlock :code="worldSetupSceneSource" lang="vue" />
     </div>
   </GuideLayout>
 </template>
