@@ -31,6 +31,10 @@ const routes: Array<RouteRecordRaw> = [
     path: "/guides/object-pooling",
     component: () => import("../pages/guides/usePool/UsePoolPage.vue"),
   },
+  {
+    path: "/guides/use-collision",
+    component: () => import("../pages/guides/useCollision/UseCollisionPage.vue"),
+  },
 ];
 
 export const router = createRouter({

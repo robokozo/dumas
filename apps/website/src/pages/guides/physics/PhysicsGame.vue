@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { OrbitControls } from "@tresjs/cientos";
-import { Physics, RigidBody } from "@dumas/rapier";
-import { Game, Scene } from "@dumas/core";
+import { Game, Physics, RigidBody, Scene } from "@dumas/core";
 
 interface Box {
   id: number;

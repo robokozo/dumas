@@ -64,6 +64,14 @@
             for projectiles and particles.
           </p>
         </RouterLink>
+        <RouterLink to="/guides/use-collision" class="card">
+          <div class="feature-tag">Physics</div>
+          <h3>useCollision</h3>
+          <p>
+            React to contact events between rigid bodies. Attach typed callbacks to any body and
+            identify what was hit from the target's collider data.
+          </p>
+        </RouterLink>
       </div>
     </section>
 

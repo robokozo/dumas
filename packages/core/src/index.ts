@@ -1,3 +1,9 @@
+// Physics — re-exported from @tresjs/rapier
+export { Physics, RigidBody } from "@tresjs/rapier";
+export { useRapier, useRapierContext } from "@tresjs/rapier";
+export { useCollision } from "./collision/useCollision";
+export type { CollisionContact } from "./collision/useCollision";
+
 // Components
 export { default as Game } from "./world/Game.vue";
 export { default as Scene } from "./scene/Scene.vue";
