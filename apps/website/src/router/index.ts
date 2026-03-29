@@ -20,6 +20,10 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("../pages/guides/physics/PhysicsPage.vue"),
   },
   {
+    path: "/guides/use-input",
+    component: () => import("../pages/guides/useInput/UseInputPage.vue"),
+  },
+  {
     path: "/advanced/scene-switching",
     component: () => import("../pages/advanced/sceneSwitching/RoomsPage.vue"),
   },

@@ -40,6 +40,14 @@
             registration.
           </p>
         </RouterLink>
+        <RouterLink to="/guides/use-input" class="card">
+          <div class="feature-tag">Input</div>
+          <h3>useInput</h3>
+          <p>
+            Map keyboard keys and gamepad buttons to named game actions. Distinguish held, pressed,
+            and released states per action.
+          </p>
+        </RouterLink>
         <RouterLink to="/guides/physics" class="card">
           <div class="feature-tag">Physics</div>
           <h3>Physics</h3>

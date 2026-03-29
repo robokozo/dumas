@@ -10,6 +10,7 @@ export { useEntity } from "./entity/useEntity";
 export { useEcsComponent } from "./entity/useEcsComponent";
 export { useSystem } from "./system/useSystem";
 export { useQuery } from "./query/useQuery";
+export { defineInputMap, useInput } from "./input/useInput";
 
 // ECS (for advanced users building custom systems)
 export { createTransform, createSceneTag, PersistentTag } from "./ecs/components";
@@ -33,3 +34,10 @@ export type {
 } from "./entity/types";
 export type { SystemFnWithEntities, SystemOptions, SystemParamsWithEntities } from "./system/types";
 export type { Vec3, Quat, RigidBodyType, ComponentStore, ComponentFactory } from "./types";
+export type {
+  InputSources,
+  InputMapFn,
+  InputMapDefinition,
+  InputResult,
+  InputFn,
+} from "./input/types";
