@@ -27,6 +27,10 @@ const routes: Array<RouteRecordRaw> = [
     path: "/advanced/scene-switching",
     component: () => import("../pages/advanced/sceneSwitching/RoomsPage.vue"),
   },
+  {
+    path: "/guides/object-pooling",
+    component: () => import("../pages/guides/usePool/UsePoolPage.vue"),
+  },
 ];
 
 export const router = createRouter({

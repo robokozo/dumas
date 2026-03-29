@@ -56,6 +56,14 @@
             automatic collider generation.
           </p>
         </RouterLink>
+        <RouterLink to="/guides/object-pooling" class="card">
+          <div class="feature-tag">ECS</div>
+          <h3>Object Pooling</h3>
+          <p>
+            Pre-allocate entities and recycle them with usePool and ObjectPool. Zero mount overhead
+            for projectiles and particles.
+          </p>
+        </RouterLink>
       </div>
     </section>
 
