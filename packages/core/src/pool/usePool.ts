@@ -1,4 +1,4 @@
-import { onUnmounted, shallowRef } from "vue";
+import { computed, onUnmounted, shallowRef } from "vue";
 import { addComponents, addEntity, removeEntity } from "bitecs";
 import { useGame } from "../world/useGame";
 import type { ComponentFactory, ComponentStore } from "../types";
@@ -95,5 +95,8 @@ export function usePool<F extends Record<string, ComponentFactory>>({
     }
   });
 
-  return { slots, stores, acquire, release };
+  const activeCount = computed(() => slots.filter((s) => s.isActive.value === true).length);
+  const freeCount = computed(() => slots.length - activeCount.value);
+
+  return { slots, stores, activeCount, freeCount, acquire, release };
 }

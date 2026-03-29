@@ -6,7 +6,7 @@ const INPUT_MAP = defineInputMap({
     keys.space?.value === true || gamepad.value?.buttons[0]?.pressed === true,
 });
 
-const POOL_SIZE = 8;
+const POOL_SIZE = 3;
 const GRAVITY = -12;
 const LAUNCH_SPEED = 7;
 const SPREAD = 3;
@@ -83,10 +83,7 @@ useInput({
           <span class="pill">Space to fire</span>
         </div>
         <div class="hud__row">
-          <span class="badge"
-            >Slots: {{ pool.slots.filter((s) => s.isActive.value === true).length }} /
-            {{ POOL_SIZE }}</span
-          >
+          <span class="badge">Slots: {{ pool.activeCount }} / {{ POOL_SIZE }}</span>
         </div>
       </div>
     </template>
