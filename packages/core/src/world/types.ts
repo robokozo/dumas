@@ -36,4 +36,14 @@ export interface GameContext {
   registerOverlay: (params: { name: string; slot: Slot }) => void;
   /** @internal Called by <Scene> on unmount to remove its overlay slot. */
   unregisterOverlay: (params: { name: string }) => void;
+  /**
+   * @internal Maps Rapier collider handles to bitECS entity IDs.
+   * Populated by useRegisterCollider() so that useCollision()'s `other`
+   * ECS filter can resolve which entity a collider belongs to.
+   */
+  colliderRegistry: Map<number, number>;
+  /** @internal Called by useRegisterCollider() when a collider mounts. */
+  registerCollider: (params: { handle: number; eid: number }) => void;
+  /** @internal Called by useRegisterCollider() when a collider unmounts. */
+  unregisterCollider: (params: { handle: number }) => void;
 }

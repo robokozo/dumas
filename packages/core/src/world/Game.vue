@@ -16,6 +16,7 @@ const attrs = useAttrs();
 
 const world = createWorld();
 const storeRegistry = new Map<ComponentFactory, ComponentStore>();
+const colliderRegistry = new Map<number, number>();
 const sceneOverlays = shallowRef(new Map<string, Slot>());
 const scenes = shallowRef<Array<string>>([]);
 const activeScene = shallowRef<string | null>(null);
@@ -40,6 +41,14 @@ function registerScene({ name }: { name: string }): void {
 
 function unregisterScene({ name }: { name: string }): void {
   scenes.value = scenes.value.filter((s) => s !== name);
+}
+
+function registerCollider({ handle, eid }: { handle: number; eid: number }): void {
+  colliderRegistry.set(handle, eid);
+}
+
+function unregisterCollider({ handle }: { handle: number }): void {
+  colliderRegistry.delete(handle);
 }
 
 function registerOverlay({ name, slot }: { name: string; slot: Slot }): void {
@@ -69,12 +78,15 @@ const ActiveSceneOverlay = {
 const ctx: GameContext = {
   world,
   storeRegistry,
+  colliderRegistry,
   scenes: readonly(scenes),
   loadScene,
   activeScene: readonly(activeScene),
   transitionState: readonly(transitionState),
   registerScene,
   unregisterScene,
+  registerCollider,
+  unregisterCollider,
   registerOverlay,
   unregisterOverlay,
 };

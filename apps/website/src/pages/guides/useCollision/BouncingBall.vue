@@ -2,11 +2,13 @@
 import { computed, shallowRef } from "vue";
 import { RigidBody, useCollision } from "@dumas/core";
 
-const RED_COLOR = "#ff4444";
-const BLUE_COLOR = "#4488ff";
+const props = defineProps<{
+  leftColor: string;
+  rightColor: string;
+}>();
 
 const ballRef = shallowRef<InstanceType<typeof RigidBody> | null>(null);
-const ballColor = shallowRef(RED_COLOR);
+const ballColor = shallowRef(props.leftColor);
 
 // Derived from the RigidBody's auto-created collider once it mounts.
 const ballCollider = computed(() => ballRef.value?.context?.colliders?.[0]?.collider ?? null);
@@ -15,7 +17,7 @@ useCollision({
   collider: ballCollider,
   onContact({ other }) {
     const wallX = other.translation().x;
-    ballColor.value = wallX < 0 ? RED_COLOR : BLUE_COLOR;
+    ballColor.value = wallX < 0 ? props.leftColor : props.rightColor;
   },
 });
 </script>
