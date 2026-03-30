@@ -1,4 +1,4 @@
-import { inject, onMounted as vueOnMounted } from "vue";
+import { inject, onMounted as vueOnMounted, watch } from "vue";
 import { ColliderDesc, RigidBodyDesc } from "@dimforge/rapier3d-compat";
 import type { Collider, RigidBody, World } from "@dimforge/rapier3d-compat";
 import { GAME_KEY } from "../keys";
@@ -49,12 +49,13 @@ const PHYSICS_TYPE: symbol = Symbol("dumas.physics");
 /**
  * Creates a physics ComponentFactory for use inside useEcsComponent.
  *
- * Unlike createRigidBody, this can be called **inline in component setup** —
- * no module-scope hoisting required. The factory uses a stable __type symbol
- * so all entities share one PhysicsStore per <Game>.
+ * Can be called **inline in component setup** — no module-scope hoisting required.
+ * The factory uses a stable __type symbol so all entities share one PhysicsStore
+ * per <Game>.
  *
- * The entity's initial position is read from the transform component after
- * Vue mounts, so you can set transform.posX/Y/Z.value before the first frame.
+ * The Rapier world is created asynchronously by usePhysics(). If the world is not
+ * ready when the entity mounts, the body is created lazily once it becomes available.
+ * The entity's initial transform values are read just before the first physics step.
  *
  * @example
  * const health = ref(100)
@@ -66,7 +67,6 @@ const PHYSICS_TYPE: symbol = Symbol("dumas.physics");
  *         head: createSphereCollider({ radius: 0.2, onCollision: () => { health.value -= 50 } }),
  *         body: createCuboidCollider({ halfExtents: [0.3, 0.5, 0.3] }),
  *       },
- *       onCollision: ({ which }) => { console.log("hit", which) },
  *     }),
  *   },
  * })
@@ -84,165 +84,195 @@ export function createPhysics(options: PhysicsOptions): ComponentFactory<Physics
       __type: PHYSICS_TYPE,
 
       onMounted({ eid, store }: { eid: number; store: PhysicsStore }): void {
-        const gameCtx = inject(GAME_KEY);
-        if (gameCtx === undefined) {
+        const gameCtxRaw = inject(GAME_KEY);
+        if (gameCtxRaw === undefined) {
           throw new Error("[dumas] createPhysics requires a <Game> ancestor component.");
         }
-        if (gameCtx.physicsWorld.value === null) {
-          throw new Error(
-            "[dumas] createPhysics requires usePhysics() to have been called in this scene.",
-          );
-        }
+        // Capture as a non-nullable const so closures inside initBody don't need re-checking.
+        const gameCtx = gameCtxRaw;
 
-        const rapierWorld: World = gameCtx.physicsWorld.value;
         const transformStore = gameCtx.storeRegistry.get(TRANSFORM_TYPE) as
           | TransformStore
           | undefined;
 
-        // ── Build body ────────────────────────────────────────────────────────
-        const desc = buildRigidBodyDesc(options.type);
-        const body = rapierWorld.createRigidBody(desc);
+        // Track whether the host component has mounted yet.
+        // Needed to decide whether to apply the initial transform immediately
+        // (slow path: WASM loaded after mount) or defer to vueOnMounted
+        // (fast path: world was already ready during setup).
+        let hasMounted = false;
+        let bodyInitialized = false;
 
-        if (options.gravityScale !== undefined) body.setGravityScale(options.gravityScale, true);
-        if (options.linearDamping !== undefined) body.setLinearDamping(options.linearDamping);
-        if (options.angularDamping !== undefined) body.setAngularDamping(options.angularDamping);
-        if (options.lockTranslations === true) body.lockTranslations(true, true);
-        if (options.lockRotations === true) body.lockRotations(true, true);
-        if (options.enableCcd === true) body.enableCcd(true);
-        if (options.enabledTranslations !== undefined) {
-          const [x, y, z] = options.enabledTranslations;
-          body.setEnabledTranslations(x, y, z, true);
-        }
-        if (options.enabledRotations !== undefined) {
-          const [x, y, z] = options.enabledRotations;
-          body.setEnabledRotations(x, y, z, true);
-        }
-        if (options.linvel !== undefined) body.setLinvel(options.linvel, true);
-        if (options.angvel !== undefined) body.setAngvel(options.angvel, true);
-
-        store.body[eid] = body;
-
-        // ── Build colliders ───────────────────────────────────────────────────
-        const colliderMap: Record<string, Collider> = {};
-        for (const [name, config] of Object.entries(options.colliders ?? {})) {
-          const colliderDesc = applyColliderProps(buildColliderDesc(config), config);
-          const collider = rapierWorld.createCollider(colliderDesc, body);
-          colliderMap[name] = collider;
-          gameCtx.registerCollider({ handle: collider.handle, eid });
-        }
-        store.colliders[eid] = colliderMap;
-
-        // ── Apply initial transform after setup finishes ───────────────────
-        // User code can set transform.posX/Y/Z.value after useEcsComponent returns.
-        // vueOnMounted fires before the first RAF frame, so we read the final
-        // user-set values here and push them into the body before physics steps.
         vueOnMounted(() => {
-          if (transformStore !== undefined) {
-            const px = transformStore.posX[eid]?.value ?? 0;
-            const py = transformStore.posY[eid]?.value ?? 0;
-            const pz = transformStore.posZ[eid]?.value ?? 0;
-            body.setTranslation({ x: px, y: py, z: pz }, true);
+          hasMounted = true;
+          // Fast path: body already created during setup, apply transform now.
+          const b = store.body[eid];
+          if (b !== undefined) {
+            applyInitialTransform(b, transformStore, eid);
           }
+          // Slow path: body not yet created (WASM loading), hasMounted flag
+          // lets initBody apply the transform when the world becomes available.
         });
 
-        // ── Per-entity active-contact tracking ────────────────────────────────
-        const activeContacts = new Map<string, Set<number>>();
-        activeContactsByEid.set(eid, activeContacts);
+        // Watch for the physics world — fires immediately if usePhysics() was
+        // already called, otherwise waits for WASM to finish loading.
+        // Vue auto-stops this watcher when the host component unmounts.
+        watch(
+          () => gameCtx.physicsWorld.value,
+          (rapierWorld) => {
+            if (rapierWorld === null || bodyInitialized === true) return;
+            bodyInitialized = true;
+            initBody(rapierWorld);
+          },
+          { immediate: true },
+        );
 
-        // ── Physics sync + collision system (priority 0) ──────────────────────
-        const syncOff = gameCtx.registerSystem({
-          priority: 0,
-          fn: () => {
+        function initBody(rapierWorld: World): void {
+          const activeContacts = new Map<string, Set<number>>();
+          activeContactsByEid.set(eid, activeContacts);
+
+          // ── Build body ────────────────────────────────────────────────────────
+          const desc = buildRigidBodyDesc(options.type);
+          const body = rapierWorld.createRigidBody(desc);
+
+          if (options.gravityScale !== undefined) body.setGravityScale(options.gravityScale, true);
+          if (options.linearDamping !== undefined) body.setLinearDamping(options.linearDamping);
+          if (options.angularDamping !== undefined) body.setAngularDamping(options.angularDamping);
+          if (options.lockTranslations === true) body.lockTranslations(true, true);
+          if (options.lockRotations === true) body.lockRotations(true, true);
+          if (options.enableCcd === true) body.enableCcd(true);
+          if (options.enabledTranslations !== undefined) {
+            const [x, y, z] = options.enabledTranslations;
+            body.setEnabledTranslations(x, y, z, true);
+          }
+          if (options.enabledRotations !== undefined) {
+            const [x, y, z] = options.enabledRotations;
+            body.setEnabledRotations(x, y, z, true);
+          }
+          if (options.linvel !== undefined) body.setLinvel(options.linvel, true);
+          if (options.angvel !== undefined) body.setAngvel(options.angvel, true);
+
+          store.body[eid] = body;
+
+          // ── Build colliders ───────────────────────────────────────────────────
+          const colliderMap: Record<string, Collider> = {};
+          for (const [name, config] of Object.entries(options.colliders ?? {})) {
+            const colliderDesc = applyColliderProps(buildColliderDesc(config), config);
+            const collider = rapierWorld.createCollider(colliderDesc, body);
+            colliderMap[name] = collider;
+            gameCtx.registerCollider({ handle: collider.handle, eid });
+          }
+          store.colliders[eid] = colliderMap;
+
+          // ── Apply initial transform ───────────────────────────────────────────
+          // Slow path: component already mounted, user values are finalized — apply now.
+          // Fast path: vueOnMounted hasn't fired yet — it will apply the transform.
+          if (hasMounted === true) {
+            applyInitialTransform(body, transformStore, eid);
+          }
+
+          // ── Physics sync + collision system (priority 0) ──────────────────────
+          const syncOff = gameCtx.registerSystem({
+            priority: 0,
+            fn: () => {
+              if (gameCtx.physicsWorld.value === null) return;
+              const rw = gameCtx.physicsWorld.value;
+
+              const b = store.body[eid];
+              if (b === undefined) return;
+
+              // Write body → transform shallowRefs
+              if (transformStore !== undefined) {
+                const posRef = transformStore.posX[eid];
+                if (posRef !== undefined) {
+                  const t = b.translation();
+                  const r = b.rotation();
+                  transformStore.posX[eid].value = t.x;
+                  transformStore.posY[eid].value = t.y;
+                  transformStore.posZ[eid].value = t.z;
+                  transformStore.rotX[eid].value = r.x;
+                  transformStore.rotY[eid].value = r.y;
+                  transformStore.rotZ[eid].value = r.z;
+                  transformStore.rotW[eid].value = r.w;
+                }
+              }
+
+              // Collision detection — poll contactPairsWith for each collider
+              const cMap = store.colliders[eid];
+              if (cMap === undefined) return;
+
+              for (const [name, selfCollider] of Object.entries(cMap)) {
+                let active = activeContacts.get(name);
+                if (active === undefined) {
+                  active = new Set<number>();
+                  activeContacts.set(name, active);
+                }
+
+                const current = new Set<number>();
+
+                rw.contactPairsWith(selfCollider, (otherCollider: Collider) => {
+                  current.add(otherCollider.handle);
+
+                  if (active?.has(otherCollider.handle) === false) {
+                    const normal = getContactNormal(rw, selfCollider, otherCollider);
+                    const otherEid = gameCtx.colliderRegistry.get(otherCollider.handle) ?? null;
+                    const contact: PhysicsContact = {
+                      otherCollider,
+                      normal,
+                      which: name,
+                      otherEid,
+                    };
+
+                    options.colliders?.[name]?.onCollision?.(contact);
+                    options.onCollision?.(contact);
+                  }
+                });
+
+                for (const handle of active) {
+                  if (current.has(handle) === false) {
+                    const otherCollider = rw.getCollider(handle);
+                    if (otherCollider === null) continue;
+                    const otherEid = gameCtx.colliderRegistry.get(handle) ?? null;
+                    const contact: PhysicsContactEnd = {
+                      otherCollider,
+                      which: name,
+                      otherEid,
+                    };
+
+                    options.colliders?.[name]?.onCollisionEnd?.(contact);
+                    options.onCollisionEnd?.(contact);
+                  }
+                }
+
+                active.clear();
+                for (const h of current) {
+                  active.add(h);
+                }
+              }
+            },
+          });
+
+          cleanupByEid.set(eid, () => {
+            syncOff();
+            activeContactsByEid.delete(eid);
+
             if (gameCtx.physicsWorld.value === null) return;
             const rw = gameCtx.physicsWorld.value;
 
-            const b = store.body[eid];
-            if (b === undefined) return;
-
-            // Write body → transform shallowRefs
-            if (transformStore !== undefined) {
-              const posRef = transformStore.posX[eid];
-              if (posRef !== undefined) {
-                const t = b.translation();
-                const r = b.rotation();
-                transformStore.posX[eid].value = t.x;
-                transformStore.posY[eid].value = t.y;
-                transformStore.posZ[eid].value = t.z;
-                transformStore.rotX[eid].value = r.x;
-                transformStore.rotY[eid].value = r.y;
-                transformStore.rotZ[eid].value = r.z;
-                transformStore.rotW[eid].value = r.w;
-              }
-            }
-
-            // Collision detection — poll contactPairsWith for each collider
             const cMap = store.colliders[eid];
-            if (cMap === undefined) return;
-
-            for (const [name, selfCollider] of Object.entries(cMap)) {
-              let active = activeContacts.get(name);
-              if (active === undefined) {
-                active = new Set<number>();
-                activeContacts.set(name, active);
-              }
-
-              const current = new Set<number>();
-
-              rw.contactPairsWith(selfCollider, (otherCollider: Collider) => {
-                current.add(otherCollider.handle);
-
-                if (active?.has(otherCollider.handle) === false) {
-                  const normal = getContactNormal(rw, selfCollider, otherCollider);
-                  const otherEid = gameCtx.colliderRegistry.get(otherCollider.handle) ?? null;
-                  const contact: PhysicsContact = { otherCollider, normal, which: name, otherEid };
-
-                  options.colliders?.[name]?.onCollision?.(contact);
-                  options.onCollision?.(contact);
-                }
-              });
-
-              for (const handle of active) {
-                if (current.has(handle) === false) {
-                  const otherCollider = rw.getCollider(handle);
-                  if (otherCollider === null) continue;
-                  const otherEid = gameCtx.colliderRegistry.get(handle) ?? null;
-                  const contact: PhysicsContactEnd = { otherCollider, which: name, otherEid };
-
-                  options.colliders?.[name]?.onCollisionEnd?.(contact);
-                  options.onCollisionEnd?.(contact);
-                }
-              }
-
-              active.clear();
-              for (const h of current) {
-                active.add(h);
+            if (cMap !== undefined) {
+              for (const collider of Object.values(cMap)) {
+                gameCtx.unregisterCollider({ handle: collider.handle });
+                rw.removeCollider(collider, false);
               }
             }
-          },
-        });
 
-        // Store cleanup in closure so onUnmounted doesn't need inject()
-        cleanupByEid.set(eid, () => {
-          syncOff();
-          activeContactsByEid.delete(eid);
+            const b = store.body[eid];
+            if (b !== undefined) rw.removeRigidBody(b);
 
-          if (gameCtx.physicsWorld.value === null) return;
-          const rw = gameCtx.physicsWorld.value;
-
-          const cMap = store.colliders[eid];
-          if (cMap !== undefined) {
-            for (const collider of Object.values(cMap)) {
-              gameCtx.unregisterCollider({ handle: collider.handle });
-              rw.removeCollider(collider, false);
-            }
-          }
-
-          const b = store.body[eid];
-          if (b !== undefined) rw.removeRigidBody(b);
-
-          store.body[eid] = undefined;
-          store.colliders[eid] = undefined;
-        });
+            store.body[eid] = undefined;
+            store.colliders[eid] = undefined;
+          });
+        }
       },
 
       onUnmounted({ eid }: { eid: number }): void {
@@ -256,6 +286,18 @@ export function createPhysics(options: PhysicsOptions): ComponentFactory<Physics
 }
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
+
+function applyInitialTransform(
+  body: RigidBody,
+  transformStore: TransformStore | undefined,
+  eid: number,
+): void {
+  if (transformStore === undefined) return;
+  const px = transformStore.posX[eid]?.value ?? 0;
+  const py = transformStore.posY[eid]?.value ?? 0;
+  const pz = transformStore.posZ[eid]?.value ?? 0;
+  body.setTranslation({ x: px, y: py, z: pz }, true);
+}
 
 function buildRigidBodyDesc(type: PhysicsOptions["type"]): RigidBodyDesc {
   switch (type) {

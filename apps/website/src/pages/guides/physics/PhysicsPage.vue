@@ -5,8 +5,9 @@ import CodeBlock from "../../../components/CodeBlock.vue";
 import sceneSource from "./PhysicsScene.vue?raw";
 import boxSource from "./PhysicsBox.vue?raw";
 
-const INIT_CODE = `// Call once at the top of a scene's setup — async, awaited by <Suspense> in <Game>.
-await usePhysics({ gravity: [0, -9.81, 0] });`;
+const INIT_CODE = `// Call once at the top of a scene's setup.
+// WASM loads in the background — no await needed, no <Suspense> required.
+usePhysics({ gravity: [0, -9.81, 0] });`;
 
 const CREATE_PHYSICS = `// createPhysics returns a ComponentFactory.
 // It can be called inline in component setup — a stable __type symbol is used
@@ -78,11 +79,13 @@ createCapsuleCollider({ halfHeight: 0.5, radius: 0.25 })`;
 
     <h2>1. Initialize the world</h2>
     <p>
-      Call <code>await usePhysics({ gravity })</code> once at the top of a scene's
-      <code>setup</code>. It loads the Rapier WASM binary, creates a <code>RAPIER.World</code>, and
-      registers a step system at priority <code>-100</code> so physics always runs before any other
-      system. Because the init is async, scenes that use physics must be wrapped in
-      <code>&lt;Suspense&gt;</code> — <code>&lt;Game&gt;</code> does this automatically.
+      Call <code>usePhysics({ gravity })</code> once at the top of a scene's <code>setup</code>. It
+      starts loading the Rapier WASM binary in the background and creates a
+      <code>RAPIER.World</code> once ready. The call is synchronous from the component's perspective
+      — no <code>await</code>, no <code>&lt;Suspense&gt;</code> needed. Physics bodies are created
+      lazily and the physics step registers itself at priority <code>-100</code> so it always runs
+      before any other system. Two physics scenes can switch cleanly because scene transitions are
+      synchronous.
     </p>
     <div class="code-wrap">
       <CodeBlock lang="ts" :code="INIT_CODE" />

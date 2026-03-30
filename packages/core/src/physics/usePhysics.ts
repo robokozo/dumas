@@ -1,32 +1,34 @@
 import { useGame } from "../world/useGame";
 
 /**
- * Initializes the Rapier physics engine for the current game instance.
+ * Kicks off Rapier WASM loading and world creation for the current game instance.
  *
- * Loads the WASM binary and creates a Rapier World with the given gravity.
- * The physics step is driven by the central game loop in <Game> — no separate
- * system registration is needed here.
+ * The call is synchronous from the component's perspective — WASM loads in the
+ * background and the physics world becomes available shortly after. Entity
+ * components that use createPhysics() watch for the world to become ready and
+ * create their bodies lazily, so no <Suspense> boundary is needed.
  *
- * Must be called inside an async component setup that is a descendant of
- * <Game>. Call it once per scene — calling it again is a no-op if the world
- * is already initialized.
+ * Call once per game — subsequent calls are a no-op if the world is already
+ * initialized or loading.
  *
  * @example
- * await usePhysics({ gravity: [0, -9.81, 0] });
+ * usePhysics({ gravity: [0, -9.81, 0] });
  */
-export async function usePhysics({
+export function usePhysics({
   gravity = [0, -9.81, 0] as [number, number, number],
 }: {
   gravity?: [number, number, number];
-} = {}): Promise<void> {
+} = {}): void {
   const gameCtx = useGame();
 
   if (gameCtx.physicsWorld.value !== null) return;
 
-  const RAPIER = await import("@dimforge/rapier3d-compat");
-  await RAPIER.init();
-
-  gameCtx.physicsWorld.value = new RAPIER.World(
-    new RAPIER.Vector3(gravity[0], gravity[1], gravity[2]),
-  );
+  void (async () => {
+    const RAPIER = await import("@dimforge/rapier3d-compat");
+    await RAPIER.init();
+    if (gameCtx.physicsWorld.value !== null) return;
+    gameCtx.physicsWorld.value = new RAPIER.World(
+      new RAPIER.Vector3(gravity[0], gravity[1], gravity[2]),
+    );
+  })();
 }

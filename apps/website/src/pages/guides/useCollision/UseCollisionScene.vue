@@ -11,7 +11,7 @@ import BouncingBall from "./BouncingBall.vue";
 const LEFT_COLOR = "#ff4444";
 const RIGHT_COLOR = "#4488ff";
 
-await usePhysics({ gravity: [0, 0, 0] });
+usePhysics({ gravity: [0, 0, 0] });
 
 // Left wall — fixed body at x: -4
 const { transform: leftTransform } = useEcsComponent({

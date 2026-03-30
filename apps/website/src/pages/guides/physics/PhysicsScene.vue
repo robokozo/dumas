@@ -28,7 +28,7 @@ const BOXES: Array<Box> = [
   { id: 9, position: [3, 11, 1], color: "#88ff88" },
 ];
 
-await usePhysics({ gravity: [0, -9.81, 0] });
+usePhysics({ gravity: [0, -9.81, 0] });
 
 // Ground — fixed body, no visual entity needed (static TresMesh below handles rendering)
 useEcsComponent({

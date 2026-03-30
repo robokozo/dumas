@@ -163,9 +163,7 @@ provide(GAME_KEY, ctx);
   <div v-bind="attrs" style="position: relative">
     <TresCanvas style="width: 100%; height: 100%">
       <GameLoop />
-      <Suspense>
-        <slot />
-      </Suspense>
+      <slot />
     </TresCanvas>
     <div style="position: absolute; inset: 0; pointer-events: none">
       <slot name="overlay" :active-scene="activeScene" :scenes="scenes" :load-scene="loadScene" />
