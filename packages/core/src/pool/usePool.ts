@@ -33,12 +33,16 @@ export function usePool<F extends Record<string, ComponentFactory>>({
 }): PoolInstance<F> {
   const { world, storeRegistry } = useGame();
 
+  // Resolve stores using __type symbol when available (mirrors useEcsComponent).
+  const factoryEntries = Object.entries(factories);
+
   const stores = Object.fromEntries(
-    Object.entries(factories).map(([key, factory]) => {
-      let instance = storeRegistry.get(factory);
+    factoryEntries.map(([key, factory]) => {
+      const storeKey = (factory as ComponentFactory).__type ?? factory;
+      let instance = storeRegistry.get(storeKey);
       if (instance === undefined) {
         instance = factory();
-        storeRegistry.set(factory, instance);
+        storeRegistry.set(storeKey, instance);
       }
       return [key, instance];
     }),
@@ -52,9 +56,15 @@ export function usePool<F extends Record<string, ComponentFactory>>({
   for (let i = 0; i < size; i++) {
     const eid = addEntity(world);
 
-    for (const comp of componentArray) {
-      comp.onMounted?.({ eid });
+    // Call factory.onMounted (lifecycle now lives on the factory, not the store).
+    for (const [, factory] of factoryEntries) {
+      const storeKey = (factory as ComponentFactory).__type ?? factory;
+      const store = storeRegistry.get(storeKey);
+      if (store !== undefined) {
+        (factory as ComponentFactory).onMounted?.({ eid, store });
+      }
     }
+
     addComponents(world, eid, componentArray);
 
     const isActive = shallowRef(false);
@@ -88,8 +98,12 @@ export function usePool<F extends Record<string, ComponentFactory>>({
 
   onUnmounted(() => {
     for (const slot of slots) {
-      for (const comp of componentArray) {
-        comp.onUnmounted?.({ eid: slot.eid });
+      for (const [, factory] of factoryEntries) {
+        const storeKey = (factory as ComponentFactory).__type ?? factory;
+        const store = storeRegistry.get(storeKey);
+        if (store !== undefined) {
+          (factory as ComponentFactory).onUnmounted?.({ eid: slot.eid, store });
+        }
       }
       removeEntity(world, slot.eid);
     }

@@ -97,12 +97,12 @@ importers:
 
   packages/core:
     dependencies:
+      '@dimforge/rapier3d-compat':
+        specifier: ^0.19.0
+        version: 0.19.3
       '@tresjs/core':
         specifier: ^5.0.0
         version: 5.7.0(three@0.183.2)(vue@3.5.31(typescript@5.9.3))
-      '@tresjs/rapier':
-        specifier: file:../../../tres/packages/rapier
-        version: file:../tres/packages/rapier(@tresjs/core@5.7.0(three@0.183.2)(vue@3.5.31(typescript@5.9.3)))(three@0.183.2)(vue@3.5.31(typescript@5.9.3))
       '@vueuse/core':
         specifier: ^14.0.0
         version: 14.2.1(vue@3.5.31(typescript@5.9.3))
@@ -789,13 +789,6 @@ packages:
       '@tresjs/core': '>=4.0'
       three: '>=0.169'
       vue: '>=3.4'
-
-  '@tresjs/rapier@file:../tres/packages/rapier':
-    resolution: {directory: ../tres/packages/rapier, type: directory}
-    peerDependencies:
-      '@tresjs/core': 5.3.2
-      three: '>=0.169'
-      vue: '>=3.4.0'
 
   '@tweenjs/tween.js@23.1.3':
     resolution: {integrity: sha512-vJmvvwFxYuGnF2axRtPYocag6Clbb5YS7kLL+SO/TeVFzHqDIWrNKYtcsPMibjDx9O+bu+psAy9NKfWklassUA==}
@@ -2477,14 +2470,6 @@ snapshots:
       vue: 3.5.31(typescript@5.9.3)
     transitivePeerDependencies:
       - typescript
-
-  '@tresjs/rapier@file:../tres/packages/rapier(@tresjs/core@5.7.0(three@0.183.2)(vue@3.5.31(typescript@5.9.3)))(three@0.183.2)(vue@3.5.31(typescript@5.9.3))':
-    dependencies:
-      '@dimforge/rapier3d-compat': 0.19.3
-      '@tresjs/core': 5.7.0(three@0.183.2)(vue@3.5.31(typescript@5.9.3))
-      '@vueuse/core': 13.9.0(vue@3.5.31(typescript@5.9.3))
-      three: 0.183.2
-      vue: 3.5.31(typescript@5.9.3)
 
   '@tweenjs/tween.js@23.1.3': {}
 

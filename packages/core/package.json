@@ -35,7 +35,7 @@
     "prepublishOnly": "vp run build"
   },
   "dependencies": {
-    "@tresjs/rapier": "file:../../../tres/packages/rapier",
+    "@dimforge/rapier3d-compat": "^0.19.0",
     "bitecs": "catalog:"
   },
   "devDependencies": {

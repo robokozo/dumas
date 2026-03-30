@@ -1,14 +1,30 @@
-// Physics — re-exported from @tresjs/rapier
-export { Physics, RigidBody } from "@tresjs/rapier";
-export { useRapier, useRapierContext } from "@tresjs/rapier";
-export { useCollision } from "./collision/useCollision";
-export type { CollisionContact } from "./collision/useCollision";
+// Physics
+export { createPhysics } from "./physics/createPhysics";
+export {
+  createSphereCollider,
+  createCuboidCollider,
+  createCapsuleCollider,
+  createConeCollider,
+  createCylinderCollider,
+} from "./physics/colliderConfig";
+export { usePhysics } from "./physics/usePhysics";
+export type { PhysicsStore, PhysicsOptions } from "./physics/createPhysics";
+export type {
+  ColliderConfig,
+  SphereColliderConfig,
+  CuboidColliderConfig,
+  CapsuleColliderConfig,
+  ConeColliderConfig,
+  CylinderColliderConfig,
+} from "./physics/colliderConfig";
+export type { PhysicsContact, PhysicsContactEnd } from "./physics/types";
 
 // Components
 export { default as Game } from "./world/Game.vue";
 export { default as Scene } from "./scene/Scene.vue";
 export { default as Entity } from "./entity/Entity.vue";
 export { default as ObjectPool } from "./pool/ObjectPool.vue";
+export { default as DumasEntity } from "./components/DumasEntity.vue";
 
 // Composables
 export { useGame } from "./world/useGame";
@@ -21,7 +37,7 @@ export { defineInputMap, useInput } from "./input/useInput";
 export { usePool } from "./pool/usePool";
 
 // ECS (for advanced users building custom systems)
-export { createTransform, createSceneTag, PersistentTag } from "./ecs/components";
+export { createTransform, createSceneTag, PersistentTag, TRANSFORM_TYPE } from "./ecs/components";
 export type { TransformStore } from "./ecs/components";
 
 // Types

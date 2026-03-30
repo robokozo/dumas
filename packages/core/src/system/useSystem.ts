@@ -1,4 +1,4 @@
-import { useLoop } from "@tresjs/core";
+import { onUnmounted } from "vue";
 import { useGame } from "../world/useGame";
 import type { ComponentStore } from "../types";
 import type { SystemFnWithEntities, SystemOptions } from "./types";
@@ -13,15 +13,18 @@ export function useSystem({
   fn: SystemFnWithEntities;
   options?: SystemOptions;
 }): {} {
-  const { world } = useGame();
-  const { onBeforeRender } = useLoop();
-
+  const { world, registerSystem } = useGame();
   const { query } = useQuery({ components });
 
-  onBeforeRender(({ delta, elapsed }) => {
-    const entities = query();
-    fn({ delta, elapsed, world: world, entities });
-  }, options?.priority);
+  const off = registerSystem({
+    fn: (delta, elapsed) => {
+      const entities = query();
+      fn({ delta, elapsed, world, entities });
+    },
+    priority: options?.priority,
+  });
+
+  onUnmounted(off);
 
   return {};
 }

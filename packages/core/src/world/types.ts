@@ -1,4 +1,5 @@
 import type { World } from "bitecs";
+import type { World as RapierWorld } from "@dimforge/rapier3d-compat";
 import type { DeepReadonly, Ref, ShallowRef, Slot } from "vue";
 import type { ComponentFactory, ComponentStore } from "../types";
 
@@ -10,7 +11,7 @@ export interface GameContext {
    * Ensures each <Game> gets isolated store arrays — prevents eid collisions
    * when multiple games run on the same page.
    */
-  storeRegistry: Map<ComponentFactory, ComponentStore>;
+  storeRegistry: Map<object | symbol, ComponentStore>;
   /** Names of all currently mounted <Scene> components, in mount order. */
   scenes: DeepReadonly<Ref<Array<string>>>;
   /**
@@ -38,12 +39,28 @@ export interface GameContext {
   unregisterOverlay: (params: { name: string }) => void;
   /**
    * @internal Maps Rapier collider handles to bitECS entity IDs.
-   * Populated by useRegisterCollider() so that useCollision()'s `other`
+   * Populated by createRigidBody's onMounted so that useCollision's
    * ECS filter can resolve which entity a collider belongs to.
    */
   colliderRegistry: Map<number, number>;
-  /** @internal Called by useRegisterCollider() when a collider mounts. */
+  /** @internal Called by createRigidBody's onMounted when a body is created. */
   registerCollider: (params: { handle: number; eid: number }) => void;
-  /** @internal Called by useRegisterCollider() when a collider unmounts. */
+  /** @internal Called by createRigidBody's onUnmounted when a body is removed. */
   unregisterCollider: (params: { handle: number }) => void;
+  /**
+   * The active Rapier physics world, or null if usePhysics() has not been
+   * called yet for this game instance.
+   */
+  physicsWorld: ShallowRef<RapierWorld | null>;
+  /** @internal Called by usePhysics() to register the world after WASM init. */
+  registerPhysicsWorld: (params: { world: ShallowRef<RapierWorld | null> }) => void;
+  /**
+   * Register a function to run every frame in the central game loop.
+   * Lower priority numbers run first. Returns an unregister function.
+   * @internal Called by useSystem, usePhysicsSync, useCollision, etc.
+   */
+  registerSystem: (params: {
+    fn: (delta: number, elapsed: number) => void;
+    priority?: number;
+  }) => () => void;
 }

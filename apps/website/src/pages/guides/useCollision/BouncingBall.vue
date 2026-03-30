@@ -1,47 +1,53 @@
 <script setup lang="ts">
-import { computed, shallowRef } from "vue";
-import { RigidBody, useCollision } from "@dumas/core";
+import { ref, computed } from "vue";
+import { DumasEntity, useEcsComponent, createPhysics, createSphereCollider } from "@dumas/core";
 
 const props = defineProps<{
   leftColor: string;
   rightColor: string;
 }>();
 
-const ballRef = shallowRef<InstanceType<typeof RigidBody> | null>(null);
-const ballColor = shallowRef(props.leftColor);
+// Reactive color — updated in the onCollision callback and drives the material.
+const color = ref(props.leftColor);
+const emissiveColor = computed(() => color.value);
 
-// Derived from the RigidBody's auto-created collider once it mounts.
-const ballCollider = computed(() => ballRef.value?.context?.colliders?.[0]?.collider ?? null);
-
-useCollision({
-  collider: ballCollider,
-  onContact({ other }) {
-    const wallX = other.translation().x;
-    ballColor.value = wallX < 0 ? props.leftColor : props.rightColor;
+const { eid, transform } = useEcsComponent({
+  components: {
+    physics: createPhysics({
+      type: "dynamic",
+      gravityScale: 0,
+      linearDamping: 0,
+      lockRotations: true,
+      enabledTranslations: [true, false, false],
+      linvel: { x: 6, y: 0, z: 0 },
+      colliders: {
+        shell: createSphereCollider({
+          radius: 0.5,
+          restitution: 1,
+          friction: 0,
+          onCollision: ({ otherCollider }) => {
+            color.value = otherCollider.translation().x < 0 ? props.leftColor : props.rightColor;
+          },
+        }),
+      },
+    }),
   },
 });
+
+transform.posX.value = 0;
+transform.posY.value = 0;
+transform.posZ.value = 0;
 </script>
 
 <template>
-  <RigidBody
-    ref="ballRef"
-    type="dynamic"
-    collider="ball"
-    :gravity-scale="0"
-    :restitution="1"
-    :friction="0"
-    :linear-damping="0"
-    :lock-rotations="true"
-    :enabled-translations="[true, false, false]"
-    :linvel="{ x: 6, y: 0, z: 0 }"
-  >
+  <DumasEntity :eid="eid">
     <TresMesh>
       <TresSphereGeometry :args="[0.5, 32, 32]" />
       <TresMeshStandardMaterial
-        :color="ballColor"
-        :emissive="ballColor"
+        :color="color"
+        :emissive="emissiveColor"
         :emissive-intensity="0.5"
       />
     </TresMesh>
-  </RigidBody>
+  </DumasEntity>
 </template>
