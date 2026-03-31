@@ -150,6 +150,22 @@
             detection, and a modal interaction menu.
           </p>
         </RouterLink>
+        <RouterLink to="/games/dungeon" class="card card--demo">
+          <div class="feature-tag feature-tag--demo">Game</div>
+          <h3>Dungeon Explorer</h3>
+          <p>
+            Zelda-style top-down movement with WASD and gamepad. Walk into the cave to trigger a
+            scene transition with spawn positioning.
+          </p>
+        </RouterLink>
+        <RouterLink to="/games/dyson" class="card card--demo">
+          <div class="feature-tag feature-tag--demo">Game</div>
+          <h3>Dyson Swarm</h3>
+          <p>
+            Idle clicker in space. Click the sun for energy, build orbital collectors and stations
+            that generate passive income.
+          </p>
+        </RouterLink>
       </div>
     </section>
   </div>

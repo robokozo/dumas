@@ -8,6 +8,15 @@ Ordered by priority — foundational primitives first, then features that build 
 
 `Scene.vue` extracts the `#overlay` slot function via `registerOverlay` and re-mounts it under `Game.vue`'s `ActiveSceneOverlay` component. This severs the Vue component tree — overlay content cannot `inject` from its defining scene's ancestors. The adventure game hit this as a runtime error and had to work around it by passing context as a prop.
 
+**Fix:** Replace the slot extraction pattern with Vue's `<Teleport>`. Game.vue exposes the overlay div element as `overlayEl: Ref<HTMLElement | null>` in `GameContext`. Scene.vue teleports its overlay slot into that element instead of registering a slot function. Vue's Teleport explicitly preserves the logical component tree for provide/inject. This removes `registerOverlay`, `unregisterOverlay`, `sceneOverlays`, and `ActiveSceneOverlay` entirely.
+
+```vue
+<!-- Scene.vue -->
+<Teleport v-if="isActive && game.overlayEl.value !== null" :to="game.overlayEl.value">
+  <slot name="overlay" />
+</Teleport>
+```
+
 ---
 
 ## Transform rotation helpers

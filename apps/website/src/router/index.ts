@@ -63,6 +63,14 @@ const routes: Array<RouteRecordRaw> = [
     path: "/games/adventure",
     component: () => import("../pages/games/adventure/AdventurePage.vue"),
   },
+  {
+    path: "/games/dungeon",
+    component: () => import("../pages/games/dungeon/DungeonPage.vue"),
+  },
+  {
+    path: "/games/dyson",
+    component: () => import("../pages/games/dyson/DysonPage.vue"),
+  },
 ];
 
 export const router = createRouter({
