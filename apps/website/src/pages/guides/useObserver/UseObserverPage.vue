@@ -37,7 +37,7 @@ useObserver({
       <UseObserverGame />
     </template>
 
-    <h1>useObserver</h1>
+    <h1>Entity Observers</h1>
     <p>
       Fires a callback once each time an entity enters or leaves an archetype — when it gains or
       loses all of the declared components. The log in the demo updates entirely from the observer:

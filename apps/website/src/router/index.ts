@@ -55,6 +55,10 @@ const routes: Array<RouteRecordRaw> = [
     path: "/guides/use-observer",
     component: () => import("../pages/guides/useObserver/UseObserverPage.vue"),
   },
+  {
+    path: "/games/coin-pusher",
+    component: () => import("../pages/games/coinPusher/CoinPusherPage.vue"),
+  },
 ];
 
 export const router = createRouter({

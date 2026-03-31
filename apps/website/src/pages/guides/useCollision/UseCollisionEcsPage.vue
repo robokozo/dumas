@@ -44,7 +44,7 @@ useCollision({
       <UseCollisionEcsGame />
     </template>
 
-    <h1>useCollision</h1>
+    <h1>ECS Collision Filtering</h1>
     <p>
       A composable-level collision listener with ECS component filtering. Callbacks only fire when
       both entities carry all the declared components — no manual entity lookups needed. Pre-sliced

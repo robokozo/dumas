@@ -50,7 +50,7 @@ useSensor({
       <UseSensorGame />
     </template>
 
-    <h1>useSensor</h1>
+    <h1>Trigger Volumes</h1>
     <p>
       Sensor colliders detect overlaps without generating contact forces. Use
       <code>useSensor</code> to fire callbacks when another body enters or exits the volume. Move

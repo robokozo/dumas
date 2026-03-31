@@ -34,7 +34,7 @@
         </RouterLink>
         <RouterLink to="/guides/use-ecs-component" class="card">
           <div class="feature-tag">ECS</div>
-          <h3>useEcsComponent</h3>
+          <h3>ECS Components</h3>
           <p>
             Attach ECS components to an entity and co-locate per-frame behavior alongside the
             registration.
@@ -42,7 +42,7 @@
         </RouterLink>
         <RouterLink to="/guides/use-input" class="card">
           <div class="feature-tag">Input</div>
-          <h3>useInput</h3>
+          <h3>Input</h3>
           <p>
             Map keyboard keys and gamepad buttons to named game actions. Distinguish held, pressed,
             and released states per action.
@@ -74,7 +74,7 @@
         </RouterLink>
         <RouterLink to="/guides/use-collision-ecs" class="card">
           <div class="feature-tag">Physics</div>
-          <h3>useCollision</h3>
+          <h3>ECS Collision Filtering</h3>
           <p>
             ECS-filtered collision composable. Callbacks only fire when both entities carry the
             required components — pre-sliced reactive data passed directly.
@@ -82,7 +82,7 @@
         </RouterLink>
         <RouterLink to="/guides/use-sensor" class="card">
           <div class="feature-tag">Physics</div>
-          <h3>useSensor</h3>
+          <h3>Trigger Volumes</h3>
           <p>
             Detect when bodies enter or exit a trigger volume. Core primitive for pickups, damage
             zones, and checkpoints.
@@ -90,7 +90,7 @@
         </RouterLink>
         <RouterLink to="/guides/use-raycast" class="card">
           <div class="feature-tag">Physics</div>
-          <h3>useRaycast</h3>
+          <h3>Raycasting</h3>
           <p>
             Cast rays against the physics world with ECS target filtering. Returns the nearest hit
             or all hits with pre-sliced component data.
@@ -106,7 +106,7 @@
         </RouterLink>
         <RouterLink to="/guides/use-observer" class="card">
           <div class="feature-tag">ECS</div>
-          <h3>useObserver</h3>
+          <h3>Entity Observers</h3>
           <p>
             Fire a callback once when an entity enters or leaves an archetype. Useful for spatial
             grid registration and one-shot spawn effects.
@@ -125,6 +125,21 @@
           <p>
             Three interconnected rooms with a capsule character that spawns at the door it entered
             through — isometric Zelda-style traversal.
+          </p>
+        </RouterLink>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Game Demos</h2>
+      <p class="section-desc">Complete games built with Dumas.</p>
+      <div class="grid">
+        <RouterLink to="/games/coin-pusher" class="card card--demo">
+          <div class="feature-tag feature-tag--demo">Game</div>
+          <h3>Coin Pusher</h3>
+          <p>
+            Arcade coin pusher. Move left/right and press space to drop coins — push the pile off
+            the edge to score.
           </p>
         </RouterLink>
       </div>

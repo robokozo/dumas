@@ -56,7 +56,7 @@ const DUMAS_ENTITY = `<!-- DumasEntity wraps a THREE.Group and syncs transform â
       <UseEcsComponentGame />
     </template>
 
-    <h1>useEcsComponent</h1>
+    <h1>ECS Components</h1>
     <p>
       <code>useEcsComponent</code> creates a bitECS entity and attaches the declared component
       factories to it. It is the primary way to introduce a game object into the world. Components

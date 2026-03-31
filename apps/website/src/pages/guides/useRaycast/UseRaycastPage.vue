@@ -40,7 +40,7 @@ isGrounded.value = hit !== null;`;
       <UseRaycastGame />
     </template>
 
-    <h1>useRaycast</h1>
+    <h1>Raycasting</h1>
     <p>
       Casts a ray against the physics world and returns hit results filtered by ECS components. The
       demo shows a rotating laser from the center — the target it hits lights up orange each frame.

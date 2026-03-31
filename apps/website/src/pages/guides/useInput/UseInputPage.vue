@@ -11,7 +11,7 @@ import useInputSceneSource from "./UseInputScene.vue?raw";
       <UseInputGame />
     </template>
 
-    <h1>useInput</h1>
+    <h1>Input</h1>
     <p>
       <code>useInput</code> maps physical inputs — keyboard keys and gamepad buttons — to named game
       actions. Game code only ever reads actions, never raw keys. Rebinding a control means changing
