@@ -116,6 +116,30 @@ const routes: Array<RouteRecordRaw> = [
     path: "/games/quick-drop",
     component: () => import("../pages/games/quickDrop/QuickDropPage.vue"),
   },
+  {
+    path: "/games/tower-defense",
+    component: () => import("../pages/games/towerDefense/TowerDefensePage.vue"),
+  },
+  {
+    path: "/games/fishing",
+    component: () => import("../pages/games/fishing/FishingPage.vue"),
+  },
+  {
+    path: "/games/puzzle-platformer",
+    component: () => import("../pages/games/puzzlePlatformer/PuzzlePlatformerPage.vue"),
+  },
+  {
+    path: "/games/space-debris",
+    component: () => import("../pages/games/spaceDebris/SpaceDebrisPage.vue"),
+  },
+  {
+    path: "/games/arena-brawler",
+    component: () => import("../pages/games/arenaBrawler/ArenaBrawlerPage.vue"),
+  },
+  {
+    path: "/games/marble-run",
+    component: () => import("../pages/games/marbleRun/MarbleRunPage.vue"),
+  },
 ];
 
 export const router = createRouter({

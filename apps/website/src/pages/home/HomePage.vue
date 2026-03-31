@@ -254,6 +254,54 @@
             colored section they land on.
           </p>
         </RouterLink>
+        <RouterLink to="/games/tower-defense" class="card card--demo">
+          <div class="feature-tag feature-tag--demo">Game</div>
+          <h3>Tower Defense</h3>
+          <p>
+            Place towers along a lane to stop waves of enemies. Trigger zones detect targets, turret
+            heads rotate with ChildOf, projectiles home in.
+          </p>
+        </RouterLink>
+        <RouterLink to="/games/fishing" class="card card--demo">
+          <div class="feature-tag feature-tag--demo">Game</div>
+          <h3>Fishing</h3>
+          <p>
+            Walk the dock, cast a spring-jointed line, and wait for a bite. Four fish species with
+            DOM labels positioned via useWorldToScreen.
+          </p>
+        </RouterLink>
+        <RouterLink to="/games/puzzle-platformer" class="card card--demo">
+          <div class="feature-tag feature-tag--demo">Game</div>
+          <h3>Puzzle Platformer</h3>
+          <p>
+            Side-scrolling platformer with character controller, revolute-jointed drawbridges,
+            pressure plates, key collection, and an exit door.
+          </p>
+        </RouterLink>
+        <RouterLink to="/games/space-debris" class="card card--demo">
+          <div class="feature-tag feature-tag--demo">Game</div>
+          <h3>Space Debris Cleaner</h3>
+          <p>
+            Top-down space game. Pilot a ship with lookAt aiming, activate a tractor beam to pull
+            tumbling debris spawned from prefabs.
+          </p>
+        </RouterLink>
+        <RouterLink to="/games/arena-brawler" class="card card--demo">
+          <div class="feature-tag feature-tag--demo">Game</div>
+          <h3>Arena Brawler</h3>
+          <p>
+            Top-down melee combat. Enemies chase via useEntityRef, weapons attach with ChildOf,
+            health bars float with useWorldToScreen.
+          </p>
+        </RouterLink>
+        <RouterLink to="/games/marble-run" class="card card--demo">
+          <div class="feature-tag feature-tag--demo">Game</div>
+          <h3>Marble Run</h3>
+          <p>
+            Drop marbles down a zigzag course with revolute-jointed seesaws, spring bumpers, trigger
+            zone checkpoints, and a timed score.
+          </p>
+        </RouterLink>
       </div>
     </section>
   </div>
