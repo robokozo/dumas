@@ -35,6 +35,26 @@ const routes: Array<RouteRecordRaw> = [
     path: "/guides/use-collision",
     component: () => import("../pages/guides/useCollision/UseCollisionPage.vue"),
   },
+  {
+    path: "/guides/use-collision-ecs",
+    component: () => import("../pages/guides/useCollision/UseCollisionEcsPage.vue"),
+  },
+  {
+    path: "/guides/use-sensor",
+    component: () => import("../pages/guides/useSensor/UseSensorPage.vue"),
+  },
+  {
+    path: "/guides/use-raycast",
+    component: () => import("../pages/guides/useRaycast/UseRaycastPage.vue"),
+  },
+  {
+    path: "/guides/collision-groups",
+    component: () => import("../pages/guides/collisionGroups/CollisionGroupsPage.vue"),
+  },
+  {
+    path: "/guides/use-observer",
+    component: () => import("../pages/guides/useObserver/UseObserverPage.vue"),
+  },
 ];
 
 export const router = createRouter({

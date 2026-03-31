@@ -15,6 +15,18 @@ interface ColliderConfigBase {
   mass?: number;
   density?: number;
   sensor?: boolean;
+  /**
+   * Collision group membership bitmask for this collider.
+   * Use defineCollisionGroups() to generate named constants.
+   * Encoded with encodeCollisionGroups() alongside filter before being
+   * passed to Rapier.
+   */
+  membership?: number;
+  /**
+   * Collision filter bitmask — which groups this collider interacts with.
+   * Bodies whose membership does not match this filter are ignored.
+   */
+  filter?: number;
   /** Fires when this specific collider starts contacting another body. */
   onCollision?: (contact: PhysicsContact) => void;
   /** Fires when this specific collider stops contacting another body. */

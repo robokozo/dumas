@@ -66,10 +66,50 @@
         </RouterLink>
         <RouterLink to="/guides/use-collision" class="card">
           <div class="feature-tag">Physics</div>
+          <h3>Collision Events</h3>
+          <p>
+            Per-collider callbacks on createPhysics close over reactive state — no separate
+            composable needed for simple cases.
+          </p>
+        </RouterLink>
+        <RouterLink to="/guides/use-collision-ecs" class="card">
+          <div class="feature-tag">Physics</div>
           <h3>useCollision</h3>
           <p>
-            React to contact events between rigid bodies. Attach typed callbacks to any body and
-            identify what was hit from the target's collider data.
+            ECS-filtered collision composable. Callbacks only fire when both entities carry the
+            required components — pre-sliced reactive data passed directly.
+          </p>
+        </RouterLink>
+        <RouterLink to="/guides/use-sensor" class="card">
+          <div class="feature-tag">Physics</div>
+          <h3>useSensor</h3>
+          <p>
+            Detect when bodies enter or exit a trigger volume. Core primitive for pickups, damage
+            zones, and checkpoints.
+          </p>
+        </RouterLink>
+        <RouterLink to="/guides/use-raycast" class="card">
+          <div class="feature-tag">Physics</div>
+          <h3>useRaycast</h3>
+          <p>
+            Cast rays against the physics world with ECS target filtering. Returns the nearest hit
+            or all hits with pre-sliced component data.
+          </p>
+        </RouterLink>
+        <RouterLink to="/guides/collision-groups" class="card">
+          <div class="feature-tag">Physics</div>
+          <h3>Collision Groups</h3>
+          <p>
+            Control which bodies interact at the physics level with named bitmask groups. More
+            efficient than filtering in callbacks.
+          </p>
+        </RouterLink>
+        <RouterLink to="/guides/use-observer" class="card">
+          <div class="feature-tag">ECS</div>
+          <h3>useObserver</h3>
+          <p>
+            Fire a callback once when an entity enters or leaves an archetype. Useful for spatial
+            grid registration and one-shot spawn effects.
           </p>
         </RouterLink>
       </div>

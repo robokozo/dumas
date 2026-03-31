@@ -1,5 +1,6 @@
 import { inject, onMounted as vueOnMounted, watch } from "vue";
 import { ColliderDesc, RigidBodyDesc } from "@dimforge/rapier3d-compat";
+import { encodeCollisionGroups } from "./collisionGroups";
 import type { Collider, RigidBody, World } from "@dimforge/rapier3d-compat";
 import { GAME_KEY } from "../keys";
 import { TRANSFORM_TYPE } from "../ecs/components";
@@ -41,8 +42,12 @@ export interface PhysicsOptions {
   onCollisionEnd?: (contact: PhysicsContactEnd) => void;
 }
 
-/** Stable symbol — all createPhysics() calls share one PhysicsStore per <Game>. */
-const PHYSICS_TYPE: symbol = Symbol("dumas.physics");
+/**
+ * Stable symbol — all createPhysics() calls share one PhysicsStore per <Game>.
+ * Exported for internal use by useCollision, useSensor, and useRaycast.
+ * Not part of the public API surface (not re-exported from index.ts).
+ */
+export const PHYSICS_TYPE: symbol = Symbol("dumas.physics");
 
 // ─── factory ──────────────────────────────────────────────────────────────────
 
@@ -333,6 +338,12 @@ function applyColliderProps(desc: ColliderDesc, config: ColliderConfig): Collide
   if (config.mass !== undefined) desc.setMass(config.mass);
   if (config.density !== undefined) desc.setDensity(config.density);
   if (config.sensor === true) desc.setSensor(true);
+  if (config.membership !== undefined || config.filter !== undefined) {
+    // Default: member of all groups (0xffff), collides with all groups (0xffff).
+    const membership = config.membership ?? 0xffff;
+    const filter = config.filter ?? 0xffff;
+    desc.setCollisionGroups(encodeCollisionGroups({ membership, filter }));
+  }
   return desc;
 }
 

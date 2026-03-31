@@ -8,6 +8,11 @@ export {
   createCylinderCollider,
 } from "./physics/colliderConfig";
 export { usePhysics } from "./physics/usePhysics";
+export { useCollision } from "./physics/useCollision";
+export { useSensor } from "./physics/useSensor";
+export { useRaycast } from "./physics/useRaycast";
+export { defineCollisionGroups, encodeCollisionGroups } from "./physics/collisionGroups";
+export { PHYSICS_TYPE } from "./physics/createPhysics";
 export type { PhysicsStore, PhysicsOptions } from "./physics/createPhysics";
 export type {
   ColliderConfig,
@@ -18,6 +23,9 @@ export type {
   CylinderColliderConfig,
 } from "./physics/colliderConfig";
 export type { PhysicsContact, PhysicsContactEnd } from "./physics/types";
+export type { CollisionContact, CollisionContactEnd } from "./physics/useCollision";
+export type { SensorEvent } from "./physics/useSensor";
+export type { RaycastHit, UseRaycastReturn } from "./physics/useRaycast";
 
 // Components
 export { default as Game } from "./world/Game.vue";
@@ -38,6 +46,7 @@ export { usePool } from "./pool/usePool";
 
 // ECS (for advanced users building custom systems)
 export { createTransform, createSceneTag, PersistentTag, TRANSFORM_TYPE } from "./ecs/components";
+export { useObserver } from "./ecs/useObserver";
 export type { TransformStore } from "./ecs/components";
 
 // Types
