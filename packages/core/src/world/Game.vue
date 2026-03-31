@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { defineComponent, h, provide, readonly, shallowRef, useAttrs } from "vue";
+import { defineComponent, provide, readonly, shallowRef, useAttrs } from "vue";
 import type { ShallowRef, Slot, VNode } from "vue";
 import type { World as RapierWorld } from "@dimforge/rapier3d-compat";
 import { TresCanvas, useLoop } from "@tresjs/core";
 import { createWorld } from "bitecs";
 import { GAME_KEY } from "../keys";
-import type { ComponentFactory, ComponentStore } from "../types";
+import type { ComponentStore } from "../types";
+import type { SceneContext } from "../scene/types";
 import type { GameContext } from "./types";
 
 defineOptions({ inheritAttrs: false });
@@ -81,6 +82,9 @@ const GameLoop = defineComponent({
 
 // ─── scene management ─────────────────────────────────────────────────────────
 
+const sceneContexts = new Map<string, SceneContext>();
+let isTransitioning = false;
+
 async function loadScene({
   name,
   state = {},
@@ -88,16 +92,45 @@ async function loadScene({
   name: string;
   state?: Record<string, unknown>;
 }): Promise<void> {
-  transitionState.value = { from: activeScene.value, ...state };
+  if (isTransitioning) {
+    return;
+  }
+  isTransitioning = true;
+
+  const previousScene = activeScene.value;
+
+  // Fire exit hooks on the scene being left
+  if (previousScene !== null) {
+    const exitCtx = sceneContexts.get(previousScene);
+    if (exitCtx !== undefined) {
+      for (const hook of exitCtx.exitHooks) {
+        await hook({ sceneName: previousScene, nextScene: name });
+      }
+    }
+  }
+
+  transitionState.value = { from: previousScene, ...state };
   activeScene.value = name;
+
+  // Fire enter hooks on the scene being entered
+  const enterCtx = sceneContexts.get(name);
+  if (enterCtx !== undefined) {
+    for (const hook of enterCtx.enterHooks) {
+      await hook({ sceneName: name });
+    }
+  }
+
+  isTransitioning = false;
 }
 
-function registerScene({ name }: { name: string }): void {
+function registerScene({ name, context }: { name: string; context: SceneContext }): void {
   scenes.value = [...scenes.value, name];
+  sceneContexts.set(name, context);
 }
 
 function unregisterScene({ name }: { name: string }): void {
   scenes.value = scenes.value.filter((s) => s !== name);
+  sceneContexts.delete(name);
 }
 
 function registerCollider({ handle, eid }: { handle: number; eid: number }): void {
@@ -146,6 +179,7 @@ const ctx: GameContext = {
   loadScene,
   activeScene: readonly(activeScene),
   transitionState: readonly(transitionState),
+  sceneContexts,
   registerScene,
   unregisterScene,
   registerCollider,

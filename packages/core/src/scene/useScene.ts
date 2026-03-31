@@ -1,4 +1,4 @@
-import { inject } from "vue";
+import { inject, onUnmounted } from "vue";
 import { SCENE_KEY } from "../keys";
 import type { SceneEnterHook, SceneExitHook } from "./types";
 
@@ -17,16 +17,26 @@ export function useScene(): UseSceneReturn {
     throw new Error("[dumas] useScene() must be called inside a <Scene> component.");
   }
 
-  const enterHooks: Array<SceneEnterHook> = [];
-  const exitHooks: Array<SceneExitHook> = [];
+  const registered: Array<{ list: Array<unknown>; fn: unknown }> = [];
+
+  onUnmounted(() => {
+    for (const { list, fn } of registered) {
+      const idx = list.indexOf(fn);
+      if (idx !== -1) {
+        list.splice(idx, 1);
+      }
+    }
+  });
 
   return {
     sceneName: ctx.name,
     onSceneEnter: (fn) => {
-      enterHooks.push(fn);
+      ctx.enterHooks.push(fn);
+      registered.push({ list: ctx.enterHooks, fn });
     },
     onSceneExit: (fn) => {
-      exitHooks.push(fn);
+      ctx.exitHooks.push(fn);
+      registered.push({ list: ctx.exitHooks, fn });
     },
   };
 }

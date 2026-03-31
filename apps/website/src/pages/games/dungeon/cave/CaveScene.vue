@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import { Scene, useGame } from "@dumas/core";
+import { Scene, useGame, useScene } from "@dumas/core";
 import DungeonCharacter from "../shared/DungeonCharacter.vue";
 
 const { loadScene, transitionState } = useGame();
+const { onSceneEnter } = useScene();
 
 const spawnX = computed(() => {
   const from = transitionState.value.from as string | undefined;
@@ -18,7 +19,11 @@ const spawnZ = computed(() => {
 
 const camX = ref(spawnX.value);
 const camZ = ref(spawnZ.value);
-let isTransitioning = false;
+
+onSceneEnter(() => {
+  camX.value = spawnX.value;
+  camZ.value = spawnZ.value;
+});
 
 function onPlayerMoved({ x, z }: { x: number; z: number }): void {
   camX.value = x;
@@ -27,12 +32,8 @@ function onPlayerMoved({ x, z }: { x: number; z: number }): void {
   // Walk to cave exit → back to forest
   const dx = x - 0;
   const dz = z - 5;
-  const dist = Math.sqrt(dx * dx + dz * dz);
-  if (!isTransitioning && dist < 1.0) {
-    isTransitioning = true;
+  if (Math.sqrt(dx * dx + dz * dz) < 1.0) {
     void loadScene({ name: "forest" });
-  } else if (isTransitioning && dist > 1.5) {
-    isTransitioning = false;
   }
 }
 </script>

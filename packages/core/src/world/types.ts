@@ -1,7 +1,8 @@
 import type { World } from "bitecs";
 import type { World as RapierWorld } from "@dimforge/rapier3d-compat";
 import type { DeepReadonly, Ref, ShallowRef, Slot } from "vue";
-import type { ComponentFactory, ComponentStore } from "../types";
+import type { ComponentStore } from "../types";
+import type { SceneContext } from "../scene/types";
 
 export interface GameContext {
   /** The bitECS world instance. Use for ECS queries and component access. */
@@ -30,9 +31,11 @@ export interface GameContext {
    */
   transitionState: DeepReadonly<ShallowRef<Record<string, unknown>>>;
   /** @internal Called by <Scene> on mount. */
-  registerScene: (params: { name: string }) => void;
+  registerScene: (params: { name: string; context: SceneContext }) => void;
   /** @internal Called by <Scene> on unmount. */
   unregisterScene: (params: { name: string }) => void;
+  /** @internal Map of scene name → SceneContext, for hook lookup by loadScene. */
+  sceneContexts: Map<string, SceneContext>;
   /** @internal Called by <Scene> to register its #overlay slot for rendering outside TresCanvas. */
   registerOverlay: (params: { name: string; slot: Slot }) => void;
   /** @internal Called by <Scene> on unmount to remove its overlay slot. */

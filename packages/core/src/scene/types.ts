@@ -17,6 +17,10 @@ export interface SceneContext {
   name: string;
   /** Whether this scene is the currently active one. */
   isActive: ComputedRef<boolean>;
+  /** @internal Hook arrays populated by useScene(). Fired by loadScene(). */
+  enterHooks: Array<SceneEnterHook>;
+  /** @internal Hook arrays populated by useScene(). Fired by loadScene(). */
+  exitHooks: Array<SceneExitHook>;
 }
 
 // Lifecycle hook signatures exposed by useScene()

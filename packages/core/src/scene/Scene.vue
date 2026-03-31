@@ -21,15 +21,22 @@ const isActive = computed(() => {
   return game.activeScene.value === props.name;
 });
 
+import type { SceneEnterHook, SceneExitHook } from "./types";
+
+const enterHooks: Array<SceneEnterHook> = [];
+const exitHooks: Array<SceneExitHook> = [];
+
 const ctx: SceneContext = {
   name: props.name,
   isActive,
+  enterHooks,
+  exitHooks,
 };
 
 provide(SCENE_KEY, ctx);
 
 onMounted(() => {
-  game.registerScene({ name: props.name });
+  game.registerScene({ name: props.name, context: ctx });
   if (props.default === true && game.activeScene.value === null) {
     game.loadScene({ name: props.name });
   }
