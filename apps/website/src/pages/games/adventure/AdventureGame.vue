@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Game } from "@dumas/core";
-import AdventureScene from "./AdventureScene.vue";
+import AdventureScene from "./outdoor-area-1/OutdoorArea1Scene.vue";
 </script>
 
 <template>
