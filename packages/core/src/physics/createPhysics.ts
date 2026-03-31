@@ -333,6 +333,11 @@ function buildColliderDesc(config: ColliderConfig): ColliderDesc {
 }
 
 function applyColliderProps(desc: ColliderDesc, config: ColliderConfig): ColliderDesc {
+  if (config.offset !== undefined) desc.setTranslation(...config.offset);
+  if (config.offsetRotation !== undefined) {
+    const [x, y, z, w] = config.offsetRotation;
+    desc.setRotation({ x, y, z, w });
+  }
   if (config.friction !== undefined) desc.setFriction(config.friction);
   if (config.restitution !== undefined) desc.setRestitution(config.restitution);
   if (config.mass !== undefined) desc.setMass(config.mass);

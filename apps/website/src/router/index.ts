@@ -71,6 +71,10 @@ const routes: Array<RouteRecordRaw> = [
     path: "/games/dyson",
     component: () => import("../pages/games/dyson/DysonPage.vue"),
   },
+  {
+    path: "/games/quick-drop",
+    component: () => import("../pages/games/quickDrop/QuickDropPage.vue"),
+  },
 ];
 
 export const router = createRouter({

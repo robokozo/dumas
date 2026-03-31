@@ -15,6 +15,10 @@ interface ColliderConfigBase {
   mass?: number;
   density?: number;
   sensor?: boolean;
+  /** Offset translation relative to the parent body. */
+  offset?: [number, number, number];
+  /** Offset rotation (quaternion) relative to the parent body. */
+  offsetRotation?: [number, number, number, number];
   /**
    * Collision group membership bitmask for this collider.
    * Use defineCollisionGroups() to generate named constants.

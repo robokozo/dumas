@@ -166,6 +166,14 @@
             that generate passive income.
           </p>
         </RouterLink>
+        <RouterLink to="/games/quick-drop" class="card card--demo">
+          <div class="feature-tag feature-tag--demo">Game</div>
+          <h3>Quick Drop</h3>
+          <p>
+            Arcade timing game. Drop balls onto a spinning turntable and score points based on which
+            colored section they land on.
+          </p>
+        </RouterLink>
       </div>
     </section>
   </div>
