@@ -59,6 +59,10 @@ const routes: Array<RouteRecordRaw> = [
     path: "/games/coin-pusher",
     component: () => import("../pages/games/coinPusher/CoinPusherPage.vue"),
   },
+  {
+    path: "/games/adventure",
+    component: () => import("../pages/games/adventure/AdventurePage.vue"),
+  },
 ];
 
 export const router = createRouter({

@@ -142,6 +142,14 @@
             the edge to score.
           </p>
         </RouterLink>
+        <RouterLink to="/games/adventure" class="card card--demo">
+          <div class="feature-tag feature-tag--demo">Game</div>
+          <h3>Point & Click Adventure</h3>
+          <p>
+            Click to move, click objects to interact. Three items with branching dialogue, proximity
+            detection, and a modal interaction menu.
+          </p>
+        </RouterLink>
       </div>
     </section>
   </div>

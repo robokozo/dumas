@@ -465,7 +465,7 @@ useSystem({
 .score {
   position: absolute;
   top: 1rem;
-  right: 1.5rem;
+  left: 1.5rem;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -490,7 +490,7 @@ useSystem({
 .score__legend {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: flex-start;
   gap: 0.1rem;
   margin-top: 0.4rem;
 }
