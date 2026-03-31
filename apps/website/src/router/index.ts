@@ -32,12 +32,21 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("../pages/guides/usePool/UsePoolPage.vue"),
   },
   {
+    path: "/guides/use-pointer",
+    component: () => import("../pages/guides/usePointer/UsePointerPage.vue"),
+  },
+  {
     path: "/guides/use-collision",
     component: () => import("../pages/guides/useCollision/UseCollisionPage.vue"),
   },
   {
     path: "/guides/use-collision-ecs",
     component: () => import("../pages/guides/useCollision/UseCollisionEcsPage.vue"),
+  },
+  {
+    path: "/guides/use-character-controller",
+    component: () =>
+      import("../pages/guides/useCharacterController/UseCharacterControllerPage.vue"),
   },
   {
     path: "/guides/use-sensor",
@@ -54,6 +63,38 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/guides/use-observer",
     component: () => import("../pages/guides/useObserver/UseObserverPage.vue"),
+  },
+  {
+    path: "/guides/define-tag",
+    component: () => import("../pages/guides/defineTag/DefineTagPage.vue"),
+  },
+  {
+    path: "/guides/transform-helpers",
+    component: () => import("../pages/guides/transformHelpers/TransformHelpersPage.vue"),
+  },
+  {
+    path: "/guides/use-world-to-screen",
+    component: () => import("../pages/guides/useWorldToScreen/UseWorldToScreenPage.vue"),
+  },
+  {
+    path: "/guides/trigger-zones",
+    component: () => import("../pages/guides/triggerZones/TriggerZonesPage.vue"),
+  },
+  {
+    path: "/guides/use-entity-ref",
+    component: () => import("../pages/guides/useEntityRef/UseEntityRefPage.vue"),
+  },
+  {
+    path: "/guides/define-prefab",
+    component: () => import("../pages/guides/definePrefab/DefinePrefabPage.vue"),
+  },
+  {
+    path: "/guides/use-joint",
+    component: () => import("../pages/guides/useJoint/UseJointPage.vue"),
+  },
+  {
+    path: "/guides/relationships",
+    component: () => import("../pages/guides/relationships/RelationshipsPage.vue"),
   },
   {
     path: "/games/coin-pusher",

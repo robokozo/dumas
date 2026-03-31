@@ -9,12 +9,12 @@ export function useSystem({
   fn,
   options,
 }: {
-  components: Array<ComponentStore>;
+  components?: Array<ComponentStore>;
   fn: SystemFnWithEntities;
   options?: SystemOptions;
 }): {} {
   const { world, registerSystem } = useGame();
-  const { query } = useQuery({ components });
+  const { query } = useQuery({ components: components ?? [] });
 
   const off = registerSystem({
     fn: (delta, elapsed) => {

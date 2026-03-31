@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { defineComponent, provide, readonly, shallowRef, useAttrs } from "vue";
-import type { ShallowRef, Slot, VNode } from "vue";
+import type { ShallowRef } from "vue";
 import type { World as RapierWorld } from "@dimforge/rapier3d-compat";
 import { TresCanvas, useLoop } from "@tresjs/core";
 import { createWorld } from "bitecs";
@@ -17,7 +17,7 @@ const world = createWorld();
 const storeRegistry = new Map<object | symbol, ComponentStore>();
 const colliderRegistry = new Map<number, number>();
 const physicsWorldRef = shallowRef<RapierWorld | null>(null);
-const sceneOverlays = shallowRef(new Map<string, Slot>());
+const overlayEl = shallowRef<HTMLElement | null>(null);
 const scenes = shallowRef<Array<string>>([]);
 const activeScene = shallowRef<string | null>(null);
 const transitionState = shallowRef<Record<string, unknown>>({});
@@ -149,27 +149,6 @@ function registerPhysicsWorld({
   physicsWorldRef.value = rapierWorld.value;
 }
 
-function registerOverlay({ name, slot }: { name: string; slot: Slot }): void {
-  const next = new Map(sceneOverlays.value);
-  next.set(name, slot);
-  sceneOverlays.value = next;
-}
-
-function unregisterOverlay({ name }: { name: string }): void {
-  const next = new Map(sceneOverlays.value);
-  next.delete(name);
-  sceneOverlays.value = next;
-}
-
-const ActiveSceneOverlay = {
-  render(): Array<VNode> | null {
-    if (activeScene.value === null) return null;
-    const slotFn = sceneOverlays.value.get(activeScene.value);
-    if (slotFn === undefined) return null;
-    return slotFn({ name: activeScene.value });
-  },
-};
-
 const ctx: GameContext = {
   world,
   storeRegistry,
@@ -185,8 +164,7 @@ const ctx: GameContext = {
   registerCollider,
   unregisterCollider,
   registerPhysicsWorld,
-  registerOverlay,
-  unregisterOverlay,
+  overlayEl,
   registerSystem,
 };
 
@@ -199,9 +177,8 @@ provide(GAME_KEY, ctx);
       <GameLoop />
       <slot />
     </TresCanvas>
-    <div style="position: absolute; inset: 0; pointer-events: none">
+    <div ref="overlayEl" style="position: absolute; inset: 0; pointer-events: none">
       <slot name="overlay" :active-scene="activeScene" :scenes="scenes" :load-scene="loadScene" />
-      <component :is="ActiveSceneOverlay" />
     </div>
   </div>
 </template>

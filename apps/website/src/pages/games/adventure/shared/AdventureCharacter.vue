@@ -23,7 +23,6 @@ emit("ready", eid);
 let isArrivedEmitted = false;
 
 useSystem({
-  components: [],
   fn: ({ delta }) => {
     if (props.isMoving === false) {
       // Reset guard each time movement stops so the next trip fires correctly.
@@ -48,12 +47,7 @@ useSystem({
     transform.posX.value += nx * MOVE_SPEED * delta;
     transform.posZ.value += nz * MOVE_SPEED * delta;
 
-    // Rotation is a quaternion, not Euler angles: (0, sin(θ/2), 0, cos(θ/2))
-    const halfAngle = Math.atan2(nx, nz) / 2;
-    transform.rotX.value = 0;
-    transform.rotY.value = Math.sin(halfAngle);
-    transform.rotZ.value = 0;
-    transform.rotW.value = Math.cos(halfAngle);
+    transform.setRotationY({ angle: Math.atan2(nx, nz) });
   },
 });
 </script>

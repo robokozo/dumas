@@ -12,11 +12,7 @@ const { eid, transform } = useEcsComponent({
   components: {},
   fn: ({ transform, elapsed }) => {
     transform.posY.value = Math.sin(elapsed * WAVE_SPEED + props.phase) * WAVE_AMPLITUDE;
-    // Derive the full Y-axis quaternion from elapsed so it stays normalized.
-    // rotX = 0, rotZ = 0 (pure Y rotation), rotY = sin(θ/2), rotW = cos(θ/2).
-    const halfAngle = elapsed * SPIN_SPEED + props.phase * 0.5;
-    transform.rotY.value = Math.sin(halfAngle);
-    transform.rotW.value = Math.cos(halfAngle);
+    transform.setRotationY({ angle: (elapsed * SPIN_SPEED + props.phase * 0.5) * 2 });
   },
 });
 

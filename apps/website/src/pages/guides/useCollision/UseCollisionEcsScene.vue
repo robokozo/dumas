@@ -20,20 +20,14 @@ import {
   createSphereCollider,
   createCuboidCollider,
   useCollision,
+  defineTag,
   DumasEntity,
 } from "@dumas/core";
-import type { ComponentFactory, ComponentStore } from "@dumas/core";
 
-// ── Minimal tag factories ──────────────────────────────────────────────────────
-interface TagStore extends ComponentStore {}
+// ── Tags ─────────────────────────────────────────────────────────────────────
 
-function makeTagFactory(): ComponentFactory<TagStore> {
-  const type: symbol = Symbol();
-  return Object.assign((): TagStore => ({}), { __type: type });
-}
-
-const createSwordTag = makeTagFactory();
-const createTargetTag = makeTagFactory();
+const SwordTag = defineTag();
+const TargetTag = defineTag();
 
 // ── Setup ──────────────────────────────────────────────────────────────────────
 
@@ -90,7 +84,7 @@ for (const cfg of SWORD_CONFIGS) {
         linvel: { x: cfg.vx, y: cfg.vy, z: 0 },
         colliders: { body: createSphereCollider({ radius: 0.45, restitution: 1, friction: 0 }) },
       }),
-      sword: createSwordTag,
+      sword: SwordTag,
     },
   });
   transform.posX.value = cfg.x;
@@ -117,7 +111,7 @@ for (const cfg of TARGET_CONFIGS) {
         linvel: { x: cfg.vx, y: cfg.vy, z: 0 },
         colliders: { body: createSphereCollider({ radius: 0.45, restitution: 1, friction: 0 }) },
       }),
-      target: createTargetTag,
+      target: TargetTag,
     },
   });
   transform.posX.value = cfg.x;
@@ -126,7 +120,7 @@ for (const cfg of TARGET_CONFIGS) {
 
   useCollision({
     eid,
-    other: { sword: createSwordTag },
+    other: { sword: SwordTag },
     onContact({ otherEid: _otherEid }) {
       const next = new Set(flashSet.value);
       next.add(eid);

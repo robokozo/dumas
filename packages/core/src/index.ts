@@ -9,6 +9,20 @@ export {
 } from "./physics/colliderConfig";
 export { usePhysics } from "./physics/usePhysics";
 export { useCollision } from "./physics/useCollision";
+export { useCharacterController } from "./physics/useCharacterController";
+export type {
+  CharacterControllerOptions,
+  CharacterControllerResult,
+} from "./physics/useCharacterController";
+export { useJoint } from "./physics/useJoint";
+export type {
+  JointOptions,
+  JointResult,
+  FixedJointOptions,
+  RevoluteJointOptions,
+  PrismaticJointOptions,
+  SpringJointOptions,
+} from "./physics/useJoint";
 export { useSensor } from "./physics/useSensor";
 export { useRaycast } from "./physics/useRaycast";
 export { defineCollisionGroups, encodeCollisionGroups } from "./physics/collisionGroups";
@@ -39,15 +53,37 @@ export { useGame } from "./world/useGame";
 export { useScene } from "./scene/useScene";
 export { useEntity } from "./entity/useEntity";
 export { useEcsComponent } from "./entity/useEcsComponent";
+export { definePrefab, usePrefab } from "./entity/definePrefab";
 export { useSystem } from "./system/useSystem";
 export { useQuery } from "./query/useQuery";
 export { defineInputMap, useInput } from "./input/useInput";
+export { usePointer } from "./input/usePointer";
+export type { PointerState } from "./input/usePointer";
+export { useEntityRef } from "./entity/useEntityRef";
+export { useWorldToScreen } from "./components/useWorldToScreen";
+export type { WorldToScreenResult } from "./components/useWorldToScreen";
 export { usePool } from "./pool/usePool";
 
 // ECS (for advanced users building custom systems)
-export { createTransform, createSceneTag, PersistentTag, TRANSFORM_TYPE } from "./ecs/components";
+export {
+  createTransform,
+  createSceneTag,
+  PersistentTag,
+  TRANSFORM_TYPE,
+  defineTag,
+} from "./ecs/components";
 export { useObserver } from "./ecs/useObserver";
+export { ChildOf, useRelationship } from "./ecs/relationships";
 export type { TransformStore } from "./ecs/components";
+export type { SlicedTransform } from "./ecs/transformHelpers";
+
+// Trigger zones
+export { createTriggerZone } from "./trigger/createTriggerZone";
+export type {
+  TriggerZoneStore,
+  TriggerZoneEvent,
+  TriggerZoneOptions,
+} from "./trigger/createTriggerZone";
 
 // Types
 export type { GameContext } from "./world/types";

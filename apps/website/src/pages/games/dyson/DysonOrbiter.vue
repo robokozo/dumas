@@ -25,13 +25,8 @@ const { eid, transform } = useEcsComponent({
     transform.posZ.value = Math.sin(angle) * r;
     transform.posY.value = 0.5;
 
-    // Face the sun (origin) — Y-axis rotation as quaternion
-    const facingAngle = Math.atan2(-transform.posX.value, -transform.posZ.value);
-    const halfAngle = facingAngle / 2;
-    transform.rotX.value = 0;
-    transform.rotY.value = Math.sin(halfAngle);
-    transform.rotZ.value = 0;
-    transform.rotW.value = Math.cos(halfAngle);
+    // Face the sun (origin)
+    transform.lookAt({ x: 0, z: 0 });
 
     // Accumulate passive energy
     energyAccumulator += props.orbiter.energyPerSecond * delta;

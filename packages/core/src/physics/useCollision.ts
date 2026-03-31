@@ -4,8 +4,6 @@ import type { Collider } from "@dimforge/rapier3d-compat";
 import { useGame } from "../world/useGame";
 import { PHYSICS_TYPE } from "./createPhysics";
 import type { PhysicsStore } from "./createPhysics";
-import { TRANSFORM_TYPE } from "../ecs/components";
-import type { TransformStore } from "../ecs/components";
 import type { ComponentFactory, ComponentStore } from "../types";
 import type { SlicedComponents, InstancesOf } from "../entity/types";
 import type { Vec3 } from "../types";

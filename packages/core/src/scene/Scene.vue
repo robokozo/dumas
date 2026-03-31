@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, inject, onMounted, onUnmounted, provide, useSlots } from "vue";
+import { computed, inject, onMounted, onUnmounted, provide } from "vue";
 import { GAME_KEY, SCENE_KEY } from "../keys";
 import type { SceneContext } from "./types";
 
@@ -13,8 +13,6 @@ const game = inject(GAME_KEY);
 if (game === undefined) {
   throw new Error("[dumas] <Scene> must be placed inside a <Game> component.");
 }
-
-const slots = useSlots();
 
 const isActive = computed(() => {
   if (game.activeScene.value === null) return props.default === true;
@@ -40,17 +38,16 @@ onMounted(() => {
   if (props.default === true && game.activeScene.value === null) {
     game.loadScene({ name: props.name });
   }
-  if (slots.overlay !== undefined) {
-    game.registerOverlay({ name: props.name, slot: slots.overlay });
-  }
 });
 
 onUnmounted(() => {
   game.unregisterScene({ name: props.name });
-  game.unregisterOverlay({ name: props.name });
 });
 </script>
 
 <template>
   <slot v-if="isActive" />
+  <Teleport v-if="isActive && game.overlayEl.value !== null" :to="game.overlayEl.value">
+    <slot name="overlay" />
+  </Teleport>
 </template>

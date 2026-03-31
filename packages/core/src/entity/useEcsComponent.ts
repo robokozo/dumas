@@ -5,6 +5,8 @@ import { useEntity } from "./useEntity";
 import { useSystem } from "../system/useSystem";
 import { createTransform, TRANSFORM_TYPE } from "../ecs/components";
 import type { TransformStore } from "../ecs/components";
+import { createSlicedTransform } from "../ecs/transformHelpers";
+import type { SlicedTransform } from "../ecs/transformHelpers";
 import type { ComponentFactory, ComponentStore } from "../types";
 import type { EntityOptions, InstancesOf, SlicedComponents, SlicedStore } from "./types";
 
@@ -63,11 +65,11 @@ export function useEcsComponent<F extends Record<string, ComponentFactory<any>>>
   components: F;
   fn?: (
     params: { delta: number; elapsed: number } & SlicedComponents<InstancesOf<F>> & {
-        transform: SlicedStore<TransformStore>;
+        transform: SlicedTransform;
       },
   ) => void;
   persistent?: EntityOptions["persistent"];
-}): SlicedComponents<InstancesOf<F>> & { eid: number; transform: SlicedStore<TransformStore> } {
+}): SlicedComponents<InstancesOf<F>> & { eid: number; transform: SlicedTransform } {
   const { world, storeRegistry } = useGame();
   const { eid } = useEntity({ persistent });
 
@@ -116,7 +118,9 @@ export function useEcsComponent<F extends Record<string, ComponentFactory<any>>>
 
   // ── 4. Slice for reactive access ──────────────────────────────────────────
   const slicedUser = sliceComponents(resolvedStores, eid);
-  const slicedTransform = sliceStore(transformStore, eid);
+  const slicedTransform = createSlicedTransform(
+    sliceStore(transformStore, eid) as SlicedStore<TransformStore>,
+  );
 
   // ── 5. Register optional per-entity system ────────────────────────────────
   if (fn !== undefined) {

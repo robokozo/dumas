@@ -48,6 +48,14 @@
             and released states per action.
           </p>
         </RouterLink>
+        <RouterLink to="/guides/use-pointer" class="card">
+          <div class="feature-tag">Input</div>
+          <h3>Pointer</h3>
+          <p>
+            Track mouse and touch position in screen and NDC coordinates. Press/release edge
+            detection and Three.js raycasting built in.
+          </p>
+        </RouterLink>
         <RouterLink to="/guides/physics" class="card">
           <div class="feature-tag">Physics</div>
           <h3>Physics</h3>
@@ -110,6 +118,78 @@
           <p>
             Fire a callback once when an entity enters or leaves an archetype. Useful for spatial
             grid registration and one-shot spawn effects.
+          </p>
+        </RouterLink>
+        <RouterLink to="/guides/define-tag" class="card">
+          <div class="feature-tag">ECS</div>
+          <h3>Tags</h3>
+          <p>
+            Zero-field ECS markers for archetype filtering. Label entities for queries, collision
+            callbacks, and trigger zones without storing data.
+          </p>
+        </RouterLink>
+        <RouterLink to="/guides/transform-helpers" class="card">
+          <div class="feature-tag">ECS</div>
+          <h3>Transform Helpers</h3>
+          <p>
+            Convenience methods on SlicedTransform: setRotationY, setEuler, and lookAt. No manual
+            quaternion math needed.
+          </p>
+        </RouterLink>
+        <RouterLink to="/guides/use-world-to-screen" class="card">
+          <div class="feature-tag">Rendering</div>
+          <h3>World to Screen</h3>
+          <p>
+            Project 3D entity positions to 2D screen coordinates. Drive DOM overlays, health bars,
+            and name tags from ECS transforms.
+          </p>
+        </RouterLink>
+        <RouterLink to="/guides/trigger-zones" class="card">
+          <div class="feature-tag">ECS</div>
+          <h3>Trigger Zones</h3>
+          <p>
+            Proximity-based enter/exit detection without physics. Tag-filtered targets, configurable
+            radius, and automatic cleanup.
+          </p>
+        </RouterLink>
+        <RouterLink to="/guides/use-entity-ref" class="card">
+          <div class="feature-tag">ECS</div>
+          <h3>Entity Ref</h3>
+          <p>
+            Reactive read-only access to any entity's component data. Observe transforms and stores
+            from outside the owning component.
+          </p>
+        </RouterLink>
+        <RouterLink to="/guides/define-prefab" class="card">
+          <div class="feature-tag">ECS</div>
+          <h3>Prefabs</h3>
+          <p>
+            Reusable entity templates with default values. Define once, spawn many with per-instance
+            overrides.
+          </p>
+        </RouterLink>
+        <RouterLink to="/guides/use-character-controller" class="card">
+          <div class="feature-tag">Physics</div>
+          <h3>Character Controller</h3>
+          <p>
+            Rapier kinematic character controller with slope limits, step climbing, snap-to-ground,
+            and wall sliding.
+          </p>
+        </RouterLink>
+        <RouterLink to="/guides/use-joint" class="card">
+          <div class="feature-tag">Physics</div>
+          <h3>Joints</h3>
+          <p>
+            Connect physics bodies with fixed, revolute, prismatic, and spring joints. Motor control
+            and configurable limits.
+          </p>
+        </RouterLink>
+        <RouterLink to="/guides/relationships" class="card">
+          <div class="feature-tag">ECS</div>
+          <h3>Relationships</h3>
+          <p>
+            Parent-child entity linking with ChildOf. Exclusive, auto-cleanup bitECS relations with
+            ergonomic composable API.
           </p>
         </RouterLink>
       </div>

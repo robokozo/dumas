@@ -1,6 +1,6 @@
 import type { World } from "bitecs";
 import type { World as RapierWorld } from "@dimforge/rapier3d-compat";
-import type { DeepReadonly, Ref, ShallowRef, Slot } from "vue";
+import type { DeepReadonly, Ref, ShallowRef } from "vue";
 import type { ComponentStore } from "../types";
 import type { SceneContext } from "../scene/types";
 
@@ -36,10 +36,12 @@ export interface GameContext {
   unregisterScene: (params: { name: string }) => void;
   /** @internal Map of scene name → SceneContext, for hook lookup by loadScene. */
   sceneContexts: Map<string, SceneContext>;
-  /** @internal Called by <Scene> to register its #overlay slot for rendering outside TresCanvas. */
-  registerOverlay: (params: { name: string; slot: Slot }) => void;
-  /** @internal Called by <Scene> on unmount to remove its overlay slot. */
-  unregisterOverlay: (params: { name: string }) => void;
+  /**
+   * The DOM element that scene overlay content is teleported into.
+   * Scenes use `<Teleport :to="overlayEl">` to render overlay content
+   * while preserving the Vue component tree for provide/inject.
+   */
+  overlayEl: ShallowRef<HTMLElement | null>;
   /**
    * @internal Maps Rapier collider handles to bitECS entity IDs.
    * Populated by createRigidBody's onMounted so that useCollision's

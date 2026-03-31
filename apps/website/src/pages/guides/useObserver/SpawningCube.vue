@@ -7,11 +7,7 @@ const emit = defineEmits<{ mounted: [eid: number]; unmounted: [eid: number] }>()
 const { eid, transform } = useEcsComponent({
   components: {},
   fn: ({ elapsed, transform }) => {
-    const halfAngle = elapsed * 0.6;
-    transform.rotX.value = 0;
-    transform.rotY.value = Math.sin(halfAngle);
-    transform.rotZ.value = 0;
-    transform.rotW.value = Math.cos(halfAngle);
+    transform.setRotationY({ angle: elapsed * 1.2 });
   },
 });
 

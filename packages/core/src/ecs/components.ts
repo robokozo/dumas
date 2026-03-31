@@ -94,3 +94,19 @@ export function createSceneTag(): SceneTagStore {
  * scene transitions and are not destroyed on scene exit.
  */
 export const PersistentTag: ComponentStore = {};
+
+/**
+ * Creates a zero-field tag ComponentFactory for archetype filtering.
+ * Each call returns a unique tag backed by its own symbol.
+ *
+ * @example
+ * const PlayerTag = defineTag();
+ * const EnemyTag = defineTag();
+ *
+ * useEcsComponent({ components: { player: PlayerTag } });
+ * useCollision({ self: { player: PlayerTag }, other: { enemy: EnemyTag }, ... });
+ */
+export function defineTag(): ComponentFactory<ComponentStore> {
+  const type: symbol = Symbol();
+  return Object.assign((): ComponentStore => ({}), { __type: type });
+}

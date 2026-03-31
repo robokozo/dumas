@@ -35,9 +35,7 @@ useInput({
       transform.posX.value += dx * MOVE_SPEED * delta;
       transform.posZ.value += dz * MOVE_SPEED * delta;
 
-      const halfAngle = Math.atan2(dx, dz) / 2;
-      transform.rotY.value = Math.sin(halfAngle);
-      transform.rotW.value = Math.cos(halfAngle);
+      transform.setRotationY({ angle: Math.atan2(dx, dz) });
     }
 
     emit("moved", { x: transform.posX.value, z: transform.posZ.value });
