@@ -119,10 +119,9 @@ const { eid: bobberEid, transform: bobberTransform } = useEcsComponent({
   },
 });
 
-// Park the bobber far away until cast
-const OFFSCREEN_Y = -100;
-bobberTransform.posX.value = 0;
-bobberTransform.posY.value = OFFSCREEN_Y;
+// Park bobber near rod tip until cast (within spring rest length to avoid catapulting)
+bobberTransform.posX.value = CHARACTER_SPAWN_X + ROD_TIP_OFFSET_X;
+bobberTransform.posY.value = CHARACTER_Y + ROD_TIP_OFFSET_Y;
 
 const {
   x: bobberScreenX,
@@ -220,9 +219,9 @@ function resetLine(): void {
   isBobberActive.value = false;
   bitingFishIndex.value = null;
 
-  // Park bobber offscreen
-  bobberTransform.posX.value = 0;
-  bobberTransform.posY.value = OFFSCREEN_Y;
+  // Park bobber near rod tip (within spring rest length)
+  bobberTransform.posX.value = characterTransform.posX.value + ROD_TIP_OFFSET_X;
+  bobberTransform.posY.value = characterTransform.posY.value + ROD_TIP_OFFSET_Y;
 }
 
 // ─── main game system ───────────────────────────────────────────────────────

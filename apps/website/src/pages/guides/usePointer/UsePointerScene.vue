@@ -66,11 +66,13 @@ function setCubeRef({ index, el }: { index: number; el: Mesh | null }): void {
       <TresBoxGeometry :args="[1, 1, 1]" />
       <TresMeshStandardMaterial :color="cubeColors[i]" />
     </TresMesh>
-  </Scene>
 
-  <div class="overlay">
-    <span>NDC: ({{ ndcDisplay.x }}, {{ ndcDisplay.y }})</span>
-  </div>
+    <template #overlay>
+      <div class="overlay">
+        <span>NDC: ({{ ndcDisplay.x }}, {{ ndcDisplay.y }})</span>
+      </div>
+    </template>
+  </Scene>
 </template>
 
 <style scoped>

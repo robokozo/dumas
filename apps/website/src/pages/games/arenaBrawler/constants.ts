@@ -80,3 +80,39 @@ export const HEALTH_BAR_Y_OFFSET = 1.8;
 
 /** Lerp factor for enemy movement smoothing. */
 export const ENEMY_LERP = 0.06;
+
+/** Minimum distance enemies try to keep from the player. */
+export const ENEMY_KEEP_DISTANCE_MIN = 5;
+
+/** Maximum / preferred distance enemies orbit at. */
+export const ENEMY_KEEP_DISTANCE_MAX = 8;
+
+/** Ideal standoff distance (midpoint) enemies orbit around. */
+export const ENEMY_IDEAL_DISTANCE = 6.5;
+
+/** Cooldown between enemy shots in seconds. */
+export const ENEMY_SHOOT_COOLDOWN = 2.0;
+
+/** Speed of enemy projectiles in units per second. */
+export const PROJECTILE_SPEED = 6;
+
+/** Radius of the projectile sphere. */
+export const PROJECTILE_RADIUS = 0.15;
+
+/** Maximum lifetime of a projectile in seconds before auto-removal. */
+export const PROJECTILE_LIFETIME = 4;
+
+/** Damage dealt by a single enemy projectile. */
+export const PROJECTILE_DAMAGE = 8;
+
+/** Color of enemy projectiles. */
+export const PROJECTILE_COLOR = "#ff8800";
+
+/** Trigger zone radius for projectile collision with the player. */
+export const PROJECTILE_TRIGGER_RADIUS = 0.6;
+
+/** Factor applied to enemy speed when approaching from far away (slower than retreating). */
+export const ENEMY_APPROACH_FACTOR = 0.5;
+
+/** Factor applied to enemy speed for lateral strafing around the player. */
+export const ENEMY_STRAFE_FACTOR = 0.4;

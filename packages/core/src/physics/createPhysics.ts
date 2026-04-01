@@ -195,8 +195,11 @@ export function createPhysics(options: PhysicsOptions): ComponentFactory<Physics
               const b = store.body[eid];
               if (b === undefined) return;
 
-              // Write body → transform shallowRefs
-              if (transformStore !== undefined) {
+              // Write body → transform shallowRefs.
+              // Skip kinematic bodies — their position is set manually
+              // (e.g. character controllers), and overwriting it causes jitter.
+              const isKinematic = b.isKinematic();
+              if (isKinematic === false && transformStore !== undefined) {
                 const posRef = transformStore.posX[eid];
                 if (posRef !== undefined) {
                   const t = b.translation();

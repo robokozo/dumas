@@ -122,12 +122,18 @@ useInput({
   },
 });
 
-function takeDamage(): void {
-  if (damageCooldown.value > 0) {
-    return;
+function takeDamage({ amount }: { amount?: number } = {}): void {
+  const damage = amount ?? ENEMY_CONTACT_DAMAGE;
+
+  // Contact damage (no explicit amount) respects the melee cooldown
+  if (amount === undefined) {
+    if (damageCooldown.value > 0) {
+      return;
+    }
+    damageCooldown.value = ENEMY_DAMAGE_COOLDOWN;
   }
-  damageCooldown.value = ENEMY_DAMAGE_COOLDOWN;
-  health.value = Math.max(0, health.value - ENEMY_CONTACT_DAMAGE);
+
+  health.value = Math.max(0, health.value - damage);
   emit("healthChanged", { current: health.value, max: PLAYER_MAX_HEALTH });
 
   if (health.value <= 0) {

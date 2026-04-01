@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
-import { Scene, useGame, useScene } from "@dumas/core";
+import { ref, computed, watch } from "vue";
+import { Scene, useGame } from "@dumas/core";
 import DungeonCharacter from "../shared/DungeonCharacter.vue";
 
-const { loadScene, transitionState } = useGame();
-const { onSceneEnter } = useScene();
+const { loadScene, transitionState, activeScene } = useGame();
 
 const spawnX = computed(() => {
   const from = transitionState.value.from as string | undefined;
@@ -20,9 +19,11 @@ const spawnZ = computed(() => {
 const camX = ref(spawnX.value);
 const camZ = ref(spawnZ.value);
 
-onSceneEnter(() => {
-  camX.value = spawnX.value;
-  camZ.value = spawnZ.value;
+watch(activeScene, (scene) => {
+  if (scene === "forest") {
+    camX.value = spawnX.value;
+    camZ.value = spawnZ.value;
+  }
 });
 
 function onPlayerMoved({ x, z }: { x: number; z: number }): void {

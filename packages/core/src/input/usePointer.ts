@@ -157,6 +157,7 @@ export function usePointer(): PointerState {
     if (objects !== undefined) {
       return raycaster.intersectObjects(objects, recursive);
     }
+    if (scene.value === null) return [];
     return raycaster.intersectObjects(scene.value.children, recursive);
   }
 

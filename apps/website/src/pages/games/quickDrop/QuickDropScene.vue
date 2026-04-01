@@ -8,6 +8,7 @@ import {
   createCylinderCollider,
   useSystem,
   useGame,
+  usePointer,
   DumasEntity,
   PHYSICS_TYPE,
   TRANSFORM_TYPE,
@@ -40,8 +41,10 @@ const { storeRegistry } = useGame();
 // ── State ────────────────────────────────────────────────────────────────────
 
 const score = ref(0);
+const highScore = ref(0);
 const lastDrop = ref<number | null>(null);
 const isHolding = ref(false);
+const pointer = usePointer();
 const plateAngle = ref(0);
 let nextBallId = 1;
 let lastDropTimer = 0;
@@ -139,6 +142,16 @@ useSystem({
         z: 0,
         w: Math.cos(halfCupAngle),
       });
+    }
+
+    // Canvas click/tap drives hold state (in addition to button)
+    if (pointer.isPressed.value === true && isHolding.value === false) {
+      startHolding();
+      // Reset score at round start
+      score.value = 0;
+    }
+    if (pointer.isReleased.value === true && isHolding.value === true) {
+      stopHolding();
     }
 
     // Spawn balls while holding
@@ -245,6 +258,10 @@ function scoreBalls(): void {
   lastDrop.value = dropScore;
   lastDropTimer = 0;
 
+  if (score.value > highScore.value) {
+    highScore.value = score.value;
+  }
+
   balls.value = [];
   ballEids.clear();
 }
@@ -306,6 +323,7 @@ function scoreBalls(): void {
     <template #overlay>
       <QuickDropUI
         :score="score"
+        :high-score="highScore"
         :last-drop="lastDrop"
         :is-holding="isHolding"
         :ball-count="balls.length"

@@ -171,16 +171,22 @@ useInput({
       const body = physStore.body[playerEid];
       if (body !== undefined) {
         const pos = body.translation();
-        body.setNextKinematicTranslation({
-          x: pos.x + movement.x,
-          y: pos.y + movement.y,
-          z: pos.z + movement.z,
-        });
+        const newX = pos.x + movement.x;
+        const newY = pos.y + movement.y;
+        const newZ = pos.z + movement.z;
+
+        body.setNextKinematicTranslation({ x: newX, y: newY, z: newZ });
+
+        // Update transform store so visual updates immediately
+        // (kinematic bodies are skipped by physics sync)
+        playerTransform.posX.value = newX;
+        playerTransform.posY.value = newY;
+        playerTransform.posZ.value = newZ;
 
         // Camera follows character from above/behind
-        camX.value = pos.x + movement.x;
-        camY.value = pos.y + movement.y + 6;
-        camZ.value = pos.z + movement.z + 8;
+        camX.value = newX;
+        camY.value = newY + 6;
+        camZ.value = newZ + 8;
       }
     }
   },

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import {
   Scene,
   useEcsComponent,
@@ -248,25 +248,56 @@ interface CoinState {
   kind: CoinKind;
 }
 
-// Randomly pick a coin kind to drop, weighted toward common coins.
-const DROP_KINDS: Array<CoinKind> = ["gold", "gold", "gold", "silver", "silver", "copper"];
+const COIN_POINTS: Record<CoinKind, number> = { gold: 3, silver: 2, copper: 1 };
+
+// ── Inventory ────────────────────────────────────────────────────────────────
+const INITIAL_INVENTORY_COPPER = 8;
+const INITIAL_INVENTORY_SILVER = 5;
+const INITIAL_INVENTORY_GOLD = 2;
+
+interface Inventory {
+  gold: number;
+  silver: number;
+  copper: number;
+}
+
+const inventory = ref<Inventory>({
+  copper: INITIAL_INVENTORY_COPPER,
+  silver: INITIAL_INVENTORY_SILVER,
+  gold: INITIAL_INVENTORY_GOLD,
+});
+
+const selectedKind = ref<CoinKind>("copper");
+
+const totalInventory = computed(() => {
+  return inventory.value.copper + inventory.value.silver + inventory.value.gold;
+});
+
+function selectKind({ kind }: { kind: CoinKind }): void {
+  selectedKind.value = kind;
+}
 
 let nextId = 0;
 const coins = ref<Array<CoinState>>([]);
-const score = ref(0);
 
 function dropCoin({ x }: { x: number }): void {
+  const kind = selectedKind.value;
+  if (inventory.value[kind] <= 0) return;
+
   if (coins.value.length >= MAX_COINS) {
     coins.value = coins.value.slice(1);
   }
-  const kind = DROP_KINDS[Math.floor(Math.random() * DROP_KINDS.length)];
+
+  inventory.value = { ...inventory.value, [kind]: inventory.value[kind] - 1 };
   coins.value = [...coins.value, { id: nextId++, x, y: 2.5, z: COIN_DROP_Z, kind }];
 }
 
-const COIN_POINTS: Record<CoinKind, number> = { gold: 3, silver: 2, copper: 1 };
-
 function onCoinScored({ id, points }: { id: number; points: number }): void {
-  score.value += points;
+  // Won coins go back to inventory
+  const coin = coins.value.find((c) => c.id === id);
+  if (coin !== undefined) {
+    inventory.value = { ...inventory.value, [coin.kind]: inventory.value[coin.kind] + 1 };
+  }
   coins.value = coins.value.filter((c) => c.id !== id);
 }
 
@@ -413,21 +444,30 @@ useSystem({
     </template>
 
     <template #overlay>
-      <!-- Score display -->
-      <div class="score">
-        <span class="score__label">SCORE</span>
-        <span class="score__value">{{ score }}</span>
-        <span class="score__legend">
-          <span class="score__legend-item score__legend-item--gold"
-            >Gold +{{ COIN_POINTS.gold }}</span
-          >
-          <span class="score__legend-item score__legend-item--silver"
-            >Silver +{{ COIN_POINTS.silver }}</span
-          >
-          <span class="score__legend-item score__legend-item--copper"
-            >Copper +{{ COIN_POINTS.copper }}</span
-          >
-        </span>
+      <!-- Inventory display -->
+      <div class="inventory">
+        <span class="inventory__label">AMMO ({{ totalInventory }})</span>
+        <button
+          class="inventory__btn inventory__btn--gold"
+          :class="{ 'inventory__btn--active': selectedKind === 'gold' }"
+          @pointerdown.stop="() => selectKind({ kind: 'gold' })"
+        >
+          Gold x{{ inventory.gold }}
+        </button>
+        <button
+          class="inventory__btn inventory__btn--silver"
+          :class="{ 'inventory__btn--active': selectedKind === 'silver' }"
+          @pointerdown.stop="() => selectKind({ kind: 'silver' })"
+        >
+          Silver x{{ inventory.silver }}
+        </button>
+        <button
+          class="inventory__btn inventory__btn--copper"
+          :class="{ 'inventory__btn--active': selectedKind === 'copper' }"
+          @pointerdown.stop="() => selectKind({ kind: 'copper' })"
+        >
+          Copper x{{ inventory.copper }}
+        </button>
       </div>
 
       <!-- Touch controls -->
@@ -462,52 +502,55 @@ useSystem({
 </template>
 
 <style scoped>
-.score {
+.inventory {
   position: absolute;
   top: 1rem;
   left: 1.5rem;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: flex-start;
+  gap: 0.3rem;
   font-family: sans-serif;
-  pointer-events: none;
+  pointer-events: auto;
 }
 
-.score__label {
+.inventory__label {
   font-size: 0.65rem;
   letter-spacing: 0.15em;
   color: rgba(255, 255, 255, 0.35);
   text-transform: uppercase;
+  pointer-events: none;
 }
 
-.score__value {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #f0c040;
-  line-height: 1;
+.inventory__btn {
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 0.25rem 0.6rem;
+  font-family: sans-serif;
+  font-size: 0.7rem;
+  cursor: pointer;
+  transition: all 0.1s;
+  width: 100%;
+  text-align: left;
 }
 
-.score__legend {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.1rem;
-  margin-top: 0.4rem;
-}
-
-.score__legend-item {
-  font-size: 0.6rem;
-  letter-spacing: 0.05em;
-}
-
-.score__legend-item--gold {
+.inventory__btn--gold {
   color: #f0c040;
 }
-.score__legend-item--silver {
+
+.inventory__btn--silver {
   color: #c0c8d8;
 }
-.score__legend-item--copper {
+
+.inventory__btn--copper {
   color: #c87040;
+}
+
+.inventory__btn--active {
+  border-color: currentColor;
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.15);
 }
 
 .touch-controls {

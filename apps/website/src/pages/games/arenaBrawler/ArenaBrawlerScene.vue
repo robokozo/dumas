@@ -9,12 +9,14 @@ import {
   WEAPON_DAMAGE,
   PLAYER_COLOR,
   ENEMY_COLOR,
+  PROJECTILE_DAMAGE,
 } from "./constants";
-import type { EnemySpawn, GameState } from "./types";
+import type { EnemySpawn, GameState, ProjectileSpawn } from "./types";
 import BrawlerPlayer from "./BrawlerPlayer.vue";
 import BrawlerEnemy from "./BrawlerEnemy.vue";
 import BrawlerArena from "./BrawlerArena.vue";
 import BrawlerUI from "./BrawlerUI.vue";
+import BrawlerProjectile from "./BrawlerProjectile.vue";
 
 const gameState = ref<GameState>("playing");
 const playerHealth = ref(PLAYER_MAX_HEALTH);
@@ -43,6 +45,9 @@ const enemies = shallowRef<Array<EnemySpawn>>(createEnemySpawns());
 const defeatedEnemies = ref(new Set<number>());
 
 const enemiesRemaining = computed(() => ENEMY_COUNT - defeatedEnemies.value.size);
+
+const projectiles = shallowRef<Array<ProjectileSpawn>>([]);
+let nextProjectileId = 0;
 
 // Build floating health bar data from live refs
 const healthBars = computed(() => {
@@ -123,6 +128,37 @@ function onEnemyDefeated({ enemyId }: { enemyId: number }): void {
   }
 }
 
+function onEnemyShoot({
+  x,
+  z,
+  dirX,
+  dirZ,
+}: {
+  x: number;
+  z: number;
+  dirX: number;
+  dirZ: number;
+}): void {
+  if (gameState.value !== "playing") {
+    return;
+  }
+  const id = nextProjectileId++;
+  projectiles.value = [...projectiles.value, { id, x, z, dirX, dirZ }];
+}
+
+function onProjectileHitPlayer({ projectileId }: { projectileId: number }): void {
+  removeProjectile({ projectileId });
+  playerRef.value?.takeDamage({ amount: PROJECTILE_DAMAGE });
+}
+
+function onProjectileExpired({ projectileId }: { projectileId: number }): void {
+  removeProjectile({ projectileId });
+}
+
+function removeProjectile({ projectileId }: { projectileId: number }): void {
+  projectiles.value = projectiles.value.filter((p) => p.id !== projectileId);
+}
+
 function onRestart(): void {
   // Reload the page to reset all ECS state cleanly
   window.location.reload();
@@ -166,8 +202,18 @@ function setEnemyRef({ index, el }: { index: number; el: unknown }): void {
         :player-eid="playerRef.eid"
         @contact-player="onEnemyContactPlayer"
         @defeated="(evt) => onEnemyDefeated(evt)"
+        @shoot="(evt) => onEnemyShoot(evt)"
       />
     </template>
+
+    <!-- Enemy projectiles -->
+    <BrawlerProjectile
+      v-for="proj in projectiles"
+      :key="proj.id"
+      :spawn="proj"
+      @hit-player="(evt) => onProjectileHitPlayer(evt)"
+      @expired="(evt) => onProjectileExpired(evt)"
+    />
 
     <template #overlay>
       <BrawlerUI

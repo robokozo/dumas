@@ -48,6 +48,11 @@ const towerSlots = ref<Array<TowerSlot>>(
 // Refs to tower component instances
 const towerRefs = shallowRef<Array<InstanceType<typeof Tower> | null>>([null, null, null]);
 
+function setTowerRef({ index, el }: { index: number; el: unknown }): void {
+  towerRefs.value[index] = el as InstanceType<typeof Tower> | null;
+  triggerRef(towerRefs);
+}
+
 function placeTower({ index }: { index: number }): void {
   if (isGameOver.value === true) return;
   if (towerSlots.value[index].isBuilt === true) return;
@@ -365,11 +370,7 @@ function restartGame(): void {
       <!-- Built tower -->
       <Tower
         v-if="slot.isBuilt === true"
-        :ref="
-          (el: unknown) => {
-            towerRefs[index] = el as InstanceType<typeof Tower> | null;
-          }
-        "
+        :ref="(el: unknown) => setTowerRef({ index, el })"
         :pos-x="slot.x"
         :pos-z="slot.z"
       />

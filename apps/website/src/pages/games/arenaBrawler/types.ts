@@ -12,3 +12,11 @@ export interface HealthBarEntry {
 }
 
 export type GameState = "playing" | "victory" | "defeat";
+
+export interface ProjectileSpawn {
+  id: number;
+  x: number;
+  z: number;
+  dirX: number;
+  dirZ: number;
+}

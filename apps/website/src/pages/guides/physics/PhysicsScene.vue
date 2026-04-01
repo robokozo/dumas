@@ -15,11 +15,25 @@ interface Box {
   color: string;
 }
 
-const BOXES: Array<Box> = [
+/** Maximum random offset applied to each cube's x and z starting position. */
+const POSITION_JITTER_RANGE = 1.5;
+
+function randomJitter(): number {
+  return (Math.random() - 0.5) * POSITION_JITTER_RANGE;
+}
+
+function jitterPosition({
+  position,
+}: {
+  position: [number, number, number];
+}): [number, number, number] {
+  return [position[0] + randomJitter(), position[1], position[2] + randomJitter()];
+}
+
+const BOX_TEMPLATES: Array<{ id: number; position: [number, number, number]; color: string }> = [
   { id: 1, position: [-4, 3, 0.5], color: "#ff6b6b" },
   { id: 2, position: [-2.5, 6, -0.5], color: "#ff8e53" },
   { id: 3, position: [-1, 9, 0.3], color: "#ffe66d" },
-  // Box 4 falls almost directly on box 3 — knocks it away on landing.
   { id: 4, position: [-0.8, 14, 0.2], color: "#4ecdc4" },
   { id: 5, position: [2, 15, 0.4], color: "#a8e6cf" },
   { id: 6, position: [3.5, 18, -0.2], color: "#c9b1ff" },
@@ -27,6 +41,11 @@ const BOXES: Array<Box> = [
   { id: 8, position: [1, 8, -1.2], color: "#44aaff" },
   { id: 9, position: [3, 11, 1], color: "#88ff88" },
 ];
+
+const BOXES: Array<Box> = BOX_TEMPLATES.map((template) => ({
+  ...template,
+  position: jitterPosition({ position: template.position }),
+}));
 
 usePhysics({ gravity: [0, -9.81, 0] });
 

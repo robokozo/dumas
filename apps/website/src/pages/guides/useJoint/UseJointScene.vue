@@ -1,12 +1,15 @@
 <script setup lang="ts">
+import { ref } from "vue";
 import {
   Scene,
   DumasEntity,
   useEcsComponent,
   usePhysics,
   useJoint,
+  useSystem,
   createPhysics,
   createCuboidCollider,
+  createTransform,
 } from "@dumas/core";
 
 usePhysics({ gravity: [0, -9.81, 0] });
@@ -41,7 +44,9 @@ const { eid: pendulumEid, transform: pendulumTransform } = useEcsComponent({
     }),
   },
 });
-pendulumTransform.posX.value = -4;
+// Offset horizontally from the anchor so the pendulum starts swinging.
+const PENDULUM_START_OFFSET_X = 2;
+pendulumTransform.posX.value = -4 + PENDULUM_START_OFFSET_X;
 pendulumTransform.posY.value = 3;
 pendulumTransform.posZ.value = 0;
 
@@ -53,6 +58,48 @@ useJoint({
   axis: { x: 0, y: 0, z: 1 },
   anchorA: { x: 0, y: 0, z: 0 },
   anchorB: { x: 0, y: 2, z: 0 },
+});
+
+// ---------------------------------------------------------------------------
+// Pendulum rope — thin cylinder updated each frame to connect anchor → bob
+// ---------------------------------------------------------------------------
+
+const ROPE_RADIUS = 0.03;
+
+const ropePosition = ref<[number, number, number]>([-4, 4, 0]);
+const ropeScale = ref<[number, number, number]>([1, 2, 1]);
+const ropeRotation = ref<[number, number, number]>([0, 0, 0]);
+
+useSystem({
+  components: [createTransform],
+  fn: () => {
+    const ax = anchorTransform.posX.value;
+    const ay = anchorTransform.posY.value;
+    const az = anchorTransform.posZ.value;
+
+    const bx = pendulumTransform.posX.value;
+    const by = pendulumTransform.posY.value;
+    const bz = pendulumTransform.posZ.value;
+
+    // Midpoint between anchor and pendulum bob
+    const midX = (ax + bx) / 2;
+    const midY = (ay + by) / 2;
+    const midZ = (az + bz) / 2;
+
+    // Distance between anchor and bob
+    const dx = bx - ax;
+    const dy = by - ay;
+    const dz = bz - az;
+    const distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
+
+    // Angle in the XY plane from vertical (the cylinder's default orientation)
+    const angle = Math.atan2(dx, dy);
+
+    ropePosition.value = [midX, midY, midZ];
+    // CylinderGeometry height is 1 by default; scale Y to match distance
+    ropeScale.value = [1, distance, 1];
+    ropeRotation.value = [0, 0, -angle];
+  },
 });
 
 // ---------------------------------------------------------------------------
@@ -134,6 +181,12 @@ groundTransform.posY.value = 0;
         <TresMeshStandardMaterial color="#ff6b6b" />
       </TresMesh>
     </DumasEntity>
+
+    <!-- Pendulum rope (thin cylinder connecting anchor to bob) -->
+    <TresMesh :position="ropePosition" :scale="ropeScale" :rotation="ropeRotation">
+      <TresCylinderGeometry :args="[ROPE_RADIUS, ROPE_RADIUS, 1, 8]" />
+      <TresMeshStandardMaterial color="#cccccc" />
+    </TresMesh>
 
     <!-- Spring box A -->
     <DumasEntity :eid="springBoxAEid">

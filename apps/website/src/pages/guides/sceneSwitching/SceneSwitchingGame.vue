@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { Game, Scene } from "@dumas/core";
 import SceneControls from "./SceneControls.vue";
+import SceneBackground from "./SceneBackground.vue";
 </script>
 
 <template>
   <Game style="width: 100%; height: 100%">
     <!-- ── Forest ─────────────────────────────────────────────── -->
     <Scene name="forest" :default="true">
-      <TresColor attach="background" :args="[0.478, 0.722, 0.831]" />
+      <SceneBackground :color="[0.478, 0.722, 0.831]" />
       <TresPerspectiveCamera :position="[0, 2.5, 7]" :look-at="[0, 0.5, 0]" />
       <TresDirectionalLight :position="[3, 8, 4]" :intensity="1.8" color="#c8ecc8" />
       <TresAmbientLight :intensity="0.5" color="#a0c8a0" />
@@ -85,7 +86,7 @@ import SceneControls from "./SceneControls.vue";
 
     <!-- ── Desert ─────────────────────────────────────────────── -->
     <Scene name="desert">
-      <TresColor attach="background" :args="[0.91, 0.831, 0.627]" />
+      <SceneBackground :color="[0.91, 0.831, 0.627]" />
       <TresPerspectiveCamera :position="[0, 2.5, 7]" :look-at="[0, 0.5, 0]" />
       <TresDirectionalLight :position="[4, 10, 2]" :intensity="2.5" color="#ffe8a0" />
       <TresAmbientLight :intensity="0.35" color="#e8c870" />

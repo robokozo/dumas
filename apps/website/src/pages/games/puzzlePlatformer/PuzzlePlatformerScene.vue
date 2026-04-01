@@ -201,8 +201,8 @@ const { eid: bridgeEid, transform: bridgeT } = useEcsComponent({
       enabledRotations: [false, false, true],
       enabledTranslations: [true, true, false],
       gravityScale: 0,
-      linearDamping: 5,
-      angularDamping: 5,
+      linearDamping: 10,
+      angularDamping: 50,
       colliders: {
         plank: createCuboidCollider({ halfExtents: [BRIDGE_HALF_LENGTH, 0.1, 0.8] }),
       },
@@ -252,8 +252,8 @@ const { eid: gateEid, transform: gateT } = useEcsComponent({
     physics: createPhysics({
       type: "dynamic",
       gravityScale: 0,
-      linearDamping: 5,
-      angularDamping: 5,
+      linearDamping: 10,
+      angularDamping: 50,
       enabledRotations: [false, false, true],
       enabledTranslations: [true, true, false],
       colliders: {
@@ -288,11 +288,11 @@ const { transform: plate1T } = useEcsComponent({
       target: [PlayerTag],
       onEnter() {
         isBridgeActive.value = true;
-        bridgeJoint.setMotorPosition({ targetPosition: -HALF_PI, stiffness: 200, damping: 50 });
+        bridgeJoint.setMotorPosition({ targetPosition: -HALF_PI, stiffness: 200, damping: 400 });
       },
       onExit() {
         isBridgeActive.value = false;
-        bridgeJoint.setMotorPosition({ targetPosition: 0, stiffness: 200, damping: 50 });
+        bridgeJoint.setMotorPosition({ targetPosition: 0, stiffness: 200, damping: 400 });
       },
     }),
   },
@@ -313,11 +313,11 @@ const { transform: plate2T } = useEcsComponent({
       target: [PlayerTag],
       onEnter() {
         isGateActive.value = true;
-        gateJoint.setMotorPosition({ targetPosition: HALF_PI, stiffness: 200, damping: 50 });
+        gateJoint.setMotorPosition({ targetPosition: HALF_PI, stiffness: 200, damping: 400 });
       },
       onExit() {
         isGateActive.value = false;
-        gateJoint.setMotorPosition({ targetPosition: 0, stiffness: 200, damping: 50 });
+        gateJoint.setMotorPosition({ targetPosition: 0, stiffness: 200, damping: 400 });
       },
     }),
   },
@@ -434,11 +434,16 @@ useInput({
       const body = physStore.body[playerEid];
       if (body !== undefined) {
         const pos = body.translation();
-        body.setNextKinematicTranslation({
-          x: pos.x + movement.x,
-          y: pos.y + movement.y,
-          z: 0,
-        });
+        const newX = pos.x + movement.x;
+        const newY = pos.y + movement.y;
+
+        body.setNextKinematicTranslation({ x: newX, y: newY, z: 0 });
+
+        // Update transform store so visual updates immediately
+        // (kinematic bodies are skipped by physics sync)
+        playerTransform.posX.value = newX;
+        playerTransform.posY.value = newY;
+        playerTransform.posZ.value = 0;
       }
     }
 
@@ -451,7 +456,7 @@ useInput({
 <template>
   <Scene name="puzzle-platformer" :default="true">
     <!-- Side-view camera looking at XY plane -->
-    <TresPerspectiveCamera :position="[0, 4, 18]" :look-at="[0, 3, 0]" :fov="45" />
+    <TresPerspectiveCamera :position="[0, 4, 28]" :look-at="[0, 3, 0]" :fov="45" />
     <TresDirectionalLight :position="[5, 10, 8]" :intensity="2" cast-shadow />
     <TresAmbientLight :intensity="0.4" />
     <TresHemisphereLight :args="['#334466', '#111111', 0.6]" />

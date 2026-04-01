@@ -15,6 +15,11 @@ import {
   ARENA_HALF_SIZE,
   ENEMY_TRIGGER_RADIUS,
   ENEMY_LERP,
+  ENEMY_KEEP_DISTANCE_MIN,
+  ENEMY_IDEAL_DISTANCE,
+  ENEMY_SHOOT_COOLDOWN,
+  ENEMY_APPROACH_FACTOR,
+  ENEMY_STRAFE_FACTOR,
 } from "./constants";
 import type { EnemySpawn } from "./types";
 
@@ -26,10 +31,12 @@ const props = defineProps<{
 const emit = defineEmits<{
   contactPlayer: [];
   defeated: [{ enemyId: number }];
+  shoot: [{ x: number; z: number; dirX: number; dirZ: number }];
 }>();
 
 const health = ref(props.spawn.health);
 const isAlive = shallowRef(true);
+const shootCooldown = shallowRef(ENEMY_SHOOT_COOLDOWN * Math.random());
 
 const playerRef = useEntityRef({ eid: toRef(() => props.playerEid) });
 
@@ -67,13 +74,31 @@ const { eid, transform } = useEcsComponent({
     const dz = pz - ez;
     const dist = Math.sqrt(dx * dx + dz * dz);
 
-    if (dist > 0.8) {
-      // Move toward player
+    if (dist > 0.1) {
       const nx = dx / dist;
       const nz = dz / dist;
 
-      const targetX = ex + nx * ENEMY_SPEED * delta;
-      const targetZ = ez + nz * ENEMY_SPEED * delta;
+      let moveX = 0;
+      let moveZ = 0;
+
+      if (dist < ENEMY_KEEP_DISTANCE_MIN) {
+        // Too close -- back away from the player
+        moveX = -nx * ENEMY_SPEED * delta;
+        moveZ = -nz * ENEMY_SPEED * delta;
+      } else if (dist > ENEMY_IDEAL_DISTANCE) {
+        // Too far -- move closer, but slowly
+        moveX = nx * ENEMY_SPEED * ENEMY_APPROACH_FACTOR * delta;
+        moveZ = nz * ENEMY_SPEED * ENEMY_APPROACH_FACTOR * delta;
+      }
+
+      // Add lateral strafe so enemies circle the player
+      const strafeX = -nz;
+      const strafeZ = nx;
+      moveX += strafeX * ENEMY_SPEED * ENEMY_STRAFE_FACTOR * delta;
+      moveZ += strafeZ * ENEMY_SPEED * ENEMY_STRAFE_FACTOR * delta;
+
+      const targetX = ex + moveX;
+      const targetZ = ez + moveZ;
 
       // Clamp to arena bounds
       transform.posX.value = Math.max(
@@ -87,6 +112,18 @@ const { eid, transform } = useEcsComponent({
 
       // Face player
       transform.lookAt({ x: px, z: pz });
+    }
+
+    // Shooting cooldown
+    shootCooldown.value -= delta;
+    if (shootCooldown.value <= 0) {
+      shootCooldown.value = ENEMY_SHOOT_COOLDOWN;
+
+      if (dist > 0.1) {
+        const dirX = dx / dist;
+        const dirZ = dz / dist;
+        emit("shoot", { x: ex, z: ez, dirX, dirZ });
+      }
     }
   },
 });

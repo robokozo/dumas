@@ -4,6 +4,7 @@ import type {
   ImpulseJoint,
   RevoluteImpulseJoint,
   PrismaticImpulseJoint,
+  World,
 } from "@dimforge/rapier3d-compat";
 import { useGame } from "../world/useGame";
 import { PHYSICS_TYPE } from "./createPhysics";
@@ -131,78 +132,107 @@ export function useJoint(options: JointOptions): JointResult {
     },
   };
 
+  // Bodies are created asynchronously by createPhysics — they watch the same
+  // physicsWorld ref and may not exist yet when the world first becomes
+  // available. A one-shot system polls each frame until both bodies are
+  // registered, then creates the joint and unregisters itself.
+  let stopPoll: (() => void) | null = null;
+
   const stopWatch = watch(
     () => gameCtx.physicsWorld.value,
     (rapierWorld) => {
       if (rapierWorld === null) return;
       if (joint !== null) return;
 
-      const physStore = gameCtx.storeRegistry.get(PHYSICS_TYPE) as PhysicsStore | undefined;
-      if (physStore === undefined) return;
+      // Try immediately — if both bodies already exist we skip the polling path.
+      if (tryCreateJoint(rapierWorld) === true) return;
 
-      const bodyA = physStore.body[options.bodyA];
-      const bodyB = physStore.body[options.bodyB];
-      if (bodyA === undefined || bodyB === undefined) return;
-
-      const a1 = options.anchorA ?? { x: 0, y: 0, z: 0 };
-      const a2 = options.anchorB ?? { x: 0, y: 0, z: 0 };
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      let jointData: any;
-
-      switch (options.type) {
-        case "fixed":
-          jointData = JointData.fixed(a1, { x: 0, y: 0, z: 0, w: 1 }, a2, {
-            x: 0,
-            y: 0,
-            z: 0,
-            w: 1,
-          });
-          break;
-
-        case "revolute":
-          jointData = JointData.revolute(a1, a2, options.axis);
-          if (options.limits !== undefined) {
-            jointData.limitsEnabled = true;
-            jointData.limits = [options.limits.min, options.limits.max];
+      // Bodies not ready yet — poll each frame until they appear.
+      stopPoll = gameCtx.registerSystem({
+        priority: -1,
+        fn: () => {
+          if (joint !== null) return;
+          const rw = gameCtx.physicsWorld.value;
+          if (rw === null) return;
+          if (tryCreateJoint(rw) === true) {
+            stopPoll?.();
+            stopPoll = null;
           }
-          break;
-
-        case "prismatic":
-          jointData = JointData.prismatic(a1, a2, options.axis);
-          if (options.limits !== undefined) {
-            jointData.limitsEnabled = true;
-            jointData.limits = [options.limits.min, options.limits.max];
-          }
-          break;
-
-        case "spring":
-          jointData = JointData.spring(
-            options.restLength,
-            options.stiffness,
-            options.damping,
-            a1,
-            a2,
-          );
-          break;
-      }
-
-      joint = rapierWorld.createImpulseJoint(jointData, bodyA, bodyB, true);
-
-      // Apply motor configuration if specified at creation time
-      if (options.type === "revolute" && options.motor !== undefined) {
-        (joint as RevoluteImpulseJoint).configureMotorPosition(
-          options.motor.targetPosition,
-          options.motor.stiffness,
-          options.motor.damping,
-        );
-      }
+        },
+      });
     },
     { immediate: true },
   );
 
+  function tryCreateJoint(rapierWorld: World): boolean {
+    const physStore = gameCtx.storeRegistry.get(PHYSICS_TYPE) as PhysicsStore | undefined;
+    if (physStore === undefined) return false;
+
+    const bodyA = physStore.body[options.bodyA];
+    const bodyB = physStore.body[options.bodyB];
+    if (bodyA === undefined || bodyB === undefined) return false;
+
+    const a1 = options.anchorA ?? { x: 0, y: 0, z: 0 };
+    const a2 = options.anchorB ?? { x: 0, y: 0, z: 0 };
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let jointData: any;
+
+    switch (options.type) {
+      case "fixed":
+        jointData = JointData.fixed(a1, { x: 0, y: 0, z: 0, w: 1 }, a2, {
+          x: 0,
+          y: 0,
+          z: 0,
+          w: 1,
+        });
+        break;
+
+      case "revolute":
+        jointData = JointData.revolute(a1, a2, options.axis);
+        if (options.limits !== undefined) {
+          jointData.limitsEnabled = true;
+          jointData.limits = [options.limits.min, options.limits.max];
+        }
+        break;
+
+      case "prismatic":
+        jointData = JointData.prismatic(a1, a2, options.axis);
+        if (options.limits !== undefined) {
+          jointData.limitsEnabled = true;
+          jointData.limits = [options.limits.min, options.limits.max];
+        }
+        break;
+
+      case "spring":
+        jointData = JointData.spring(
+          options.restLength,
+          options.stiffness,
+          options.damping,
+          a1,
+          a2,
+        );
+        break;
+    }
+
+    joint = rapierWorld.createImpulseJoint(jointData, bodyA, bodyB, true);
+
+    // Apply motor configuration if specified at creation time
+    if (options.type === "revolute" && options.motor !== undefined) {
+      (joint as RevoluteImpulseJoint).configureMotorPosition(
+        options.motor.targetPosition,
+        options.motor.stiffness,
+        options.motor.damping,
+      );
+    }
+
+    return true;
+  }
+
   onUnmounted(() => {
     stopWatch();
+    stopPoll?.();
+    stopPoll = null;
     if (joint !== null && gameCtx.physicsWorld.value !== null) {
       gameCtx.physicsWorld.value.removeImpulseJoint(joint, true);
       joint = null;

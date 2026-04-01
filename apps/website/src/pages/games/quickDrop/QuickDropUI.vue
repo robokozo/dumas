@@ -3,6 +3,7 @@ import { MAX_BALLS } from "./types";
 
 const props = defineProps<{
   score: number;
+  highScore: number;
   lastDrop: number | null;
   isHolding: boolean;
   ballCount: number;
@@ -19,6 +20,7 @@ const emit = defineEmits<{
     <div class="score-display">
       <span class="score-value">{{ props.score }}</span>
       <span class="score-label">Score</span>
+      <span v-if="props.highScore > 0" class="high-score">Best: {{ props.highScore }}</span>
     </div>
 
     <div class="drop-area">
@@ -36,7 +38,7 @@ const emit = defineEmits<{
   </div>
 
   <div v-if="props.lastDrop !== null" class="last-drop">+{{ props.lastDrop }}</div>
-  <div class="hint">Hold the button to drop balls — release and wait for scoring</div>
+  <div class="hint">Click &amp; hold anywhere to drop balls — release and wait for scoring</div>
 </template>
 
 <style scoped>
@@ -71,6 +73,12 @@ const emit = defineEmits<{
   color: rgba(255, 255, 255, 0.35);
   text-transform: uppercase;
   letter-spacing: 0.1em;
+}
+
+.high-score {
+  font-family: monospace;
+  font-size: 0.7rem;
+  color: rgba(255, 204, 68, 0.6);
 }
 
 .drop-area {

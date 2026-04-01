@@ -8,3 +8,6 @@ export const EnemyTag = defineTag();
 
 /** Marks an entity as the player's weapon. */
 export const WeaponTag = defineTag();
+
+/** Marks an entity as an enemy projectile. */
+export const ProjectileTag = defineTag();
