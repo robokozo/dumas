@@ -45,9 +45,9 @@ const marbles = shallowRef<Array<MarbleState>>([]);
 
 // ── Checkpoint data ──────────────────────────────────────────────────────────
 const CHECKPOINT_CONFIGS = [
-  { id: 0, label: "CP 1", x: -1.5, y: 7.5, z: 0 },
-  { id: 1, label: "CP 2", x: 1.5, y: 4.5, z: 0 },
-  { id: 2, label: "CP 3", x: -1.5, y: 2.0, z: 0 },
+  { id: 0, label: "CP 1", x: -2.5, y: 7.5, z: 0 },
+  { id: 1, label: "CP 2", x: 2.5, y: 5.2, z: 0 },
+  { id: 2, label: "CP 3", x: -2.5, y: 3.0, z: 0 },
 ] as const;
 
 // Template refs for checkpoints to access their exposed screen positions
@@ -78,24 +78,6 @@ function updateCheckpointDisplays(): void {
   }
   checkpointDisplays.value = displays;
 }
-
-// ── Start platform (fixed) ───────────────────────────────────────────────────
-const { transform: startPlatformTransform } = useEcsComponent({
-  components: {
-    physics: createPhysics({
-      type: "fixed",
-      colliders: {
-        platform: createCuboidCollider({
-          halfExtents: [1.5, 0.15, 1.2],
-          friction: 0.3,
-        }),
-      },
-    }),
-  },
-});
-startPlatformTransform.posX.value = START_PLATFORM_X;
-startPlatformTransform.posY.value = START_PLATFORM_Y;
-startPlatformTransform.posZ.value = START_PLATFORM_Z;
 
 // ── Side walls — keep marbles from flying off sideways ───────────────────────
 const SIDE_WALL_HALF_HEIGHT = 7;
@@ -243,12 +225,6 @@ function onCheckpointReached(): void {
     <TresMesh :position="[0, 4, -2]">
       <TresPlaneGeometry :args="[16, 16]" />
       <TresMeshStandardMaterial color="#1a1a2e" />
-    </TresMesh>
-
-    <!-- Start platform visual -->
-    <TresMesh :position="[START_PLATFORM_X, START_PLATFORM_Y, START_PLATFORM_Z]">
-      <TresBoxGeometry :args="[3, 0.3, 2.4]" />
-      <TresMeshStandardMaterial color="#3a7d44" :emissive="'#2a5d34'" :emissive-intensity="0.3" />
     </TresMesh>
 
     <!-- Ramps -->

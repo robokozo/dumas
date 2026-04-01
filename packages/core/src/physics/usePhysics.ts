@@ -27,8 +27,9 @@ export function usePhysics({
     const RAPIER = await import("@dimforge/rapier3d-compat");
     await RAPIER.init();
     if (gameCtx.physicsWorld.value !== null) return;
-    gameCtx.physicsWorld.value = new RAPIER.World(
-      new RAPIER.Vector3(gravity[0], gravity[1], gravity[2]),
-    );
+    const world = new RAPIER.World(new RAPIER.Vector3(gravity[0], gravity[1], gravity[2]));
+    // Higher solver iterations for joint/contact stability (default is 4).
+    world.numSolverIterations = 8;
+    gameCtx.physicsWorld.value = world;
   })();
 }

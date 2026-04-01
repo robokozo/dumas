@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { defineComponent, provide, readonly, shallowRef, useAttrs } from "vue";
-import type { ShallowRef } from "vue";
+import type { ShallowRef, Slot, VNode } from "vue";
 import type { World as RapierWorld } from "@dimforge/rapier3d-compat";
 import { TresCanvas, useLoop } from "@tresjs/core";
 import { createWorld } from "bitecs";
@@ -17,7 +17,7 @@ const world = createWorld();
 const storeRegistry = new Map<object | symbol, ComponentStore>();
 const colliderRegistry = new Map<number, number>();
 const physicsWorldRef = shallowRef<RapierWorld | null>(null);
-const overlayEl = shallowRef<HTMLElement | null>(null);
+const sceneOverlays = shallowRef(new Map<string, Slot>());
 const scenes = shallowRef<Array<string>>([]);
 const activeScene = shallowRef<string | null>(null);
 const transitionState = shallowRef<Record<string, unknown>>({});
@@ -55,13 +55,29 @@ function registerSystem({
 // ─── GameLoop — lives inside TresCanvas so useLoop() is valid ─────────────────
 // Defined here so it closes over Game.vue's system registry and physics world.
 
+const FIXED_TIMESTEP = 1 / 60;
+const MAX_SUBSTEPS = 4;
+
 const GameLoop = defineComponent({
   setup() {
     const { onBeforeRender } = useLoop();
 
-    // Physics step — runs first (priority -100), no-op until world is ready.
+    let physicsAccumulator = 0;
+
     onBeforeRender(({ delta, elapsed }) => {
-      physicsWorldRef.value?.step();
+      // Fixed-timestep physics stepping to prevent jitter
+      const world = physicsWorldRef.value;
+      if (world !== null) {
+        physicsAccumulator += delta;
+        // Cap to prevent spiral of death on long frames
+        if (physicsAccumulator > FIXED_TIMESTEP * MAX_SUBSTEPS) {
+          physicsAccumulator = FIXED_TIMESTEP * MAX_SUBSTEPS;
+        }
+        while (physicsAccumulator >= FIXED_TIMESTEP) {
+          world.step();
+          physicsAccumulator -= FIXED_TIMESTEP;
+        }
+      }
 
       if (isDirty) {
         systemEntries = [...systemEntries].sort((a, b) => {
@@ -149,6 +165,27 @@ function registerPhysicsWorld({
   physicsWorldRef.value = rapierWorld.value;
 }
 
+function registerOverlay({ name, slot }: { name: string; slot: Slot }): void {
+  const next = new Map(sceneOverlays.value);
+  next.set(name, slot);
+  sceneOverlays.value = next;
+}
+
+function unregisterOverlay({ name }: { name: string }): void {
+  const next = new Map(sceneOverlays.value);
+  next.delete(name);
+  sceneOverlays.value = next;
+}
+
+const ActiveSceneOverlay = defineComponent({
+  render(): Array<VNode> | null {
+    if (activeScene.value === null) return null;
+    const slotFn = sceneOverlays.value.get(activeScene.value);
+    if (slotFn === undefined) return null;
+    return slotFn({ name: activeScene.value });
+  },
+});
+
 const ctx: GameContext = {
   world,
   storeRegistry,
@@ -164,7 +201,8 @@ const ctx: GameContext = {
   registerCollider,
   unregisterCollider,
   registerPhysicsWorld,
-  overlayEl,
+  registerOverlay,
+  unregisterOverlay,
   registerSystem,
 };
 
@@ -177,8 +215,9 @@ provide(GAME_KEY, ctx);
       <GameLoop />
       <slot />
     </TresCanvas>
-    <div ref="overlayEl" style="position: absolute; inset: 0; pointer-events: none">
+    <div style="position: absolute; inset: 0; pointer-events: none">
       <slot name="overlay" :active-scene="activeScene" :scenes="scenes" :load-scene="loadScene" />
+      <ActiveSceneOverlay />
     </div>
   </div>
 </template>

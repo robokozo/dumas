@@ -29,6 +29,9 @@ const { eid, transform } = useEcsComponent({
   components: {
     physics: createPhysics({
       type: "dynamic",
+      enableCcd: true,
+      linearDamping: 0.3,
+      angularDamping: 0.2,
       colliders: {
         ball: createSphereCollider({
           radius: MARBLE_RADIUS,

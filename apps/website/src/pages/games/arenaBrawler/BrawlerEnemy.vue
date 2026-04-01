@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, shallowRef } from "vue";
+import { ref, shallowRef, toRef } from "vue";
 import {
   DumasEntity,
   useEcsComponent,
@@ -31,7 +31,7 @@ const emit = defineEmits<{
 const health = ref(props.spawn.health);
 const isAlive = shallowRef(true);
 
-const playerRef = useEntityRef({ eid: props.playerEid });
+const playerRef = useEntityRef({ eid: toRef(() => props.playerEid) });
 
 const { eid, transform } = useEcsComponent({
   components: {

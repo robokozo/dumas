@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { shallowRef } from "vue";
+import { shallowRef, toRef } from "vue";
 import {
   DumasEntity,
   useEcsComponent,
@@ -33,7 +33,7 @@ const isSwinging = shallowRef(false);
 const swingTimer = shallowRef(0);
 const weaponAngle = shallowRef(0);
 
-const parentRef = useEntityRef({ eid: props.parentEid });
+const parentRef = useEntityRef({ eid: toRef(() => props.parentEid) });
 
 const { eid, transform } = useEcsComponent({
   components: {

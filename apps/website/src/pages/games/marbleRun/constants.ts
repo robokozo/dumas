@@ -9,14 +9,14 @@ export const MARBLE_RESTITUTION = 0.4;
 export const MARBLE_FRICTION = 0.5;
 export const MAX_MARBLES = 3;
 
-// ── Start platform ──────────────────────────────────────────────────────────
+// ── Start — seesaw is the landing pad at the top ───────────────────────────
 export const START_PLATFORM_X = 0;
 export const START_PLATFORM_Y = 10;
 export const START_PLATFORM_Z = 0;
 
 // ── Ramp configuration ──────────────────────────────────────────────────────
 // Zigzag ramps descending from left to right and back.
-// Angle is rotation around the Z axis in radians (tilt toward negative X or positive X).
+// Angle is rotation around the Z axis in radians.
 const RAMP_TILT = 0.18;
 const RAMP_COLOR_A = "#4a5568";
 const RAMP_COLOR_B = "#553c6e";
@@ -24,7 +24,7 @@ const RAMP_COLOR_B = "#553c6e";
 export const RAMPS: Array<RampConfig> = [
   {
     x: -2.5,
-    y: 8.2,
+    y: 8.0,
     z: 0,
     halfWidth: 2.5,
     halfHeight: 0.15,
@@ -34,7 +34,7 @@ export const RAMPS: Array<RampConfig> = [
   },
   {
     x: 2.5,
-    y: 6.0,
+    y: 5.8,
     z: 0,
     halfWidth: 2.5,
     halfHeight: 0.15,
@@ -44,7 +44,7 @@ export const RAMPS: Array<RampConfig> = [
   },
   {
     x: -2.5,
-    y: 3.8,
+    y: 3.6,
     z: 0,
     halfWidth: 2.5,
     halfHeight: 0.15,
@@ -54,7 +54,7 @@ export const RAMPS: Array<RampConfig> = [
   },
   {
     x: 2.5,
-    y: 1.6,
+    y: 1.4,
     z: 0,
     halfWidth: 2.5,
     halfHeight: 0.15,
@@ -64,22 +64,22 @@ export const RAMPS: Array<RampConfig> = [
   },
 ] satisfies Array<RampConfig>;
 
-// ── Seesaw ───────────────────────────────────────────────────────────────────
+// ── Seesaw — now at the top, replaces start platform ────────────────────────
 export const SEESAW_X = 0;
-export const SEESAW_Y = 5.1;
+export const SEESAW_Y = START_PLATFORM_Y;
 export const SEESAW_Z = 0;
-export const SEESAW_HALF_WIDTH = 2.0;
-export const SEESAW_HALF_HEIGHT = 0.1;
-export const SEESAW_HALF_DEPTH = 1.0;
-export const SEESAW_ANGLE_LIMIT = 0.35;
+export const SEESAW_HALF_WIDTH = 2.5;
+export const SEESAW_HALF_HEIGHT = 0.12;
+export const SEESAW_HALF_DEPTH = 1.2;
+export const SEESAW_ANGLE_LIMIT = 0.3;
 
-// ── Spring bumper ────────────────────────────────────────────────────────────
-export const BUMPER_X = -4.5;
-export const BUMPER_Y = 2.8;
+// ── Spring bumper — at the end of ramp 2, redirects marbles ─────────────────
+export const BUMPER_X = 5;
+export const BUMPER_Y = 5.4;
 export const BUMPER_Z = 0;
 export const BUMPER_REST_LENGTH = 0.3;
-export const BUMPER_STIFFNESS = 300;
-export const BUMPER_DAMPING = 2;
+export const BUMPER_STIFFNESS = 400;
+export const BUMPER_DAMPING = 3;
 
 // ── Goal funnel ──────────────────────────────────────────────────────────────
 export const GOAL_X = 0;

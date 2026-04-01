@@ -18,9 +18,9 @@ import {
 } from "./constants";
 
 const BUMPER_HALF = 0.35;
-const WALL_ANCHOR_X = BUMPER_X - 1.2;
+const WALL_ANCHOR_X = BUMPER_X + 1.2;
 
-// Fixed wall anchor — the spring attaches to this.
+// Fixed wall anchor — the spring attaches to this (right side).
 const { eid: wallEid, transform: wallTransform } = useEcsComponent({
   components: {
     physics: createPhysics({
@@ -35,11 +35,12 @@ wallTransform.posX.value = WALL_ANCHOR_X;
 wallTransform.posY.value = BUMPER_Y;
 wallTransform.posZ.value = BUMPER_Z;
 
-// Dynamic bumper pad — bounces the marble sideways.
+// Dynamic bumper pad — bounces the marble back toward center.
 const { eid: bumperEid, transform: bumperTransform } = useEcsComponent({
   components: {
     physics: createPhysics({
       type: "dynamic",
+      linearDamping: 2.0,
       colliders: {
         pad: createCuboidCollider({
           halfExtents: [BUMPER_HALF, BUMPER_HALF, 0.8],
@@ -59,8 +60,8 @@ useJoint({
   type: "spring",
   bodyA: wallEid,
   bodyB: bumperEid,
-  anchorA: { x: 0.15, y: 0, z: 0 },
-  anchorB: { x: -BUMPER_HALF, y: 0, z: 0 },
+  anchorA: { x: -0.15, y: 0, z: 0 },
+  anchorB: { x: BUMPER_HALF, y: 0, z: 0 },
   restLength: BUMPER_REST_LENGTH,
   stiffness: BUMPER_STIFFNESS,
   damping: BUMPER_DAMPING,

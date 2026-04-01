@@ -33,6 +33,8 @@ export interface RevoluteJointOptions extends JointOptionsBase {
   axis: Vec3;
   /** Optional angle limits in radians [min, max]. */
   limits?: { min: number; max: number };
+  /** Configure a position-drive motor at creation time. */
+  motor?: { targetPosition: number; stiffness: number; damping: number };
 }
 
 export interface PrismaticJointOptions extends JointOptionsBase {
@@ -186,6 +188,15 @@ export function useJoint(options: JointOptions): JointResult {
       }
 
       joint = rapierWorld.createImpulseJoint(jointData, bodyA, bodyB, true);
+
+      // Apply motor configuration if specified at creation time
+      if (options.type === "revolute" && options.motor !== undefined) {
+        (joint as RevoluteImpulseJoint).configureMotorPosition(
+          options.motor.targetPosition,
+          options.motor.stiffness,
+          options.motor.damping,
+        );
+      }
     },
     { immediate: true },
   );

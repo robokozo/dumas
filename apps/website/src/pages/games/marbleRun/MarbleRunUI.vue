@@ -69,7 +69,7 @@ function formatTime({ seconds }: { seconds: number }): string {
   position: absolute;
   top: 0.75rem;
   left: 0.75rem;
-  right: 0.75rem;
+  right: 3.5rem;
   display: flex;
   justify-content: space-between;
   pointer-events: none;

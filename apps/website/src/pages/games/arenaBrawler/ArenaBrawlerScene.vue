@@ -156,16 +156,18 @@ function setEnemyRef({ index, el }: { index: number; el: unknown }): void {
       @weapon-hit="(evt) => onWeaponHit(evt)"
     />
 
-    <!-- Enemies -->
-    <BrawlerEnemy
-      v-for="(spawn, index) in enemies"
-      :key="spawn.id"
-      :ref="(el) => setEnemyRef({ index, el })"
-      :spawn="spawn"
-      :player-eid="playerRef?.eid ?? 0"
-      @contact-player="onEnemyContactPlayer"
-      @defeated="(evt) => onEnemyDefeated(evt)"
-    />
+    <!-- Enemies — only render after the player has mounted so playerEid is valid -->
+    <template v-if="playerRef !== null">
+      <BrawlerEnemy
+        v-for="(spawn, index) in enemies"
+        :key="spawn.id"
+        :ref="(el) => setEnemyRef({ index, el })"
+        :spawn="spawn"
+        :player-eid="playerRef.eid"
+        @contact-player="onEnemyContactPlayer"
+        @defeated="(evt) => onEnemyDefeated(evt)"
+      />
+    </template>
 
     <template #overlay>
       <BrawlerUI

@@ -110,9 +110,14 @@ export function createPhysics(options: PhysicsOptions): ComponentFactory<Physics
         vueOnMounted(() => {
           hasMounted = true;
           // Fast path: body already created during setup, apply transform now.
+          // Also reset velocity and wake the body — it was created sleeping
+          // to prevent physics chaos between creation and transform application.
           const b = store.body[eid];
           if (b !== undefined) {
             applyInitialTransform(b, transformStore, eid);
+            b.setLinvel({ x: 0, y: 0, z: 0 }, false);
+            b.setAngvel({ x: 0, y: 0, z: 0 }, false);
+            b.wakeUp();
           }
           // Slow path: body not yet created (WASM loading), hasMounted flag
           // lets initBody apply the transform when the world becomes available.
@@ -137,6 +142,11 @@ export function createPhysics(options: PhysicsOptions): ComponentFactory<Physics
 
           // ── Build body ────────────────────────────────────────────────────────
           const desc = buildRigidBodyDesc(options.type);
+          // Start sleeping if created before vueOnMounted (user hasn't set
+          // transform values yet). vueOnMounted teleports + wakes the body.
+          if (hasMounted === false) {
+            desc.setSleeping(true);
+          }
           const body = rapierWorld.createRigidBody(desc);
 
           if (options.gravityScale !== undefined) body.setGravityScale(options.gravityScale, true);
@@ -302,6 +312,12 @@ function applyInitialTransform(
   const py = transformStore.posY[eid]?.value ?? 0;
   const pz = transformStore.posZ[eid]?.value ?? 0;
   body.setTranslation({ x: px, y: py, z: pz }, true);
+
+  const rx = transformStore.rotX[eid]?.value ?? 0;
+  const ry = transformStore.rotY[eid]?.value ?? 0;
+  const rz = transformStore.rotZ[eid]?.value ?? 0;
+  const rw = transformStore.rotW[eid]?.value ?? 1;
+  body.setRotation({ x: rx, y: ry, z: rz, w: rw }, true);
 }
 
 function buildRigidBodyDesc(type: PhysicsOptions["type"]): RigidBodyDesc {

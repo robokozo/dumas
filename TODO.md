@@ -185,3 +185,30 @@ function onLeverReleased() {
   hinge.setMotor({ targetVelocity: 0, maxForce: 0 }); // free-swing shut
 }
 ```
+
+BUGS:
+in general everything needs to be zoomed out more. maybe give guides orbit controls by default. (not advanced guides or games unless it makes sense)
+
+Arena brawler... the enemies just surround you. its not very interesting. can they maybe keep a distance. maybe they shoot?
+
+Puzzle platform has 2 wobbly boards that dont stop moving. also i think we need to zoom out a bit
+
+fishing scene is completely broken. i think it broke with some of the changes we made recently.
+
+tower defense is broken. only the last gun shoots. if i place them in order. probably needs to be zoomed out too.
+
+quick drop. instead of a button can we just click anywhere (or pres anywhere for mobile.) alsot he score should be reset (maybe keep track of the current sessions high score)
+
+dungeon explorer stopped working. nothing loads
+
+scene switching guide has a bug. the forest sky is blue. when you go to the desert and back the sky is black.
+
+coinpusher. give the player a random amount of coins of different denominations. and they can run out of coins. any coins they win let them continue playing with that as their "ammuninition"
+
+pointer input guide is scrolling a ton of errors in the console.
+
+physics. can you randomize the position of the cubes a little
+
+character controller guide.. the capsule representing the player jitters a TON as its moving around. even jumping causing it to have a seizure.
+
+joints. whats the thing on the left supposed to be? is it supposed to be swinging? i can't see the string if thats it and its staying still

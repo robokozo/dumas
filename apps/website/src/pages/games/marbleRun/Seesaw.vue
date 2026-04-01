@@ -33,6 +33,7 @@ anchorTransform.posY.value = SEESAW_Y;
 anchorTransform.posZ.value = SEESAW_Z;
 
 // Dynamic plank that tips when the marble rolls onto it.
+// No body-level damping — the joint motor handles stability.
 const { eid: plankEid, transform: plankTransform } = useEcsComponent({
   components: {
     physics: createPhysics({
@@ -51,6 +52,7 @@ plankTransform.posY.value = SEESAW_Y;
 plankTransform.posZ.value = SEESAW_Z;
 
 // Revolute joint — hinge around the Z axis so the plank tips left/right.
+// Motor gently returns to center; low stiffness lets marbles tilt it.
 useJoint({
   type: "revolute",
   bodyA: anchorEid,
@@ -59,14 +61,15 @@ useJoint({
   anchorA: { x: 0, y: 0, z: 0 },
   anchorB: { x: 0, y: 0, z: 0 },
   limits: { min: -SEESAW_ANGLE_LIMIT, max: SEESAW_ANGLE_LIMIT },
+  motor: { targetPosition: 0, stiffness: 3, damping: 4 },
 });
 </script>
 
 <template>
-  <!-- Anchor pivot visual (small cylinder) -->
+  <!-- Anchor pivot visual (small triangle base) -->
   <DumasEntity :eid="anchorEid">
     <TresMesh>
-      <TresCylinderGeometry :args="[0.12, 0.12, 0.3, 8]" />
+      <TresConeGeometry :args="[0.25, 0.4, 4]" />
       <TresMeshStandardMaterial color="#888888" />
     </TresMesh>
   </DumasEntity>
